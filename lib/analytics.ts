@@ -10,7 +10,7 @@ import { Mixpanel } from 'mixpanel-react-native';
 const token = process.env.EXPO_PUBLIC_MIXPANEL_TOKEN;
 const enabled = !!token && Platform.OS !== 'web';
 
-const CONSENT_KEY = 'atossa_analytics_consent';
+const CONSENT_KEY = 'zeeba_analytics_consent';
 let consent = false;
 let client: Mixpanel | null = null;
 

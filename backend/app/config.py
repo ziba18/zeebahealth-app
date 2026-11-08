@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     # Comma-separated allowed CORS origins; "*" keeps the previous behaviour.
     cors_origins: str = "*"
     # Expected audiences for verifying social sign-in identity tokens.
-    apple_bundle_id: str = "com.attosa.app"
+    apple_bundle_id: str = "com.zeebahealth.app"
     google_web_client_id: str = ""
     # Basket Buddy ("Groceries Mate", a separate app) signs in with Apple/Google through this
     # server too; see routers/basket_buddy.py. Its data stays in its own Supabase project, so

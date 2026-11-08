@@ -3,9 +3,11 @@
 ## NAME: the app is now **Zeeba Health** (owner, 2026-11-08)
 Atossa was renamed Zeeba Health ("Zeeba" only as a casual short form in copy; never "Atossa" in anything a user sees).
 Repo is now private `ziba18/zeebahealth-app`, folder `~/projects/zeebahealth-app`. Older notes below still say Atossa; read them as Zeeba Health.
-Kept on purpose (invisible to users; changing breaks Apple/Google sign-in, logs out installs, or needs a new App Store record):
-bundle id / package `com.attosa.app`, Expo slug + URL scheme `attosa`, on-device storage keys `atossa.*` / `atossa_*`,
-backend URL `atossa-backend.onrender.com` (Render service also serves Basket Buddy sign-in — never suspend it).
+Identifiers (2026-11-08, new App Store listing): bundle id / Android package `com.zeebahealth.app`, Expo slug + URL scheme
+`zeebahealth`, new EAS project `@zamaniziba18/zeebahealth` (id 69e41ccd-094f-4227-a786-3a2ade8834da; the old `attosa`
+project and App Store app 6762570606 belong to Atossa), on-device keys `zeeba.*` / `zeeba_*`. Backend: Render service
+`atossa-backend` (URL atossa-backend.onrender.com, target custom domain api.zeebahealth.com); it also serves Basket Buddy
+sign-in, so never suspend it, and don't rename it in render.yaml (Blueprint would create a new service).
 Folders: `components/zeeba/` (was components/atossa), `constants/zeebaUI.ts` (was atossaUI.ts).
 
 ## RED LINE: Claude usage (owner, 2026-11-02)

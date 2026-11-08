@@ -39,7 +39,7 @@ const DATE_LABEL = /^\d{1,2}(?: [A-Za-z]{3}(?: \d{4})?)?(?:–\d{1,2} [A-Za-z]{3
 
 /**
  * A back-button label taken from a link's `from` param. Anything that is not a screen title or a
- * date range falls back, so a crafted attosa:// link cannot put its own text in the app's chrome.
+ * date range falls back, so a crafted zeebahealth:// link cannot put its own text in the app's chrome.
  */
 export function safeBackLabel(raw: string | string[] | undefined, fallback = 'Timeline'): string {
   const v = (Array.isArray(raw) ? raw[0] : raw)?.trim();
