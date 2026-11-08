@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import { AppState, Platform } from 'react-native';
 import { Tabs } from 'expo-router';
-import { MainTabBar } from '../../components/atossa/MainTabBar';
-import { CaptureSheet } from '../../components/atossa/capture/CaptureSheet';
-import { colors } from '../../constants/atossaUI';
+import { MainTabBar } from '../../components/zeeba/MainTabBar';
+import { CaptureSheet } from '../../components/zeeba/capture/CaptureSheet';
+import { colors } from '../../constants/zeebaUI';
 import { useAuthStore } from '../../stores/authStore';
 import { useRecordsStore } from '../../stores/recordsStore';
 

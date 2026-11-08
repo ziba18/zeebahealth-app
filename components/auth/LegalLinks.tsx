@@ -1,8 +1,8 @@
 import React from 'react';
 import { Linking, View } from 'react-native';
-import { space } from '../../constants/atossaUI';
+import { space } from '../../constants/zeebaUI';
 import { LegalUrls } from '../../constants/config';
-import { Button, Txt } from '../atossa/kit';
+import { Button, Txt } from '../zeeba/kit';
 
 export const openLegal = (page: keyof typeof LegalUrls) => Linking.openURL(LegalUrls[page]).catch(() => {});
 

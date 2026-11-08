@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { space } from '../../constants/atossaUI';
-import { Button, InlineError, ScreenLarge, TextField } from '../../components/atossa/kit';
+import { space } from '../../constants/zeebaUI';
+import { Button, InlineError, ScreenLarge, TextField } from '../../components/zeeba/kit';
 import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
 import { useAuthStore } from '../../stores/authStore';
 import { ApiError } from '../../lib/api';

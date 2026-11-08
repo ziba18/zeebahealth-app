@@ -1,6 +1,6 @@
 // The ONE document model for the For my doctor tab. `buildDoctorSummary` turns Sam's records +
 // the builder's choices into a typed `DoctorDoc`; the on-screen preview / Show on screen
-// (components/atossa/doctor/DocumentView.tsx) and the PDF (`summaryToHtml`) both render that
+// (components/zeeba/doctor/DocumentView.tsx) and the PDF (`summaryToHtml`) both render that
 // same model, so they can never say different things.
 //
 // Rules (every string produced here): it only repeats what Sam entered. Never a condition name,
@@ -9,7 +9,7 @@
 // no data are omitted from `sections` (never an empty label); the 13 PRODUCT §4 areas in `domains`
 // each get one line, "Not recorded" when empty, so a clinician can tell "not logged" from "left out". "Not sure" / "Skip" / "It varies" /
 // "Nothing today" are never counted as impacts; an unanswered strength is never 0.
-import { colors, severityColor } from '../../constants/atossaUI';
+import { colors, severityColor } from '../../constants/zeebaUI';
 import type {
   AppointmentData, Cycle, DatePrecision, HistoryData, MedicineData, PeriodDayData, Rec, SymptomData,
 } from '../../types/records';
@@ -597,7 +597,7 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
       id: 'words',
       title: 'Symptoms in my words',
       quotes,
-      more: unquoted > 0 ? `${plural(unquoted, 'more note')} in my words, saved in Atossa.` : '',
+      more: unquoted > 0 ? `${plural(unquoted, 'more note')} in my words, saved in Zeeba Health.` : '',
     });
   }
 
@@ -737,7 +737,7 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
         title: clean(a.who),
         lines: [{ label: 'Why I went', text: clean(a.why) }, ...afterLines(a)].filter((l) => l.text),
       })),
-      more: past.length > MAX_LISTED ? `${plural(past.length - MAX_LISTED, 'earlier appointment')} saved in Atossa.` : '',
+      more: past.length > MAX_LISTED ? `${plural(past.length - MAX_LISTED, 'earlier appointment')} saved in Zeeba Health.` : '',
     });
   }
 
@@ -757,7 +757,7 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
           { label: 'Result or how it went', text: clean(h.result) },
         ].filter((l) => l.text),
       })),
-      more: hist.length > MAX_LISTED ? `${plural(hist.length - MAX_LISTED, 'earlier item')} saved in Atossa.` : '',
+      more: hist.length > MAX_LISTED ? `${plural(hist.length - MAX_LISTED, 'earlier item')} saved in Zeeba Health.` : '',
       family: familyText,
     });
   }
@@ -782,7 +782,7 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
     from, to, rangeLabel, agenda, agendaTitle: agendaTitleFor(options.appointmentToday),
     agendaBlock: agendaBlockOf(agenda, agendaTitleFor(options.appointmentToday)), sections, available, entries,
     domains, completeness: `${recorded} of ${plural(DOMAINS.length, 'area')} recorded`,
-    footer: `Patient-reported via Atossa · not clinically verified · ${rangeLabel} · ${plural(entries, 'entry', 'entries')}`,
+    footer: `Patient-reported via Zeeba Health · not clinically verified · ${rangeLabel} · ${plural(entries, 'entry', 'entries')}`,
     // An agenda on its own isn't a summary: nothing to share until a section has data.
     empty: sections.length === 0,
   };

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { colors, space } from '../../../constants/atossaUI';
-import { Button, Card, DayChooser, InlineError, Txt } from '../../../components/atossa/kit';
+import { colors, space } from '../../../constants/zeebaUI';
+import { Button, Card, DayChooser, InlineError, Txt } from '../../../components/zeeba/kit';
 import { OnboardingScreen } from '../../../components/auth/OnboardingScreen';
 import { api } from '../../../lib/api';
 import { useRecordsStore } from '../../../stores/recordsStore';

@@ -1,7 +1,7 @@
 // node --experimental-strip-types scripts/ai-eval/holistic-v2.test.mjs  (precision/recall per field on items.holistic-v2.json;
 // 58 of 78 notes written by Marketing / Design / Data, gold written before the tired/skin/helped rules; exits 1 on a wrong fill)
 import { readFileSync } from 'node:fs';
-import { holisticFrom } from '../../components/atossa/capture/holistic.ts';
+import { holisticFrom } from '../../components/zeeba/capture/holistic.ts';
 const { items } = JSON.parse(readFileSync(new URL('./items.holistic-v2.json', import.meta.url)));
 const FIELDS = ['products', 'flooding', 'clots', 'between', 'afterSex', 'bowelPain', 'urinePain', 'tired', 'skin', 'helped'];
 const val = (got, k) => k === 'skin' ? got.skin?.map((s) => s.kind) : k === 'helped' ? got.helped?.map((h) => h.verdict) : got[k];

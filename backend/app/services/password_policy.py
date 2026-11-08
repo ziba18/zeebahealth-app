@@ -14,7 +14,7 @@ COMMON_PASSWORDS = _load_common() | frozenset("""
 password password1 password12 password123 passw0rd p@ssw0rd 12345678 123456789 1234567890 11111111
 00000000 87654321 qwertyui qwerty123 qwertyuiop 1q2w3e4r 1q2w3e4r5t iloveyou iloveyou1 letmein1
 welcome1 welcome123 admin123 abc12345 abcd1234 monkey123 dragon123 football1 baseball1 sunshine1
-princess1 trustno1 changeme changeme1 atossa123 atossa1234 password! passwort1 london123 summer2024
+princess1 trustno1 changeme changeme1 atossa123 atossa1234 zeeba123 zeeba1234 password! passwort1 london123 summer2024
 """.split())
 
 MAX_BYTES = 72  # bcrypt ignores everything after 72 bytes

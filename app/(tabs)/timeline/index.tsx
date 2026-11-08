@@ -5,22 +5,22 @@ import { View, type ScrollViewInstance } from 'react-native';
 import { useRouter } from 'expo-router';
 import {
   AddButton, Button, ChipGroup, EmptyState, FadeIn, HeaderAvatar, InlineError, SkeletonCards, ScreenLarge, SegmentedControl, Txt,
-} from '../../../components/atossa/kit';
-import { LogBleedingSheet } from '../../../components/atossa/LogBleedingSheet';
-import { DaySheet } from '../../../components/atossa/timeline/DaySheet';
-import { GhostEntry } from '../../../components/atossa/timeline/GhostEntry';
-import { PatternsView } from '../../../components/atossa/timeline/PatternsView';
-import { RecentStrip } from '../../../components/atossa/timeline/RecentStrip';
-import { EntryCard } from '../../../components/atossa/timeline/EntryCard';
-import { MonthCalendar, type DayMark } from '../../../components/atossa/timeline/MonthCalendar';
+} from '../../../components/zeeba/kit';
+import { LogBleedingSheet } from '../../../components/zeeba/LogBleedingSheet';
+import { DaySheet } from '../../../components/zeeba/timeline/DaySheet';
+import { GhostEntry } from '../../../components/zeeba/timeline/GhostEntry';
+import { PatternsView } from '../../../components/zeeba/timeline/PatternsView';
+import { RecentStrip } from '../../../components/zeeba/timeline/RecentStrip';
+import { EntryCard } from '../../../components/zeeba/timeline/EntryCard';
+import { MonthCalendar, type DayMark } from '../../../components/zeeba/timeline/MonthCalendar';
 import {
   EMPTY_FILTER_TEXT, buildFeed, filterFeed, inArea, groupFeed, itemsOnDay, mergeBleedingRuns, type FeedItem, type ListItem,
-} from '../../../components/atossa/timeline/feed';
+} from '../../../components/zeeba/timeline/feed';
 import {
   AFTER_SHEET_MS, bleedingHref, entryHref, periodHref, recordHref,
-} from '../../../components/atossa/timeline/navigation';
-import { AREA_FILTERS, TIMELINE_FILTERS, useTimelineSession, type TimelineFilter, type TimelineMode } from '../../../components/atossa/timeline/session';
-import { colors, fonts, space } from '../../../constants/atossaUI';
+} from '../../../components/zeeba/timeline/navigation';
+import { AREA_FILTERS, TIMELINE_FILTERS, useTimelineSession, type TimelineFilter, type TimelineMode } from '../../../components/zeeba/timeline/session';
+import { colors, fonts, space } from '../../../constants/zeebaUI';
 import { openCapture } from '../../../lib/captureStore';
 import { mondayOf, parseKey, todayKey } from '../../../lib/records/dates';
 import { bleedingStatus, noteCount, notesLabel, worstOf } from '../../../lib/records/format';

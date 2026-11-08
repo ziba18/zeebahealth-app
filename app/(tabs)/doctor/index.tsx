@@ -4,18 +4,18 @@ import { usePageTitle } from '../../../lib/usePageTitle';
 import React, { useEffect, useRef, useState } from 'react';
 import { Platform, Pressable, View, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
-import { colors, heights, radii, space } from '../../../constants/atossaUI';
+import { colors, heights, radii, space } from '../../../constants/zeebaUI';
 import {
   Button, Card, ChipGroup, EmptyState, HeaderAvatar, InlineError, SafetyLine, ScreenLarge, SkeletonCards, Txt, showToast,
-} from '../../../components/atossa/kit';
+} from '../../../components/zeeba/kit';
 import { Icon, type IconName } from '../../../components/ui/Icon';
 import { openCapture } from '../../../lib/captureStore';
-import { AgendaField } from '../../../components/atossa/doctor/AgendaField';
-import { DocumentPreview } from '../../../components/atossa/doctor/DocumentPreview';
-import { PageOneCards } from '../../../components/atossa/doctor/PageOneCards';
-import { SectionToggles } from '../../../components/atossa/doctor/SectionToggles';
-import { printSummary, shareSummaryPdf } from '../../../components/atossa/doctor/share';
-import { useDoctorBuilder, useDoctorDoc } from '../../../components/atossa/doctor/useDoctorDoc';
+import { AgendaField } from '../../../components/zeeba/doctor/AgendaField';
+import { DocumentPreview } from '../../../components/zeeba/doctor/DocumentPreview';
+import { PageOneCards } from '../../../components/zeeba/doctor/PageOneCards';
+import { SectionToggles } from '../../../components/zeeba/doctor/SectionToggles';
+import { printSummary, shareSummaryPdf } from '../../../components/zeeba/doctor/share';
+import { useDoctorBuilder, useDoctorDoc } from '../../../components/zeeba/doctor/useDoctorDoc';
 import { haptics } from '../../../lib/haptics';
 import { formatDay, joinFacts, notesLabel } from '../../../lib/records/format';
 import { todayKey } from '../../../lib/records/dates';

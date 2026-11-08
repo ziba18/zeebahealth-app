@@ -3,7 +3,7 @@ import type { Profile } from '../types/database';
 import { api, clearTokens, saveTokens } from '../lib/api';
 import { clearOutbox } from '../lib/outbox';
 import { clearLocalChats } from './chatStore';
-import { deleteLastSharedPdf } from '../components/atossa/doctor/share';
+import { deleteLastSharedPdf } from '../components/zeeba/doctor/share';
 
 export interface AuthSession {
   access_token: string;

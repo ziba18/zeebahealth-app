@@ -3,8 +3,8 @@ import { ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colors, fonts, layout, space } from '../../constants/atossaUI';
-import { Button, Card, Quote, Txt } from '../../components/atossa/kit';
+import { colors, fonts, layout, space } from '../../constants/zeebaUI';
+import { Button, Card, Quote, Txt } from '../../components/zeeba/kit';
 import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
 import { track } from '../../lib/analytics';
 
@@ -37,7 +37,7 @@ export default function WelcomeScreen() {
             end={{ x: 0.5, y: 1 }}
             style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]}
           />
-          <Txt variant="headline" color={colors.plum} accessibilityRole="header" accessibilityLabel="Atossa" style={styles.wordmark}>Atossa</Txt>
+          <Txt variant="headline" color={colors.plum} accessibilityRole="header" accessibilityLabel="Zeeba Health" style={styles.wordmark}>Zeeba Health</Txt>
           {short ? null : <View aria-hidden style={styles.wave}>
             {WAVE.map((h, i) => (
               <View key={i} style={{ width: 3, height: Math.round(6 + h * 22), borderRadius: 2, backgroundColor: `${colors.plum}${i % 3 === 0 ? '80' : '4D'}` }} />
@@ -48,7 +48,7 @@ export default function WelcomeScreen() {
         <View style={styles.hero}>
           <Txt variant="hero" style={short || win.width < 380 ? undefined : styles.heroLine}>Your body, in your words.</Txt>
           <Txt variant="body" color={colors.ink2}>
-            Say it the way you’d tell a friend. Atossa tidies it into a clear summary for your doctor.
+            Say it the way you’d tell a friend. Zeeba Health tidies it into a clear summary for your doctor.
           </Txt>
           <Card style={styles.example}>
             <Txt variant="caption" color={colors.ink2}>What you say</Txt>
@@ -75,7 +75,7 @@ export default function WelcomeScreen() {
         </View>}
 
         {short ? null : <Txt variant="caption" color={colors.ink2} style={{ textAlign: 'center', marginBottom: space.sm }}>
-          Atossa never diagnoses. It keeps your notes in your words.
+          Zeeba Health never diagnoses. It keeps your notes in your words.
         </Txt>}
 
         <View style={styles.actions}>

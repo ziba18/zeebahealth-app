@@ -1,7 +1,7 @@
 <div align="center">
-  <img src="assets/Atossa-logo.png" alt="Atossa logo" width="140" />
+  <img src="assets/Zeeba-logo.png" alt="Zeeba Health logo" width="140" />
 
-  # Atossa
+  # Zeeba Health
 
   **A symptom-capture companion for people with PCOS or endometriosis, built with Expo, React Native, and a Python backend.**
 
@@ -14,7 +14,7 @@
 
 ## Features
 
-- **Today** — a calm chat: type or dictate how you're feeling in your own words and Atossa replies with a short follow-up question (via the `/chat` LLM, instructed never to diagnose). "Save as a note for my GP" opens the capture sheet pre-filled, which asks only the missing details (where, how bad 0–10, how long, did it stop you doing things) before saving. The **+** button attaches a photo or file (kept on the phone), logs bleeding, or starts a full note. Chat history lives on the device; a drawer lists past chats.
+- **Today** — a calm chat: type or dictate how you're feeling in your own words and Zeeba Health replies with a short follow-up question (via the `/chat` LLM, instructed never to diagnose). "Save as a note for my GP" opens the capture sheet pre-filled, which asks only the missing details (where, how bad 0–10, how long, did it stop you doing things) before saving. The **+** button attaches a photo or file (kept on the phone), logs bleeding, or starts a full note. Chat history lives on the device; a drawer lists past chats.
 - **Timeline** — every note in your own words, as a filterable list grouped by week or as a month calendar (bleeding days marked), with a detail view for each entry.
 - **For my doctor** — pick a date range and what to include, see an A4 document preview, then share it as a PDF, print it, or show it on screen in the appointment.
 - **Profile & Records** — opened from the header avatar: medicines, appointments and health history (add / edit / delete), settings, and edit profile.
@@ -174,7 +174,7 @@ The app downloads the update on launch and uses it from the next launch. `runtim
 
 ## License
 
-All rights reserved © 2026 Atossa. Published for transparency and portfolio purposes — please do not redistribute without permission.
+All rights reserved © 2026 Zeeba Health. Published for transparency and portfolio purposes — please do not redistribute without permission.
 
 ---
 

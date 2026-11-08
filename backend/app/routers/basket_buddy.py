@@ -1,9 +1,9 @@
 """Apple/Google sign-in for Basket Buddy ("Groceries Mate"), a separate app.
 
 It shares this server only for sign-in: the identity token is checked here exactly as for
-Atossa (services/social_auth.py), but against Basket Buddy's bundle ID / Google client, and the
+Zeeba Health (services/social_auth.py), but against Basket Buddy's bundle ID / Google client, and the
 response is a session for Basket Buddy's own Supabase project (services/basket_buddy_auth.py).
-Nothing is stored in Atossa's database.
+Nothing is stored in Zeeba Health's database.
 """
 import html
 import re

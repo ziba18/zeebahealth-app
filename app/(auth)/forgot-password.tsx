@@ -1,7 +1,7 @@
 import React from 'react';
 import { Linking } from 'react-native';
-import { space } from '../../constants/atossaUI';
-import { Button, Card, ScreenLarge, Txt } from '../../components/atossa/kit';
+import { space } from '../../constants/zeebaUI';
+import { Button, Card, ScreenLarge, Txt } from '../../components/zeeba/kit';
 
 const SUPPORT_EMAIL = 'zamaniziba18@gmail.com';
 
@@ -18,7 +18,7 @@ export default function ForgotPasswordScreen() {
         label="Email support"
         icon="send"
         style={{ marginTop: space.xxl }}
-        onPress={() => Linking.openURL(`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent('Atossa password help')}`).catch(() => {})}
+        onPress={() => Linking.openURL(`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent('Zeeba Health password help')}`).catch(() => {})}
       />
     </ScreenLarge>
   );

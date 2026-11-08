@@ -1,8 +1,8 @@
 import React from 'react';
 import { ScrollView, StyleSheet, View, type ScrollViewInstance } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { colors, layout, space } from '../../constants/atossaUI';
-import { BackChevron, Txt } from '../atossa/kit';
+import { colors, layout, space } from '../../constants/zeebaUI';
+import { BackChevron, Txt } from '../zeeba/kit';
 
 export const ONBOARDING_STEPS = 4;
 

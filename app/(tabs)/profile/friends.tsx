@@ -1,10 +1,10 @@
 import React, { useCallback, useState } from 'react';
 import { View } from 'react-native';
 import { useFocusEffect } from 'expo-router';
-import { colors, space } from '../../../constants/atossaUI';
+import { colors, space } from '../../../constants/zeebaUI';
 import {
   Button, Card, ConfirmCard, InlineError, ScreenLarge, SectionTitle, TextField, Txt,
-} from '../../../components/atossa/kit';
+} from '../../../components/zeeba/kit';
 import { useAuthStore } from '../../../stores/authStore';
 import { api } from '../../../lib/api';
 import { IS_PREVIEW } from '../../../lib/preview/flag';
@@ -76,7 +76,7 @@ export default function FriendsScreen() {
     const email = inviteEmail.trim().toLowerCase();
     setInviteSent('');
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setInviteError('Enter the email your friend uses for Atossa.');
+      setInviteError('Enter the email your friend uses for Zeeba Health.');
       return;
     }
     setInviting(true);
@@ -84,7 +84,7 @@ export default function FriendsScreen() {
     try {
       await api.post('/connections/invite', { invite_email: email });
       setInviteEmail('');
-      setInviteSent(`Invite sent. ${email} will see it next time they open Atossa.`);
+      setInviteSent(`Invite sent. ${email} will see it next time they open Zeeba Health.`);
     } catch {
       setInviteError('The invite couldn’t be sent. Please try again.');
     } finally {

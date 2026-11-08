@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { space } from '../../../constants/atossaUI';
-import { Button, ChipGroup, FieldLabel, InlineError } from '../../../components/atossa/kit';
+import { space } from '../../../constants/zeebaUI';
+import { Button, ChipGroup, FieldLabel, InlineError } from '../../../components/zeeba/kit';
 import { OnboardingScreen } from '../../../components/auth/OnboardingScreen';
 import { useAuthStore } from '../../../stores/authStore';
 import { api } from '../../../lib/api';

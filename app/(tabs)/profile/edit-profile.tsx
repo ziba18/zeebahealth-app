@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
-import { space } from '../../../constants/atossaUI';
-import { Button, FieldLabel, InlineError, ScreenLarge, TextField, showToast } from '../../../components/atossa/kit';
+import { space } from '../../../constants/zeebaUI';
+import { Button, FieldLabel, InlineError, ScreenLarge, TextField, showToast } from '../../../components/zeeba/kit';
 import { haptics } from '../../../lib/haptics';
 import { useAuthStore } from '../../../stores/authStore';
 import { api } from '../../../lib/api';

@@ -1,7 +1,7 @@
-// Scores components/atossa/capture/infer.ts (regex baseline) on synthetic items. No model calls, no real data.
+// Scores components/zeeba/capture/infer.ts (regex baseline) on synthetic items. No model calls, no real data.
 // Run: node --experimental-strip-types scripts/ai-eval/run.mjs
 import fs from 'node:fs';
-import { prefillFrom } from '../../components/atossa/capture/infer.ts';
+import { prefillFrom } from '../../components/zeeba/capture/infer.ts';
 
 const items = JSON.parse(fs.readFileSync(new URL(process.argv.find((a) => a.endsWith('.json')) ?? './items.v0.json', 'file://' + process.cwd() + '/scripts/ai-eval/'), 'utf8'));
 const FIELDS = ['zones', 'when', 'duration', 'impacts', 'worst', 'tried'];

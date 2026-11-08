@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { View } from 'react-native';
-import { space } from '../../../constants/atossaUI';
-import { Card, ChipGroup, FieldLabel, ScreenLarge, SwitchRow, Txt } from '../../../components/atossa/kit';
+import { space } from '../../../constants/zeebaUI';
+import { Card, ChipGroup, FieldLabel, ScreenLarge, SwitchRow, Txt } from '../../../components/zeeba/kit';
 import { useAuthStore } from '../../../stores/authStore';
 import { api } from '../../../lib/api';
 import { syncDailyLogReminder } from '../../../lib/notifications';
@@ -29,7 +29,7 @@ export default function SettingsScreen() {
       <Card style={{ gap: space.xs }}>
         <SwitchRow
           label="Notifications"
-          description="Allow Atossa to send you notifications"
+          description="Allow Zeeba Health to send you notifications"
           value={profile?.notifications_enabled ?? true}
           onChange={(v) => persist({ notifications_enabled: v })}
         />

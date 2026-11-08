@@ -3,8 +3,8 @@ import { View, Pressable, Platform, ActivityIndicator, StyleSheet } from 'react-
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { isRunningInExpoGo } from 'expo';
 import { useRouter } from 'expo-router';
-import { colors, heights, radii, space } from '../../constants/atossaUI';
-import { InlineError, Txt } from '../atossa/kit';
+import { colors, heights, radii, space } from '../../constants/zeebaUI';
+import { InlineError, Txt } from '../zeeba/kit';
 import { GoogleGLogo } from './GoogleGLogo';
 import { signInWithApple, signInWithGoogle } from '../../lib/socialAuth';
 import { routeAfterSignIn } from '../../lib/authRouting';
@@ -12,7 +12,7 @@ import { useAuthStore } from '../../stores/authStore';
 import { track } from '../../lib/analytics';
 
 // Expo Go has no native view for Apple's button, and Apple sign-in can't work
-// there anyway (the token is issued for Expo Go's bundle id, not Atossa's).
+// there anyway (the token is issued for Expo Go's bundle id, not Zeeba Health's).
 // Google's native module isn't in Expo Go either, so there both are swapped for a note.
 const IN_EXPO_GO = isRunningInExpoGo();
 const SHOW_APPLE = Platform.OS === 'ios' && !IN_EXPO_GO;

@@ -1,18 +1,18 @@
-// Today — capture first. One large "tell Atossa" card (voice or type), quick starters, then the
+// Today — capture first. One large "tell Zeeba Health" card (voice or type), quick starters, then the
 // latest note and the next appointment. Chat is secondary ("Talk it through").
 // Rhythm (8-pt grid): title→greeting 8 · greeting→hero 24 · hero→chips 16 · 24 between cards.
-import { RecentStrip } from '../../../components/atossa/timeline/RecentStrip';
+import { RecentStrip } from '../../../components/zeeba/timeline/RecentStrip';
 import { usePageTitle } from '../../../lib/usePageTitle';
 import React, { useState } from 'react';
 import { View, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Button, HeaderAvatar, InlineError, ScreenLarge, SkeletonCards, Txt } from '../../../components/atossa/kit';
-import { LogBleedingSheet } from '../../../components/atossa/LogBleedingSheet';
-import { AppointmentCard } from '../../../components/atossa/capture/AppointmentCard';
+import { Button, HeaderAvatar, InlineError, ScreenLarge, SkeletonCards, Txt } from '../../../components/zeeba/kit';
+import { LogBleedingSheet } from '../../../components/zeeba/LogBleedingSheet';
+import { AppointmentCard } from '../../../components/zeeba/capture/AppointmentCard';
 import {
   GhostNoteCard, HeroCard, HeroChip, HeroNumberCard, LatestNoteCard, QuickRows, RoughDayCard, latestNote,
-} from '../../../components/atossa/capture/TodayCards';
-import { space } from '../../../constants/atossaUI';
+} from '../../../components/zeeba/capture/TodayCards';
+import { space } from '../../../constants/zeebaUI';
 import { isHumanName } from '../../../lib/humanName';
 import { useAuthStore } from '../../../stores/authStore';
 import { useRecordsStore } from '../../../stores/recordsStore';
@@ -82,7 +82,7 @@ export default function TodayScreen() {
           />
         ) : null}
         <Txt variant="caption" style={{ textAlign: 'center' }}>
-          Atossa can’t diagnose. If you feel very unwell, contact your GP, NHS 111 or 999.
+          Zeeba Health can’t diagnose. If you feel very unwell, contact your GP, NHS 111 or 999.
         </Txt>
       </View>
       <LogBleedingSheet visible={bleeding} onClose={() => setBleeding(false)} />

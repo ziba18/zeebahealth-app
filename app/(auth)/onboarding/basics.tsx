@@ -1,8 +1,8 @@
 import React, { useRef, useState } from 'react';
 import { ScrollView, View, type ScrollViewInstance } from 'react-native';
 import { useRouter } from 'expo-router';
-import { space } from '../../../constants/atossaUI';
-import { Button, ChipGroup, InlineError, TextField, type ChipOption } from '../../../components/atossa/kit';
+import { space } from '../../../constants/zeebaUI';
+import { Button, ChipGroup, InlineError, TextField, type ChipOption } from '../../../components/zeeba/kit';
 import { OnboardingScreen } from '../../../components/auth/OnboardingScreen';
 import { api } from '../../../lib/api';
 import { track } from '../../../lib/analytics';

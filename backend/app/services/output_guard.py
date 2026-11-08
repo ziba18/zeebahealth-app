@@ -1,6 +1,6 @@
 """Deterministic guard for any model-written text before it reaches the user.
 
-Wired into POST /chat (app/routers/chat.py). The product rule: Atossa never names a condition as a finding,
+Wired into POST /chat (app/routers/chat.py). The product rule: Zeeba Health never names a condition as a finding,
 gives a probability, suggests a cause, or recommends treatment. A system prompt alone is
 not enough, so every model-written string goes through check() and, on a hit, is replaced
 by a fixed fallback. The user's own words are not checked here: echoing them back is fine.

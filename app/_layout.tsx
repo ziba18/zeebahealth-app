@@ -8,10 +8,10 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Platform, View, useWindowDimensions } from 'react-native';
 import '../hooks/useAuth';
 import { cancelPredictedCycleReminders } from '../lib/notifications';
-import { UI } from '../constants/atossaUI';
+import { UI } from '../constants/zeebaUI';
 import { IS_PREVIEW } from '../lib/preview/flag';
-import { ErrorScreen, ToastHost } from '../components/atossa/kit';
-import { PrivacyCover } from '../components/atossa/PrivacyCover';
+import { ErrorScreen, ToastHost } from '../components/zeeba/kit';
+import { PrivacyCover } from '../components/zeeba/PrivacyCover';
 import { useFonts } from 'expo-font';
 // Per-weight imports so only the fonts we use are bundled. Inter 400/500/600 for all UI;
 // Instrument Serif ITALIC only (Sam's words, Today hero, summary title) — never a weight.

@@ -56,7 +56,7 @@ export function useDictation(onTranscript: (text: string) => void) {
         clearTimer();
         SpeechModule?.abort();
         setRecording(false);
-        setError('Recording stopped because Atossa went to the background — try again.');
+        setError('Recording stopped because Zeeba Health went to the background — try again.');
       }
     });
     return () => sub.remove();
@@ -69,7 +69,7 @@ export function useDictation(onTranscript: (text: string) => void) {
     if (!supported) {
       setError(
         isRunningInExpoGo()
-          ? 'Voice input works in the App Store version of Atossa, not in Expo Go — you can type instead.'
+          ? 'Voice input works in the App Store version of Zeeba Health, not in Expo Go — you can type instead.'
           : "Voice input isn't available on this device — you can type instead.",
       );
       return;

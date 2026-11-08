@@ -12,13 +12,13 @@ router = APIRouter(tags=["legal"])
 CONTACT_EMAIL = "zamaniziba18@gmail.com"
 EFFECTIVE_DATE = "2 October 2026"
 
-# Colours from the app's "Warm Paper, Deep Ink" palette (constants/atossaUI.ts).
+# Colours from the app's "Warm Paper, Deep Ink" palette (constants/zeebaUI.ts).
 _PAGE = """<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{title} · Atossa</title>
+<title>{title} · Zeeba Health</title>
 <style>
   body {{ margin: 0; background: #F7F3EE; color: #1F1B18;
          font: 17px/1.55 -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif; }}
@@ -34,7 +34,7 @@ _PAGE = """<!doctype html>
 </style>
 </head>
 <body><main>
-<div class="brand">Atossa</div>
+<div class="brand">Zeeba Health</div>
 <h1>{title}</h1>
 <p class="meta">Effective {date}</p>
 {body}
@@ -44,7 +44,7 @@ _PAGE = """<!doctype html>
 </html>"""
 
 _PRIVACY = """
-<p>Atossa helps you put your symptoms into words and bring a clear summary to your doctor.
+<p>Zeeba Health helps you put your symptoms into words and bring a clear summary to your doctor.
 What you record is sensitive health information, so this page explains plainly what we
 store, why, who else handles it, and how to delete it.</p>
 
@@ -105,7 +105,7 @@ providers' backups for a short time before they are overwritten. You can also em
 for a copy of your information, to correct it, or to delete it.</p>
 
 <h2>Children</h2>
-<p>Atossa is not meant for children under 16, and we don't knowingly collect their
+<p>Zeeba Health is not meant for children under 16, and we don't knowingly collect their
 information.</p>
 
 <h2>Changes</h2>
@@ -114,10 +114,10 @@ tell you in the app before the change affects you.</p>
 """
 
 _TERMS = """
-<p>These terms apply when you use the Atossa app. By creating an account, you agree to them.</p>
+<p>These terms apply when you use the Zeeba Health app. By creating an account, you agree to them.</p>
 
-<h2>What Atossa is, and isn't</h2>
-<p>Atossa helps you record your symptoms in your own words and prepare a summary to take to
+<h2>What Zeeba Health is, and isn't</h2>
+<p>Zeeba Health helps you record your symptoms in your own words and prepare a summary to take to
 a doctor. <strong>It is not a medical service.</strong> It doesn't diagnose conditions, give
 medical advice, or recommend treatment, and it doesn't replace a doctor. If you are worried
 about your health, talk to a doctor. In an emergency, call your local emergency number.</p>
@@ -133,12 +133,12 @@ about your health, talk to a doctor. In an emergency, call your local emergency 
 <p>What you record belongs to you. You let us store and process it only to run the app for
 you, as described in our <a href="/privacy">privacy policy</a>.</p>
 
-<h2>Using Atossa fairly</h2>
-<p>Don't use Atossa to harm others, to invite people who don't want to be contacted, to try
+<h2>Using Zeeba Health fairly</h2>
+<p>Don't use Zeeba Health to harm others, to invite people who don't want to be contacted, to try
 to get into other people's accounts, or to disrupt the service.</p>
 
 <h2>The service</h2>
-<p>Atossa is provided as it is, while we keep improving it. We do our best to keep it running
+<p>Zeeba Health is provided as it is, while we keep improving it. We do our best to keep it running
 and your information safe, but we can't promise it will always be available or free of
 errors, so please keep your own note of anything important. We may change or stop parts of
 the app; if we ever shut it down, we'll give you notice so you can save what you need. We may

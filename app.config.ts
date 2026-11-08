@@ -14,7 +14,7 @@ const googlePlugin: any[] = googleIosUrlScheme
   : [];
 
 const config: ExpoConfig = {
-  name: 'Atossa',
+  name: 'Zeeba Health',
   slug: 'attosa',
   version: '1.1.0',
   // EAS Update: JS-only changes ship to installed builds without a new
@@ -72,11 +72,11 @@ const config: ExpoConfig = {
     [
       'expo-image-picker',
       {
-        photosPermission: 'Atossa lets you attach a photo to a chat. It stays on your phone.',
-        cameraPermission: 'Atossa lets you take a photo to attach to a chat. It stays on your phone.',
+        photosPermission: 'Zeeba Health lets you attach a photo to a chat. It stays on your phone.',
+        cameraPermission: 'Zeeba Health lets you take a photo to attach to a chat. It stays on your phone.',
         // Not `false`: that deletes NSMicrophoneUsageDescription, which voice
         // dictation (expo-speech-recognition) needs — Apple rejected build 23 for it.
-        microphonePermission: 'Atossa needs access to your microphone to let you describe symptoms by voice.',
+        microphonePermission: 'Zeeba Health needs access to your microphone to let you describe symptoms by voice.',
       },
     ],
     [
@@ -105,11 +105,11 @@ const config: ExpoConfig = {
     [
       'expo-speech-recognition',
       {
-        microphonePermission: 'Atossa needs access to your microphone to let you describe symptoms by voice.',
+        microphonePermission: 'Zeeba Health needs access to your microphone to let you describe symptoms by voice.',
         // We only ever call requestMicrophonePermissionsAsync() with
         // requiresOnDeviceRecognition: true, so this permission should
         // never actually be requested — kept accurate in case that changes.
-        speechRecognitionPermission: 'Speech recognition is processed on your device — Atossa does not send your voice to a server.',
+        speechRecognitionPermission: 'Speech recognition is processed on your device — Zeeba Health does not send your voice to a server.',
       },
     ],
     'expo-apple-authentication',
