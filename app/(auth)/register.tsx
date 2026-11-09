@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Group } from '../../components/zeeba/records/GroupedRows';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { space } from '../../constants/zeebaUI';
@@ -50,13 +51,15 @@ export default function RegisterScreen() {
   };
 
   return (
-    <ScreenLarge title="Create an account" subtitle="Your information stays private to you." back={{ label: 'Back' }}>
-      <View style={{ gap: space.xl }}>
+    <ScreenLarge brand grouped title="Create an account" subtitle="Your information stays private to you." back={{ label: 'Back' }}>
+      <Group>
+      <View style={{ gap: space.lg, padding: space.md }}>
         <TextField label="Your name" value={name} onChangeText={(v) => { setName(v); clear('name'); }} autoCapitalize="words" autoComplete="name" textContentType="name" error={errors.name} />
         <TextField label="Email" value={email} onChangeText={(v) => { setEmail(v); clear('email'); }} keyboardType="email-address" autoCapitalize="none" autoComplete="email" textContentType="emailAddress" placeholder="you@example.com" error={errors.email} />
         <TextField label="Password" hint="At least 8 characters" secret value={password} onChangeText={(v) => { setPassword(v); clear('password'); }} autoComplete="new-password" textContentType="newPassword" error={errors.password} />
         <TextField label="Type the password again" secret value={confirm} onChangeText={(v) => { setConfirm(v); clear('confirm'); }} autoComplete="new-password" textContentType="newPassword" returnKeyType="go" onSubmitEditing={handleRegister} error={errors.confirm} />
       </View>
+      </Group>
 
       <View style={{ marginTop: space.xxl, gap: space.xs }}>
         <InlineError message={error} style={{ marginBottom: space.xs }} />

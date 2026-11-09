@@ -42,7 +42,7 @@ export function ScreenLarge({
   const head = (
     <View style={styles.head}>
       {back ? <BackChevron label={back.label} onPress={back.onPress} /> : null}
-      {brand ? <Txt variant="caption" color={colors.plum} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{ fontSize: 13, letterSpacing: 3, fontWeight: '600', marginBottom: space.xs }}>ZEEBA HEALTH</Txt> : null}
+      {brand ? <Txt variant="caption" color={colors.burgundy} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{ fontSize: 13, letterSpacing: 3, fontWeight: '600', marginBottom: space.xs }}>ZEEBA HEALTH</Txt> : null}
       <View style={styles.titleRow}>
         <Txt variant="largeTitle" accessibilityRole="header" numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.7} style={{ flexGrow: 1, flexShrink: 1, flexBasis: 150 }}>{title}</Txt>
         {right ? <View style={styles.right}>{right}</View> : null}
