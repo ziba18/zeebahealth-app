@@ -15,6 +15,10 @@ class Settings(BaseSettings):
     cors_origins: str = "*"
     # Expected audiences for verifying social sign-in identity tokens.
     apple_bundle_id: str = "com.zeebahealth.app"
+    # TESTING ONLY, off by default: also accept Apple tokens issued to Expo Go ("host.exp.Exponent"),
+    # so Sign in with Apple can be tried in Expo Go. Expo Go tokens carry a different Apple `sub`,
+    # so they create separate test accounts. Turn off again before launch.
+    apple_allow_expo_go: bool = False
     google_web_client_id: str = ""
     # Basket Buddy ("Groceries Mate", a separate app) signs in with Apple/Google through this
     # server too; see routers/basket_buddy.py. Its data stays in its own Supabase project, so

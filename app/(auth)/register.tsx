@@ -4,7 +4,6 @@ import { View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { space } from '../../constants/zeebaUI';
 import { Button, InlineError, ScreenLarge, TextField } from '../../components/zeeba/kit';
-import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
 import { LegalLinks } from '../../components/auth/LegalLinks';
 import { useAuthStore } from '../../stores/authStore';
 import { ApiError } from '../../lib/api';
@@ -66,9 +65,6 @@ export default function RegisterScreen() {
         <Button label="I already have an account" variant="text" onPress={() => router.replace('/(auth)/login')} />
       </View>
 
-      <View style={{ marginTop: space.md }}>
-        <SocialAuthButtons mode="signup" />
-      </View>
     </ScreenLarge>
   );
 }

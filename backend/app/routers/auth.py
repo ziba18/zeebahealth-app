@@ -73,7 +73,10 @@ def login(body: LoginRequest, db: Session = Depends(get_db)):
 @router.post("/apple", response_model=TokenResponse, dependencies=[_auth_limit])
 def login_with_apple(body: SocialAuthRequest, db: Session = Depends(get_db)):
     try:
-        claims = verify_apple_identity_token(body.id_token, settings.apple_bundle_id)
+        claims = verify_apple_identity_token(
+            body.id_token,
+            [settings.apple_bundle_id, "host.exp.Exponent"] if settings.apple_allow_expo_go else settings.apple_bundle_id,
+        )
     except SocialAuthError as e:
         raise HTTPException(status_code=401, detail=_social_detail(e, "Apple"))
     return _issue_tokens_for_social_user(db, claims["email"], body.display_name)

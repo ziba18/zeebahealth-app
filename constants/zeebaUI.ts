@@ -37,7 +37,8 @@ export const palettes = {
     white: '#FFFFFF',
     scrim: 'rgba(0,0,0,0.3)',
     tabBar: 'rgba(249,249,251,0.94)',
-    tabBarTranslucent: 'rgba(249,249,251,0.72)',
+    tabBarTranslucent: 'rgba(255,255,255,0.72)',
+    glassEdge: 'rgba(0,0,0,0.07)',
   },
   dark: {
     canvas: '#0A0C16',
@@ -66,7 +67,8 @@ export const palettes = {
     white: '#FFFFFF',
     scrim: 'rgba(0,0,0,0.55)',
     tabBar: 'rgba(28,33,54,0.94)',
-    tabBarTranslucent: 'rgba(20,24,41,0.72)',
+    tabBarTranslucent: 'rgba(28,33,54,0.72)',
+    glassEdge: 'rgba(255,255,255,0.12)',
   },
 } as const;
 

@@ -18,7 +18,7 @@ import { cancelAllScheduledNotifications } from '../../../lib/notifications';
 import { openLegal } from '../../../components/auth/LegalLinks';
 
 /** Visible tab title (the `from` param HeaderAvatar passes) → tab route name. */
-const TAB_ROUTES: Record<string, string> = { Today: 'today', Timeline: 'timeline', 'For my doctor': 'doctor' };
+const TAB_ROUTES: Record<string, string> = { Today: 'today', Evidence: 'timeline', Timeline: 'timeline', 'For my doctor': 'doctor' };
 
 const RECORD_KINDS: RecordDataKind[] = ['medicine', 'appointment', 'history'];
 const RECORD_ICONS: Record<RecordDataKind, IconName> = { medicine: 'pill', appointment: 'calendar', history: 'file-text' };

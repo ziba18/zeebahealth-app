@@ -10,17 +10,17 @@ export type RecordRouteKind = 'appointments' | 'medicines';
 
 const q = (from: string) => `from=${encodeURIComponent(from)}`;
 
-export const entryHref = (id: string, from = 'Timeline') =>
+export const entryHref = (id: string, from = 'Evidence') =>
   `/(tabs)/timeline/entry/${encodeURIComponent(id)}?${q(from)}`;
 
-export const bleedingHref = (date: string, from = 'Timeline') =>
+export const bleedingHref = (date: string, from = 'Evidence') =>
   `/(tabs)/timeline/bleeding/${date}?${q(from)}`;
 
 /** A run of consecutive bleeding days (List card) → the list of those days. */
-export const periodHref = (start: string, from = 'Timeline') =>
+export const periodHref = (start: string, from = 'Evidence') =>
   `/(tabs)/timeline/period/${start}?${q(from)}`;
 
-export const recordHref = (kind: RecordRouteKind, id: string, from = 'Timeline') =>
+export const recordHref = (kind: RecordRouteKind, id: string, from = 'Evidence') =>
   `/(tabs)/timeline/record/${kind}/${encodeURIComponent(id)}?${q(from)}`;
 
 /** Tab root for a `from` label, used when there is no history to go back to. */
@@ -28,11 +28,12 @@ const ROOTS: Record<string, string> = {
   Today: '/(tabs)/today',
   Timeline: '/(tabs)/timeline',
   'For my doctor': '/(tabs)/doctor',
+  Evidence: '/(tabs)/timeline',
   Profile: '/(tabs)/profile',
 };
 
 const KNOWN_LABELS = new Set([
-  'Today', 'Timeline', 'For my doctor', 'Profile', 'Period', 'Spotting', 'Medicines', 'Appointments', 'Health history',
+  'Today', 'Evidence', 'Timeline', 'For my doctor', 'Profile', 'Period', 'Spotting', 'Medicines', 'Appointments', 'Health history',
 ]);
 // "14 Jul", "14–29 Jul", "14 Jul–29 Sep 2026": the date-range titles of period runs.
 const DATE_LABEL = /^\d{1,2}(?: [A-Za-z]{3}(?: \d{4})?)?(?:–\d{1,2} [A-Za-z]{3}(?: \d{4})?)?$/;
@@ -41,7 +42,7 @@ const DATE_LABEL = /^\d{1,2}(?: [A-Za-z]{3}(?: \d{4})?)?(?:–\d{1,2} [A-Za-z]{3
  * A back-button label taken from a link's `from` param. Anything that is not a screen title or a
  * date range falls back, so a crafted zeebahealth:// link cannot put its own text in the app's chrome.
  */
-export function safeBackLabel(raw: string | string[] | undefined, fallback = 'Timeline'): string {
+export function safeBackLabel(raw: string | string[] | undefined, fallback = 'Evidence'): string {
   const v = (Array.isArray(raw) ? raw[0] : raw)?.trim();
   return v && (KNOWN_LABELS.has(v) || DATE_LABEL.test(v)) ? v : fallback;
 }
@@ -61,7 +62,7 @@ export function fromLabel(from: string | string[] | undefined): string {
  */
 export function goBack(router: Router, from: string) {
   const root = ROOTS[from];
-  if (root && from !== 'Timeline') router.navigate(root as any);
+  if (root && from !== 'Timeline' && from !== 'Evidence') router.navigate(root as any);
   else if (router.canGoBack()) router.back();
   else router.navigate(ROOTS.Timeline as any);
 }

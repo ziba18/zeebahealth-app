@@ -36,7 +36,7 @@ export default function OnboardingReminders() {
       await syncDailyLogReminder(enabled, at).catch(() => {});
       await fetchProfile();
       track('Onboarding Completed', { reminder: enabled });
-      router.replace('/(tabs)/today' as any);
+      router.replace('/(auth)/onboarding/ready' as any);
     } catch {
       setError('We couldn’t finish setting up. Check your connection and try again.');
       setLoading(null);
@@ -47,8 +47,8 @@ export default function OnboardingReminders() {
     <OnboardingScreen
       step={4}
       back={{ label: 'Back' }}
-      title="Would a daily reminder help?"
-      helper="If today’s worth noting, I’m here. Two minutes is plenty. You can change this later in Settings."
+      title="Want a gentle nudge each day?"
+      helper="A record is strongest when it has no gaps. One short notification at a time you choose; iOS will ask you to allow it. You can change it any time in Settings."
     >
       <FieldLabel label="What time suits you?" />
       <ChipGroup

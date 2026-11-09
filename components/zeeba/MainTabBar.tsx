@@ -4,7 +4,7 @@ import type { BottomTabBarProps } from 'expo-router/tabs';
 import { BlurView } from 'expo-blur';
 import { haptics } from '../../lib/haptics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, heights, type as typeScale } from '../../constants/zeebaUI';
+import { colors, heights, space, type as typeScale } from '../../constants/zeebaUI';
 import { Icon, type IconName } from '../ui/Icon';
 import { Txt } from './kit';
 
@@ -16,7 +16,7 @@ const TABS: Record<string, { label: string; icon: IconName }> = {
 export const VISIBLE_TABS = ['today', 'timeline', 'doctor'];
 
 /** Visible title → tab route ("from" params carry titles). */
-const TAB_BY_TITLE: Record<string, string> = { Today: 'today', Timeline: 'timeline', 'For my doctor': 'doctor' };
+const TAB_BY_TITLE: Record<string, string> = { Today: 'today', Evidence: 'timeline', Timeline: 'timeline', 'For my doctor': 'doctor' };
 
 type AnyRoute = { key?: string; name: string; params?: any; state?: { key?: string; index?: number; routes?: AnyRoute[] } };
 
@@ -65,9 +65,9 @@ export function MainTabBar({ state, descriptors, emitter, navigateToTab }: Botto
   };
 
   return (
-    <View role="navigation" aria-label="Main">
-    <View style={[styles.bar, Platform.OS === 'web' && styles.barSolid, { paddingBottom: insets.bottom }]} accessibilityRole="tablist">
-      {Platform.OS === 'web' ? null : <BlurView intensity={60} tint="systemChromeMaterial" style={StyleSheet.absoluteFill} />}
+    <View role="navigation" aria-label="Main" style={[styles.dock, { paddingBottom: Math.max(insets.bottom - 6, space.sm) }]}>
+    <View style={[styles.bar, Platform.OS === 'web' && styles.barSolid]} accessibilityRole="tablist">
+      {Platform.OS === 'web' ? null : <BlurView intensity={70} tint="systemChromeMaterial" style={StyleSheet.absoluteFill} />}
       {routes.map((route) => {
         const focused = activeName === route.name;
         const isCurrent = active?.name === route.name;
@@ -99,8 +99,11 @@ export function MainTabBar({ state, descriptors, emitter, navigateToTab }: Botto
             }}
             style={styles.tab}
           >
-            <Icon name={tab.icon} size={24} color={tint} />
-            <Txt maxFontSizeMultiplier={1.6} style={[typeScale.tab, { color: tint }, focused && styles.labelOn]}>{tab.label}</Txt>
+            {focused ? <View style={styles.selected} aria-hidden /> : null}
+            <View style={styles.tabInner}>
+              <Icon name={tab.icon} size={24} color={tint} />
+              <Txt maxFontSizeMultiplier={1.6} style={[typeScale.tab, { color: tint }, focused && styles.labelOn]}>{tab.label}</Txt>
+            </View>
           </Pressable>
         );
       })}
@@ -110,12 +113,18 @@ export function MainTabBar({ state, descriptors, emitter, navigateToTab }: Botto
 }
 
 const styles = StyleSheet.create({
+  // A floating glass capsule (iOS 26 / Liquid Glass feel): blur + translucent fill + a hairline edge.
+  dock: { paddingHorizontal: space.md, paddingTop: space.xs, backgroundColor: colors.canvas },
   bar: {
-    flexDirection: 'row', borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.borderStrong,
-    backgroundColor: colors.tabBarTranslucent,
+    flexDirection: 'row', borderRadius: 32, overflow: 'hidden', padding: 4,
+    borderWidth: 1, borderColor: colors.glassEdge, backgroundColor: colors.tabBarTranslucent,
+    boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
   },
-  barSolid: { backgroundColor: colors.tabBar, borderTopColor: colors.hairline },
+  barSolid: { backgroundColor: colors.tabBar },
+  // The selected tab sits on a soft accent lozenge, like iOS 26's tab bar.
+  selected: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, borderRadius: 26, backgroundColor: colors.accentTint },
   // Selected = burgundy tint + heavier label, so state never rests on colour alone (WCAG 1.4.1).
   labelOn: { fontWeight: '700' },
-  tab: { flex: 1, height: heights.tabBar, alignItems: 'center', justifyContent: 'center', gap: 2, paddingHorizontal: 2 },
+  tabInner: { alignItems: 'center', gap: 2, zIndex: 1 },
+  tab: { flex: 1, height: heights.tabBar - 4, alignItems: 'center', justifyContent: 'center', gap: 2, paddingHorizontal: 2, borderRadius: 26 },
 });

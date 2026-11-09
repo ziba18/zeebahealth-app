@@ -91,7 +91,7 @@ export function ScreenLarge({
 
 /** 44 avatar (initial) that opens Profile. Top-right on every tab. */
 /** Tab route name → its visible title, so Profile's BackChevron can name the tab it came from. */
-const TAB_TITLES: Record<string, string> = { today: 'Today', timeline: 'Timeline', doctor: 'For my doctor' };
+const TAB_TITLES: Record<string, string> = { today: 'Today', timeline: 'Evidence', doctor: 'For my doctor' };
 
 export function HeaderAvatar() {
   const router = useRouter();

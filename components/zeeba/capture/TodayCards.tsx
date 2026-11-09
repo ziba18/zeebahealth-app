@@ -19,6 +19,7 @@ import {
 import { useRecordsStore } from '../../../stores/recordsStore';
 import type { Rec, SymptomData } from '../../../types/records';
 import { Wren } from '../Wren';
+import { topicsFor, useFocusStore } from '../../../lib/focus';
 import { Gauge, MiniBars, SectionHeader, Tile, TileRow } from '../dash/Dash';
 import { nextAppointment } from './AppointmentCard';
 import { type IconName } from '../../ui/Icon';
@@ -307,14 +308,14 @@ export function HeroNumberCard() {
     const week = noteCount(symptoms, { from: addDays(today, -6), to: today });
     big = String(count);
     line = week === 1 ? 'note in the last 7 days' : 'notes in the last 7 days';
-    sub = total === week ? 'Open them in your Timeline' : `${notesLabel(total)} in all`;
+    sub = total === week ? 'Open them in Evidence' : `${notesLabel(total)} in all`;
     target = '/(tabs)/timeline';
   }
   return (
     <HeroNumber
       big={big} line={line} sub={sub}
       onPress={target ? () => router.push(target as any) : undefined}
-      accessibilityHint={next ? 'Opens For my doctor' : 'Opens Timeline'}
+      accessibilityHint={next ? 'Opens For my doctor' : 'Opens Evidence'}
     />
   );
 }
@@ -338,7 +339,7 @@ export function HeroChip() {
     <PressableCard
       onPress={() => router.push(target as any)}
       accessibilityLabel={label}
-      accessibilityHint={target.includes('doctor') ? 'Opens For my doctor' : 'Opens Timeline'}
+      accessibilityHint={target.includes('doctor') ? 'Opens For my doctor' : 'Opens Evidence'}
       style={styles.chip}
     >
       <Txt variant="headline" style={{ fontVariant: ['tabular-nums'] }}>{label}</Txt>
@@ -361,7 +362,11 @@ const PRIMARY_ROWS = ['Pain', 'Bleeding', 'Tired', 'Something new'];
 /** Icon + label tiles, two across (replace the four outline chips); each opens a note already started on that topic. */
 export function QuickRows({ onPeriod }: { onPeriod: () => void }) {
   const [more, setMore] = useState(false);
-  const rows = more ? QUICK_ROWS : QUICK_ROWS.filter((r) => PRIMARY_ROWS.includes(r.label));
+  const focus = useFocusStore((st) => st.areas);
+  const primary = topicsFor(focus, PRIMARY_ROWS);
+  const rows = more
+    ? [...primary.map((l) => QUICK_ROWS.find((r) => r.label === l)!).filter(Boolean), ...QUICK_ROWS.filter((r) => !primary.includes(r.label))]
+    : primary.map((l) => QUICK_ROWS.find((r) => r.label === l)!).filter(Boolean);
   return (
     <View style={styles.qgrid}>
       {rows.map((r) => (
