@@ -118,7 +118,7 @@ six old GitHub repos renamed (`zeeba-hq`, `zeeba-research`, `zeeba-data` — arc
 stale local `ios/` deleted. GitHub redirects the old repo URLs.
 Unavoidable: Render's internal `*.onrender.com` hostname is fixed at creation (nothing uses it; apps use
 api.zeebahealth.com — check Basket Buddy before ever removing it) and git history keeps old commit messages.
-Render has no environment groups (checked 9 Nov). Old EAS project `attosa` on expo.dev: owner to delete (Settings → Advanced → Start deletion; blocked for Claude as irreversible).
+Render has no environment groups (checked 9 Nov). The old EAS project (previous name) on expo.dev: owner to delete (Settings → Advanced → Start deletion; blocked for Claude as irreversible).
 
 ## 7. Open items, in priority order
 
