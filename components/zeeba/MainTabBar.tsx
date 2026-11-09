@@ -112,7 +112,7 @@ export function MainTabBar({ state, descriptors, emitter, navigateToTab }: Botto
 const styles = StyleSheet.create({
   bar: {
     flexDirection: 'row', borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.borderStrong,
-    backgroundColor: 'rgba(251,247,244,0.72)',
+    backgroundColor: colors.tabBarTranslucent,
   },
   barSolid: { backgroundColor: colors.tabBar, borderTopColor: colors.hairline },
   // Selected = burgundy tint + heavier label, so state never rests on colour alone (WCAG 1.4.1).

@@ -33,6 +33,8 @@ export const colors = {
   scrim: 'rgba(34,22,26,0.2)',
   /** Tab bar surface. */
   tabBar: 'rgba(255,255,255,0.94)',
+  /** Tab bar over a blur (native): bone at 72%. */
+  tabBarTranslucent: 'rgba(251,247,244,0.72)',
 } as const;
 
 /** Single-hue severity ramp for 0–2, 3–4, 5–6, 7–8, 9–10. Always shown with the digit. */

@@ -42,10 +42,10 @@ export function Button({
     variant === 'primary' ? (inactive ? colors.ink2 : colors.white)
     : variant === 'secondary' ? (inactive ? colors.ink3 : colors.ink)
     : variant === 'destructive' || variant === 'destructiveOutline' ? colors.error
-    : colors.plum;
+    : colors.burgundy;
   return (
     <Pressable
-      onPress={onPress}
+      onPress={() => { if (variant === 'primary') haptics.light(); onPress(); }}
       disabled={inactive}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel ?? label}
@@ -54,8 +54,8 @@ export function Button({
       style={({ pressed }) => [
         styles.btnBase,
         // A 2% press-in on the filled and outlined buttons: the colour change alone is only ~1.2:1.
-        pressed && !inactive && (variant === 'primary' || variant === 'secondary' || variant === 'destructiveOutline') && { transform: [{ scale: 0.98 }] },
-        variant === 'primary' && [styles.primary, { backgroundColor: inactive ? colors.sunken : pressed ? colors.plumPressed : colors.plum }],
+        pressed && !inactive && (variant === 'primary' || variant === 'secondary' || variant === 'destructiveOutline') && { transform: [{ scale: 0.97 }] },
+        variant === 'primary' && [styles.primary, { backgroundColor: inactive ? colors.sunken : pressed ? colors.burgundyPressed : colors.burgundy }],
         variant === 'secondary' && [styles.secondary, { borderColor: inactive ? colors.hairline : colors.borderStrong, backgroundColor: pressed ? colors.sunken : 'transparent' }],
         variant === 'destructiveOutline' && [styles.secondary, { borderColor: colors.error, backgroundColor: pressed ? colors.errorTint : 'transparent', opacity: inactive ? 0.5 : 1 }],
         (variant === 'text' || variant === 'destructive') && [styles.textBtn, { opacity: inactive ? 0.5 : pressed ? 0.6 : 1 }],
