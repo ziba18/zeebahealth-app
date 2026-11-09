@@ -1,7 +1,7 @@
 Stage 2b: rebuild the For my doctor tab as a summary builder with a real one-page document preview. Keep the project knowledge rules and Stage 1 design system exactly. Nothing in the summary may name a condition, interpret, compare against thresholds, imply causes, or suggest treatment — it only repeats what Sam entered, in her words, with raw values.
 
 ## 1. Builder (one scrolling screen, large title "For my doctor")
-- Intro in body ink-2: "This is what you told Atossa, in your words. Choose what to include."
+- Intro in body ink-2: "This is what you told Zeeba Health, in your words. Choose what to include."
 - **"What's this appointment for?"** — single-select chips: First time talking about this · Follow-up · Seeing a specialist · Other. Nothing pre-selected. If an upcoming appointment exists, show it above as a small card ("Specialist clinic · Thu 24 Sep") — it sets the "since last appointment" range.
 - **Range** — segmented control: Since last appointment · 3 months · 6 months (default: Since last appointment if one exists, else 3 months).
 - **"What I'd like from today"** — a 2-line textarea (radius 14, sunken) with a mic button, hint "What's the one thing you want your GP to take away?". Text is Sam's words (shown in serif on the document).
@@ -23,7 +23,7 @@ In this order (NICE-ish, omit any section or field with no data — never print 
 8. **Appointments** — most recent by date, with "I was told:" only if entered.
 9. **Health history** — items with "Around" dates.
 10. Sensitive sections only if switched on.
-- Footer on the page: "Patient-reported via Atossa · not clinically verified · 14 Jul–29 Sep 2026 · 23 entries".
+- Footer on the page: "Patient-reported via Zeeba Health · not clinically verified · 14 Jul–29 Sep 2026 · 23 entries".
 
 ## 3. Show on screen
 Full-screen, large type (body 22/30, headings 28), high contrast ink on white, same content as the document, X to close. Meant to be handed across the desk.

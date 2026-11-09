@@ -24,7 +24,7 @@ The apps people keep using make the daily check-in a few taps long: one or two h
 - Apple Health's symptom logging (Cycle Tracking and general Symptoms, 25 general symptom types) stores a severity level for each entry. Apple has no native way to hand a symptom series to a clinician, so third-party tools such as Vitalina export PDFs with a severity chart per symptom plus a log table. — [Vitalina](https://vitalina.app/export/symptoms)
 
 ### Inferences
-- A pattern to copy for Atossa: one required headline question on a single screen (e.g. a "How is today?" 0-10 or 5-step scale, large tap targets, no slider). Then an optional "Where?" pelvic map with 5-6 named, tappable zones (not freehand drawing), plus optional chips. Voice/free text stays the main capture path, and structured fields are derived afterwards rather than demanded first.
+- A pattern to copy for Zeeba Health: one required headline question on a single screen (e.g. a "How is today?" 0-10 or 5-step scale, large tap targets, no slider). Then an optional "Where?" pelvic map with 5-6 named, tappable zones (not freehand drawing), plus optional chips. Voice/free text stays the main capture path, and structured fields are derived afterwards rather than demanded first.
 - Chips beat sliders when people are fatigued. Sliders need fine motor control and produce false precision. The endo apps with the best reception use discrete scales (1-10 buttons or none/mild/moderate/severe), and Apple Health uses discrete severity levels too. (Inference: I found no head-to-head study.)
 - The endo body-map regions seen in the market (pelvis L/C/R, lower back/sacrum, legs, shoulder/diaphragm, pain with sex, bowel/bladder) are a good default zone list. None of them names a condition.
 
@@ -46,7 +46,7 @@ The cleaner apps separate *logging* (Home/Today) from *looking back* (Insights/T
 - Cognitive-accessibility guidance: keep information architecture stable and predictable so users "can easily access the needed tool" without relearning. — [Smashing Magazine 2026](https://www.smashingmagazine.com/2026/07/designing-distressed-users-mental-health-apps-ui/)
 
 ### Inferences
-- For Atossa, a 3-area model: **Today** (capture: voice/text, plus a one-tap "how is today"), **Timeline** (a chronological feed of entries, periods and appointments, with filter chips instead of separate pages), and **For my doctor** (the summary builder). Medicines and appointments become entry *types* in the timeline, not their own dashboard sections. Today's Dashboard, which mixes charts, calendar, symptoms, appointments, meds and history, is the "everything on one page" anti-pattern the reviews warn about.
+- For Zeeba Health, a 3-area model: **Today** (capture: voice/text, plus a one-tap "how is today"), **Timeline** (a chronological feed of entries, periods and appointments, with filter chips instead of separate pages), and **For my doctor** (the summary builder). Medicines and appointments become entry *types* in the timeline, not their own dashboard sections. Today's Dashboard, which mixes charts, calendar, symptoms, appointments, meds and history, is the "everything on one page" anti-pattern the reviews warn about.
 - Tab names people recognise: Today/Home, Insights/Trends, Records/History, Report/Visit prep.
 
 ### Gaps
@@ -55,7 +55,7 @@ The cleaner apps separate *logging* (Home/Today) from *looking back* (Insights/T
 ## 3. Visualising trends and correlations without implying causes
 
 ### Takeaway
-Correlation grids (Bearable) are popular but criticised for showing no numbers, which invites misleading conclusions. Apps that openly promise "cause and effect" (Endometriosis Diary) are exactly the framing Atossa must avoid. Safe patterns: time-series of severity, calendar heatmaps, cycle overlays, and "frequency/prevalence" counts.
+Correlation grids (Bearable) are popular but criticised for showing no numbers, which invites misleading conclusions. Apps that openly promise "cause and effect" (Endometriosis Diary) are exactly the framing Zeeba Health must avoid. Safe patterns: time-series of severity, calendar heatmaps, cycle overlays, and "frequency/prevalence" counts.
 
 ### Cited Findings
 - Bearable offers "30+ reports", "identify correlations", "find patterns", symptom prevalence, and weekly/monthly trends. Its marketing says "how your habits... improve & worsen your health", which is causal framing. — [Bearable](https://bearable.app/)
@@ -66,7 +66,7 @@ Correlation grids (Bearable) are popular but criticised for showing no numbers, 
 - A 2025 JMIR review lists "correlation grids showing activity impacts on symptoms" as a common feature of the good-quality endo apps. — [JMIR 2025](https://pmc.ncbi.nlm.nih.gov/articles/PMC11845897/)
 
 ### Inferences
-- Atossa-safe framing: purely descriptive copy. For example: "Pelvic pain was logged on 9 of 30 days; 7 of those were during bleeding days." Avoid "linked to", "caused by", "triggers" and "forecast". Show counts and dates, never scores or probabilities. A cycle-aligned strip chart (days on the x-axis, bleeding band shaded, severity dots) shows co-occurrence visually and leaves the interpretation to the GP.
+- Zeeba Health-safe framing: purely descriptive copy. For example: "Pelvic pain was logged on 9 of 30 days; 7 of those were during bleeding days." Avoid "linked to", "caused by", "triggers" and "forecast". Show counts and dates, never scores or probabilities. A cycle-aligned strip chart (days on the x-axis, bleeding band shaded, severity dots) shows co-occurrence visually and leaves the interpretation to the GP.
 
 ### Gaps
 - No sourced examples of apps that explicitly design against causal inference.
@@ -87,7 +87,7 @@ The strongest pattern is Guava's visit-type-specific **one-page** summary. It pu
 - Vitalina's Apple Health PDF: a severity chart per symptom plus a complete log table. — [Vitalina](https://vitalina.app/export/symptoms)
 
 ### Inferences
-- Recommended Atossa layout: **page 1 fits on one A4 page for the GP**. Header with name/age, date range and "patient-reported, not a diagnosis". Top symptoms table: symptom, first noted, days logged, typical severity, pattern relative to period. A compact cycle strip chart. Current meds tried. "What I want to ask", 3 bullets. Optional page 2: a verbatim quotes appendix (the patient's own words, dated), which is Atossa's differentiator. Visit-type selection (Guava) is worth copying as "What is this appointment for?"
+- Recommended Zeeba Health layout: **page 1 fits on one A4 page for the GP**. Header with name/age, date range and "patient-reported, not a diagnosis". Top symptoms table: symptom, first noted, days logged, typical severity, pattern relative to period. A compact cycle strip chart. Current meds tried. "What I want to ask", 3 bullets. Optional page 2: a verbatim quotes appendix (the patient's own words, dated), which is Zeeba Health's differentiator. Visit-type selection (Guava) is worth copying as "What is this appointment for?"
 
 ### Gaps
 - I could not obtain actual sample PDFs/screenshots of Guava, Bearable, CareClinic or Visible reports to describe their visual layout (fonts, colour, section order beyond the above).
@@ -105,7 +105,7 @@ Little is published. What is published points to a calm, low-density, single-foc
 - Distressed-user guidance: 4.5:1 body contrast, 3:1 for UI elements. Muted earthy tones (soft greens, taupes). Avoid saturated or cheerful palettes and low-contrast minimalism. Legible type over trendy type. — [Smashing 2026](https://www.smashingmagazine.com/2026/07/designing-distressed-users-mental-health-apps-ui/)
 
 ### Inferences
-- Atossa: a warm neutral base, one muted accent, and severity shown with a single-hue ramp (not traffic-light red/green, which reads as a judgement). A system font or a humanist sans at 17pt+ body. Large, sparse cards.
+- Zeeba Health: a warm neutral base, one muted accent, and severity shown with a single-hue ramp (not traffic-light red/green, which reads as a judgement). A system font or a humanist sans at 17pt+ body. Large, sparse cards.
 
 ### Gaps
 - No sourced colour/type specs for Flutter Care, QENDO, Allara, Hormona or Ovy.
@@ -123,7 +123,7 @@ Praised: few taps, hiding unneeded categories, logging any time of day, printabl
 - PCOS apps (Cysterhood) centre on weight loss, meal plans and workouts, adding a habit tracker in 2025. PCOS-relevant symptoms to log: acne, energy, bloating, hair changes, mood, food. — [Cysterhood](https://www.pcosresources.com/cysterhood); [Go Go Gaia](https://www.go-go-gaia.com/blog/best-pcos-tracking-app.html)
 
 ### Inferences
-- Atossa should not show streaks at all. At most show "entries this month". PCOS users are used to weight-centric apps, and a symptom-only, weight-neutral framing is a differentiator (inference).
+- Zeeba Health should not show streaks at all. At most show "entries this month". PCOS users are used to weight-centric apps, and a symptom-only, weight-neutral framing is a differentiator (inference).
 
 ### Gaps
 - Reddit (r/endometriosis, r/PCOS, r/ChronicIllness, r/cfs) threads were not retrievable. First-hand complaints about flare-day modes and streak guilt are unsourced beyond App Store reviews.
@@ -139,10 +139,10 @@ Reduce the executive effort each check-in needs. That means linear, short flows,
 - Voice input as a primary path. Every gesture needs a visible button. Linear small steps. Predictable navigation. Minimum 24×24 targets (larger for unsteady hands). — [Smashing 2026](https://www.smashingmagazine.com/2026/07/designing-distressed-users-mental-health-apps-ui/)
 - Visible's user quote on brain-fog days (glance once). — [Visible blog](https://www.makevisible.com/blog/introducing-updated-today-page)
 - Users with cognitive impairment struggle to remember where tools are and benefit from simplified layouts and shortcuts. — [arXiv 2024, cancer survivors](https://arxiv.org/pdf/2410.22740)
-- Visible states it "is not a medical device, and does not provide... diagnosis". This is a model for Atossa's disclaimer tone. — [Visible](https://www.makevisible.com/how-it-works)
+- Visible states it "is not a medical device, and does not provide... diagnosis". This is a model for Zeeba Health's disclaimer tone. — [Visible](https://www.makevisible.com/how-it-works)
 
 ### Inferences
-- Atossa's voice-first capture already matches best practice. The missing pieces are a one-tap "rough day, just log it" path (single scale + mic), autosaved drafts, and Dynamic Type support. Aim for 44pt targets (Apple HIG), stricter than the 24px floor.
+- Zeeba Health's voice-first capture already matches best practice. The missing pieces are a one-tap "rough day, just log it" path (single scale + mic), autosaved drafts, and Dynamic Type support. Aim for 44pt targets (Apple HIG), stricter than the 24px floor.
 
 ### Gaps
 - No quantitative study found on logging completion time vs retention in endo/PCOS apps.

@@ -4,7 +4,7 @@ Reviewer: senior product + visual designer. Date: 2026-10-02.
 Build: `mvp-symptom-capture` working tree, web preview http://localhost:8081 (design-preview, Sam, today = Thu 24 Sep 2026).
 Judged against: `local_review2.md` (N1–N22, round-2 partials), `review_brief.md` hard rules, `design/KIT.md`.
 
-**Test conditions / limits.** Only the pre-existing Atossa tab was usable, and Chrome reported it as `document.visibilityState = hidden` throughout. Hidden tabs pause rAF, smooth scrolling and ResizeObserver, so:
+**Test conditions / limits.** Only the pre-existing Zeeba Health tab was usable, and Chrome reported it as `document.visibilityState = hidden` throughout. Hidden tabs pause rAF, smooth scrolling and ResizeObserver, so:
 - animated `scrollTo` / `scrollToEnd` checks were unreliable (marked untested where they matter);
 - the 320 px iframe check of SeverityRow ran before `onLayout`, so the 44 pt widening could only be verified in code.
 Taps were real clicks where coordinates were reliable; elsewhere RN-web pointer events were dispatched on the element (same responder path). Share PDF / Print were not fired. Console: no errors or warnings during the whole session (the round-2 POP_TO_TOP warning is gone).

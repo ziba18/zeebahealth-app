@@ -1,10 +1,10 @@
-# Atossa kit — reference for Phase 1–4 agents
+# Zeeba Health kit — reference for Phase 1–4 agents
 
-"Warm Paper, Deep Ink". Spec: `reports/Atossa app design research.md` lines 47–200. Lovable
+"Warm Paper, Deep Ink". Spec: `reports/Zeeba Health design research.md` lines 47–200. Lovable
 snapshot (reference only, has known bugs): `design/lovable-reference/`. Bugs not to port:
-`research_notes/Atossa app design research/stage2a_fix_message.md` + §5 of `stage2b_doctor_message.md`.
+`research_notes/Zeeba Health design research/stage2a_fix_message.md` + §5 of `stage2b_doctor_message.md`.
 
-**Import UI only from `components/atossa/kit`** and tokens only from `constants/atossaUI`.
+**Import UI only from `components/zeeba/kit`** and tokens only from `constants/zeebaUI`.
 No raw hex, font names or magic numbers in screens.
 
 ## Hard rules
@@ -44,7 +44,7 @@ No raw hex, font names or magic numbers in screens.
   Inline `'none'` / `'auto'` are fine.
 - Must run in Expo Go (SDK 57): no new native modules. Web must keep booting (preview).
 
-## Tokens (`constants/atossaUI.ts`)
+## Tokens (`constants/zeebaUI.ts`)
 | Export | Values |
 |---|---|
 | `colors` | **Native (light) / Midnight (dark)** — see `design/BRAND.md` and `design/HANDOVER.md` §3. Every token is a Light/Dark pair. Tokens: canvas · surface · raised · sunken · hairline · cardBorder · glassEdge · borderStrong · ink / ink2 / ink3 · **accent** / accentPressed / accentTint / **onAccent** · glow · clay (period only) / clayTint / onClay · saved · error · chartTrack · scrim · tabBar / tabBarTranslucent. For SVG, gradients or string alpha use `useColors()` (plain hex). |
@@ -104,11 +104,11 @@ No raw hex, font names or magic numbers in screens.
 | Legacy: `Screen`, `PageTitle`, `BigButton`, `BackButton`, `RecordRow`, `ConfirmDelete`, `Section`, `SectionHeading`, `StepProgress`, `LoadingScreen`, `ErrorScreen`, `SuccessNote`, `FutureDateMessage` | | Restyled for auth/onboarding/profile sub-screens. Don't use in new screens |
 
 Shared screens/components already built:
-- `components/atossa/LogBleedingSheet.tsx` — `visible`, `onClose`, `date?` (preset, e.g. DaySheet day),
+- `components/zeeba/LogBleedingSheet.tsx` — `visible`, `onClose`, `date?` (preset, e.g. DaySheet day),
   `onSaved?`. Status Started today / Still going / Ended / Spotting (none pre-selected for a new day;
   an already-logged day opens with its values), optional flow None–Heavy (no default), DatePill +
   DayChooser, Save disabled until a status is chosen, saves via `savePeriodDays`, success haptic + toast.
-- `components/atossa/MainTabBar.tsx` — Today (sun) · Timeline (list) · For my doctor (file-text). Every tab press lands on the
+- `components/zeeba/MainTabBar.tsx` — Today (sun) · Timeline (list) · For my doctor (file-text). Every tab press lands on the
   tab's root with ONE mechanism (N2): if the tab's stack isn't at its `index` root, the bar `preventDefault`s the `tabPress`
   (so the native stack's own pop-to-top doesn't also fire) and RESETs the stack; otherwise it leaves the stack alone.
 - `components/ui/Icon.tsx` — Lucide set incl. mic, square, pen-line, droplet, calendar, calendar-days,
@@ -182,11 +182,11 @@ web preview. Never open the iOS Simulator.
 ## File ownership (parallel agents — stay in your lane; ask before editing shared files)
 | Phase | Owns |
 |---|---|
-| 1 Today + capture | `app/(tabs)/today/**`, `components/atossa/capture/**` (capture sheet, MicButton, Waveform, follow-ups, BodyZonePicker, NotedCard, RoughDay, AppointmentCard…) |
-| 2 Timeline | `app/(tabs)/timeline/**`, `components/atossa/timeline/**` (EntryCard, MonthCalendar, DaySheet, entry detail) |
-| 3 Profile + Records | `app/(tabs)/profile/**`, `components/atossa/records/**` |
-| 4 For my doctor | `app/(tabs)/doctor/**`, `components/atossa/doctor/**`, `lib/records/summary.ts` |
-| Shared (Phase 0 owner; additive changes only, note them in PORT_PLAN Status) | `constants/atossaUI.ts`, `components/atossa/kit*.tsx`, `components/atossa/kit-parts/**`, `components/ui/Icon.tsx`, `components/atossa/LogBleedingSheet.tsx`, `components/atossa/MainTabBar.tsx`, `lib/records/format.ts`, `lib/records/dates.ts`, `types/records.ts`, `stores/recordsStore.ts`, `lib/preview/**` |
+| 1 Today + capture | `app/(tabs)/today/**`, `components/zeeba/capture/**` (capture sheet, MicButton, Waveform, follow-ups, BodyZonePicker, NotedCard, RoughDay, AppointmentCard…) |
+| 2 Timeline | `app/(tabs)/timeline/**`, `components/zeeba/timeline/**` (EntryCard, MonthCalendar, DaySheet, entry detail) |
+| 3 Profile + Records | `app/(tabs)/profile/**`, `components/zeeba/records/**` |
+| 4 For my doctor | `app/(tabs)/doctor/**`, `components/zeeba/doctor/**`, `lib/records/summary.ts` |
+| Shared (Phase 0 owner; additive changes only, note them in PORT_PLAN Status) | `constants/zeebaUI.ts`, `components/zeeba/kit*.tsx`, `components/zeeba/kit-parts/**`, `components/ui/Icon.tsx`, `components/zeeba/LogBleedingSheet.tsx`, `components/zeeba/MainTabBar.tsx`, `lib/records/format.ts`, `lib/records/dates.ts`, `types/records.ts`, `stores/recordsStore.ts`, `lib/preview/**` |
 
 Cross-tab navigation: entry details are owned by Timeline (`/(tabs)/timeline/...`); records
 (medicine/appointment/history) by Profile (`/(tabs)/profile/records/...`). Pass a `from` param so
@@ -194,13 +194,13 @@ the BackChevron names the screen it came from.
 
 ## Route + shared-contract map (fixed — all Phase 1–4 agents link to these)
 - Capture sheet: `lib/captureStore.ts` → `openCapture({date?, tag?, mode?, startRecording?})`. The sheet
-  component (`components/atossa/capture/CaptureSheet.tsx`, Phase 1) is mounted ONCE in
+  component (`components/zeeba/capture/CaptureSheet.tsx`, Phase 1) is mounted ONCE in
   `app/(tabs)/_layout.tsx` (Phase 1 adds that one line). Everyone else just calls `openCapture`.
 - Answer lists: `lib/records/fields.ts` (BODY_ZONES + BODY_ZONE_LABELS (chip label "Bottom / when opening
   bowels", stored value stays "Bottom"), WHEN_OPTIONS, IMPACT_OPTIONS, ESCAPE_ANSWERS, STARTER_CHIPS).
 - Symptom editors shared by the noted card and entry detail: Phase 1 builds
-  `components/atossa/capture/StrengthEditor.tsx` (Usually + At worst SeverityRows, It varies / Not sure)
-  and `components/atossa/capture/ZoneEditor.tsx` (multi-select BODY_ZONES; pass `text` + `onTextChange` to
+  `components/zeeba/capture/StrengthEditor.tsx` (Usually + At worst SeverityRows, It varies / Not sure)
+  and `components/zeeba/capture/ZoneEditor.tsx` (multi-select BODY_ZONES; pass `text` + `onTextChange` to
   also offer "Somewhere else" free text and Not sure / It varies — saved to `whereText`; choosing an
   escape clears the zones via `onChange([])`). Phase 2 imports them;
   until they exist Phase 2 may build against the kit directly and switch when they land.
@@ -210,7 +210,7 @@ the BackChevron names the screen it came from.
   - `/(tabs)/timeline/entry/[id]?from=<Label>` — symptom entry detail (Phase 2)
   - `/(tabs)/timeline/bleeding/[date]?from=<Label>` — bleeding day detail (Phase 2)
   - `/(tabs)/timeline/record/[kind]/[id]?from=Timeline` — appointment/medicine/history detail opened
-    from Timeline. Phase 3 builds the screen component `components/atossa/records/RecordDetail.tsx`
+    from Timeline. Phase 3 builds the screen component `components/zeeba/records/RecordDetail.tsx`
     AND this thin route file, so back returns to Timeline.
   - `/(tabs)/profile` · `/(tabs)/profile/records/[kind]` (kind = medicines | appointments | history) ·
     `/(tabs)/profile/records/[kind]/[id]` (id or `new`; back label = the list name)

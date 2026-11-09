@@ -1,4 +1,4 @@
-# Premium Health/Wellness App Visual Design (2025–2026): A Visual-System Playbook for Atossa
+# Premium Health/Wellness App Visual Design (2025–2026): A Visual-System Playbook for Zeeba Health
 
 Scope note: researched 2026-09-29 using about 20 search/fetch calls. The sources vary a lot in quality. Primary sources are the Instrument case study, Oura's blog, the It's Nice That piece on Headspace, Apple's ADA pages and a Midi press release. Some token values (hex codes, font sizes) come from third-party sites that reverse-engineered them from live pages, and they are marked as such. Several named apps (Function Health, Levels, Eight Sleep, Maven, Superpower, Tia, Evernow, Calm, Flo, Clue) returned **no usable primary design documentation** in this pass. They are listed under Gaps, not described from memory.
 
@@ -7,7 +7,7 @@ Scope note: researched 2026-09-29 using about 20 search/fetch calls. The sources
 ## 1. What makes health UI look "premium, trustworthy, calm"? (color, type pairing, density, data-viz)
 
 ### Takeaway
-The current premium health look has four parts. The type is a restrained grotesk for UI and data, sometimes with a serif (often italic) used sparingly for emphasis. The palette is warm off-white or sand neutrals plus one strong brand color. Color is semantic, never decorative. Information is layered with progressive disclosure: one or three big numbers first, trends on tap, raw data deeper down. Oura is the clearest reference for Atossa: warm sandstone neutrals, Akkurat grotesk, Editorial New serif italic for emphasis, and nature-toned accents (slate, olive, mustard, brown).
+The current premium health look has four parts. The type is a restrained grotesk for UI and data, sometimes with a serif (often italic) used sparingly for emphasis. The palette is warm off-white or sand neutrals plus one strong brand color. Color is semantic, never decorative. Information is layered with progressive disclosure: one or three big numbers first, trends on tap, raw data deeper down. Oura is the clearest reference for Zeeba Health: warm sandstone neutrals, Akkurat grotesk, Editorial New serif italic for emphasis, and nature-toned accents (slate, olive, mustard, brown).
 
 ### Cited Findings
 **Oura (redesign by Instrument; app launched with Oura Ring 4)**
@@ -31,9 +31,9 @@ The current premium health look has four parts. The type is a restrained grotesk
 - Reverse-engineered tokens: warm cream background `#f9f4f2`, Headspace Blue `#0061ef` reserved for primary CTAs. — [oh-my-design.kr Headspace](https://oh-my-design.kr/design-systems/headspace) (via search summary, not official)
 
 ### Inferences
-- **Warm off-white plus a single strong action color is the current premium default** (Oura `#f7f1e8` with blue `#2a72de`; Headspace `#f9f4f2` with blue `#0061ef`). Atossa's cream is therefore not the problem. The problems are probably (a) salmon pink + mint as *two competing decorative accents*, (b) a serif used for all headings instead of sparingly, and (c) no semantic color logic.
+- **Warm off-white plus a single strong action color is the current premium default** (Oura `#f7f1e8` with blue `#2a72de`; Headspace `#f9f4f2` with blue `#0061ef`). Zeeba Health's cream is therefore not the problem. The problems are probably (a) salmon pink + mint as *two competing decorative accents*, (b) a serif used for all headings instead of sparingly, and (c) no semantic color logic.
 - The serif-plus-grotesk pairing only reads as premium when the grotesk carries almost all the UI and the serif is rare: one phrase, one hero, often italic (Oura's approach).
-- Premium density comes from a low count of big numbers per screen, with depth one tap away (Oura's three tiers, Whoop's three tiers). For Atossa, "For my doctor" can be tier 3. The dashboard should show 1–3 headline facts only.
+- Premium density comes from a low count of big numbers per screen, with depth one tap away (Oura's three tiers, Whoop's three tiers). For Zeeba Health, "For my doctor" can be tier 3. The dashboard should show 1–3 headline facts only.
 
 ### Gaps
 - No official Oura or Whoop mobile-app spacing, radius or shadow specs were found. The token sites measured websites, not the apps.
@@ -55,7 +55,7 @@ The sector is openly moving away from "shrink it and pink it". The clearest curr
 - Hims & Hers: the original identity came from Gin Lane (2017). MOUTHWASH Studio later turned it into a motion system. Stine Nielsen designed the Hers identity (soft colors, refined type). — [MOUTHWASH Studio](https://mouthwash.studio/project/hims-and-hers/); [Stine Nielsen](https://stinenielsen.com/hers); [The Marketing Factor](https://www.themarketingfactor.tv/content/how-hims-hers-is-humanizing-healthcare-design)
 
 ### Inferences
-- For a *clinical-adjacent* product ("GP-ready summary"), Midi's direction (bold, high-contrast, no pastels) is the closest strategic analogue. Atossa should look like a care tool, not a lifestyle tracker.
+- For a *clinical-adjacent* product ("GP-ready summary"), Midi's direction (bold, high-contrast, no pastels) is the closest strategic analogue. Zeeba Health should look like a care tool, not a lifestyle tracker.
 - Candidate primary hues that avoid the pink cliché and fit a calm clinical tone. These are my proposals, *not sourced brand values*:
   - **Deep plum / aubergine** e.g. `#3B2340` (ink) with a lighter `#6B4A73`. Links to the purple heritage of NC and Stardust without pink.
   - **Deep green / olive** e.g. `#2F4A3A` or Oura's olive `#5c6f5d`. Reads as calm, natural and medical-adjacent.
@@ -85,7 +85,7 @@ Light, warm, opaque content surfaces are the norm for trust-oriented health apps
 - Headspace's illustration now covers the full emotional range, with photography added for coaching. — [It's Nice That](https://www.itsnicethat.com/articles/italic-studio-headspace-graphic-design-project-250424)
 
 ### Inferences
-- Atossa's content should be light mode first, with opaque cards and warm off-white. Dark mode was removed from the app (per repo CLAUDE.md). If it is reintroduced, use a warm near-black (not pure `#000`).
+- Zeeba Health's content should be light mode first, with opaque cards and warm off-white. Dark mode was removed from the app (per repo CLAUDE.md). If it is reintroduced, use a warm near-black (not pure `#000`).
 - Avoid decorative gradients behind symptom text. If a gradient is used at all, make it a very subtle warm-neutral wash on the onboarding and hero screens only.
 - For imagery, abstract organic shapes or restrained illustration beat stock photos of women (a femtech cliché). No anatomy illustrations, because they drift toward diagnostic implication.
 
@@ -98,7 +98,7 @@ Light, warm, opaque content surfaces are the norm for trust-oriented health apps
 ## 4. Tab bar, headers, large titles, sheets, segmented controls (iOS 18–26)
 
 ### Takeaway
-In iOS 26 the tab bar is a floating, inset Liquid Glass capsule. Large titles are 34 pt bold and collapse to 17 pt semibold. Modal sheets dismiss by swipe or X. Premium health apps also cut tab counts to three (Oura), which fits Atossa's three tabs.
+In iOS 26 the tab bar is a floating, inset Liquid Glass capsule. Large titles are 34 pt bold and collapse to 17 pt semibold. Modal sheets dismiss by swipe or X. Premium health apps also cut tab counts to three (Oura), which fits Zeeba Health's three tabs.
 
 ### Cited Findings
 - iOS 26 tab bar: a floating, centered pill inset **21 pt** left, right and bottom; labels 11 pt SF Pro; selected state uses the brand/accent color; Liquid Glass background; hides when the keyboard or a modal appears; search can be a separate circular "island". — [LearnUI](https://www.learnui.design/blog/ios-design-guidelines-templates.html); [Donny Wals](https://www.donnywals.com/exploring-tab-bars-on-ios-26-with-liquid-glass/)
@@ -107,7 +107,7 @@ In iOS 26 the tab bar is a floating, inset Liquid Glass capsule. Large titles ar
 - Oura: 3 tabs (Today, Vitals, My Health). — [Oura blog](https://ouraring.com/blog/new-app-design/). Whoop: single-scroll Home plus a Health tab. — [Whoop](https://www.whoop.com/us/en/thelocker/the-all-new-whoop-home-screen/)
 
 ### Inferences
-- Atossa's current "mint selected-tab pill" is a custom tab bar that competes with iOS's native look. Better options: native tab bar behavior (icon + 11 pt label, brand-color tint on the selected item, no colored pill), or a floating inset capsule that echoes iOS 26 with a near-opaque surface.
+- Zeeba Health's current "mint selected-tab pill" is a custom tab bar that competes with iOS's native look. Better options: native tab bar behavior (icon + 11 pt label, brand-color tint on the selected item, no colored pill), or a floating inset capsule that echoes iOS 26 with a near-opaque surface.
 - Use large-title headers (34 pt → 17 pt collapse) on the Dashboard and For-my-doctor tabs. Put the doctor summary preview and export in a bottom sheet. Use a segmented control for time ranges (e.g. 7d / 30d / cycle) on the dashboard.
 
 ### Gaps
@@ -136,7 +136,7 @@ Top brands now treat contrast and accessible color as part of the brand system (
 
 ---
 
-## 6. Open-source fonts (Google Fonts / Expo) that evoke these brands, and a concrete system for Atossa
+## 6. Open-source fonts (Google Fonts / Expo) that evoke these brands, and a concrete system for Zeeba Health
 
 ### Takeaway
 The premium brands use proprietary faces (Oura: Akkurat LL + Editorial New; Headspace: custom Aperçu). Close free substitutes on Google Fonts, all installable through `@expo-google-fonts/*`: a clean grotesk for UI (Inter, Inter Tight, Geist, Hanken Grotesk, DM Sans) plus a high-contrast editorial serif for rare emphasis (Instrument Serif, Newsreader, Source Serif 4).
@@ -146,7 +146,7 @@ The premium brands use proprietary faces (Oura: Akkurat LL + Editorial New; Head
 - Headspace's type is a custom Aperçu variant. — [It's Nice That](https://www.itsnicethat.com/articles/italic-studio-headspace-graphic-design-project-250424)
 - Free alternatives (availability on Google Fonts): [Inter](https://fonts.google.com/specimen/Inter), [Inter Tight](https://fonts.google.com/specimen/Inter+Tight), [Geist](https://fonts.google.com/specimen/Geist), [Hanken Grotesk](https://fonts.google.com/specimen/Hanken+Grotesk), [DM Sans](https://fonts.google.com/specimen/DM+Sans), [Instrument Serif](https://fonts.google.com/specimen/Instrument+Serif) (regular + italic only), [Newsreader](https://fonts.google.com/specimen/Newsreader), [Source Serif 4](https://fonts.google.com/specimen/Source+Serif+4)
 
-### Inferences: proposed Atossa visual system (synthesized; values are recommendations, not sourced from any brand)
+### Inferences: proposed Zeeba Health visual system (synthesized; values are recommendations, not sourced from any brand)
 **Type**
 - UI/body: **Inter** (closest to Akkurat's neutral, precise feel; excellent tabular figures for data) or **Hanken Grotesk** (warmer). Scale mapped to the iOS text styles: 34/41 bold large title, 28/34 semibold title, 22/28 semibold section, 17/24 body, 15/20 secondary, 13/18 caption, 11/13 tab label. Tracking about −0.5% on 28+ sizes.
 - Emphasis serif: **Instrument Serif Italic**, used *only* for one phrase per screen hero (the Oura pattern) or the summary title. The app previously used Fraunces everywhere, which is the opposite pattern.

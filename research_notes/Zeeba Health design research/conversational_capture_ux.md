@@ -1,6 +1,6 @@
 # Conversational & Voice Symptom/Journal Capture UX, and "Logging Delight" (2025–2026)
 
-Scope: copyable interaction patterns for turning free-form symptom descriptions (voice/text) into structured, GP-ready records for Atossa, plus patterns that make daily capture feel good without guilt. Researched 2026-09-29. Some requested sources (Healthily, Buoy, Babylon, Headspace/Calm check-ins, Otter, Mobbin screenshots) were not reached with citable primary sources in the tool budget — see Gaps under each question.
+Scope: copyable interaction patterns for turning free-form symptom descriptions (voice/text) into structured, GP-ready records for Zeeba Health, plus patterns that make daily capture feel good without guilt. Researched 2026-09-29. Some requested sources (Healthily, Buoy, Babylon, Headspace/Calm check-ins, Otter, Mobbin screenshots) were not reached with citable primary sources in the tool budget — see Gaps under each question.
 
 ## 1. Chat vs guided card flow vs hybrid — how do the best apps structure a check-in?
 
@@ -24,7 +24,7 @@ The evidence favours a **hybrid**: conversational framing and one-question-at-a-
 - Aggregator claims that "NN/g research" shows progressive disclosure raises completion 30–50% and each form field costs 4–7% completion — **could not verify these are NN/g numbers; treat as unreliable**. — [Callin.io](https://callin.io/chatbots-vs-forms/)
 
 ### Inferences
-- For Atossa: keep a conversational *frame* (warm prompt, one thing at a time) but render answers as **chips/cards with an always-present free-text/voice field** ("Or tell me in your own words"). Replace fixed 4 questions with: open prompt first ("What's been going on?"), then only ask follow-ups for fields the extraction didn't fill (location, severity, timing, impact on day), each with chips + "skip" + "not sure / sometimes".
+- For Zeeba Health: keep a conversational *frame* (warm prompt, one thing at a time) but render answers as **chips/cards with an always-present free-text/voice field** ("Or tell me in your own words"). Replace fixed 4 questions with: open prompt first ("What's been going on?"), then only ask follow-ups for fields the extraction didn't fill (location, severity, timing, impact on day), each with chips + "skip" + "not sure / sometimes".
 - Offer a How We Feel–style **quick save** (long-press / "That's all for now") so a 10-second log is always possible; depth is optional.
 - Add a one-line "why we ask" under follow-ups (addresses the "lack of explanation" complaint) — phrased as "helps your GP see…" not clinical reasoning.
 - Show 2–4 suggested starters as buttons on the empty chat state (NN/g #3/#4) to kill the "empty-looking chat" problem, e.g. "Pain today", "My period", "Something new", "Just a quick note".
@@ -49,7 +49,7 @@ The 2025–26 convention is: mic/waveform icon beside the text field → tap to 
 - NN/g (2026) explicitly lists voice input as a chatbot guideline. — [NN/g](https://www.nngroup.com/articles/ai-chatbots-design-guidelines/)
 
 ### Inferences
-- Atossa: put a large mic button as the **primary** action on the capture screen (text field secondary), tap-to-toggle (press-and-hold is hard with pain/fatigue and for long descriptions), live waveform + timer, and show the transcript in the thread as the user's own bubble, editable, before extraction runs.
+- Zeeba Health: put a large mic button as the **primary** action on the capture screen (text field secondary), tap-to-toggle (press-and-hold is hard with pain/fatigue and for long descriptions), live waveform + timer, and show the transcript in the thread as the user's own bubble, editable, before extraction runs.
 - Offer "Keep my words" — store the raw transcript alongside structured fields so the GP summary can quote the user verbatim (the product's core value).
 - Graceful fallback when speech recognition is unavailable (relevant: Expo Go lacks the native module).
 
@@ -66,10 +66,10 @@ Best practice is human-in-the-loop: show the AI's structured interpretation **vi
 - Symptom tracker guidance: "Preview before submission: show selected inputs for verification". — [INSAIM](https://www.insaim.design/healthtech-blog/symptom-tracking-in-health-apps-ux-ui-best-practices)
 - Criticism of chat-first journaling (Rosebud): "your entries end up as transcripts of the AI's questions rather than your own thinking". — [Mindsera comparison](https://mindsera.com/articles/the-7-best-ai-journaling-apps-in-2026-tested)
 - Symptom reports were **8% less suitable for urgency assessment** when participants believed they talked to an AI chatbot vs a human physician; recommendation to have the interface and prompts explicitly encourage rich, narrative descriptions. — [ResearchGate: "Reduced symptom reporting quality during human–chatbot versus human–physician interactions"](https://www.researchgate.net/publication/404343790_Reduced_symptom_reporting_quality_during_human-chatbot_versus_human-physician_interactions) (full text blocked; figures from search snippet only — verify before quoting)
-- Google SymptomAI (July 2026, n=13,917): agents that actively asked structured history questions **significantly outperformed** a purely user-driven "Base" condition. (Note: SymptomAI ends in a differential diagnosis — the opposite of what Atossa may show; relevant only for the *question-asking* finding.) — [Google Research](https://research.google/blog/symptomai-towards-a-conversational-ai-agent-for-everyday-symptom-assessment/)
+- Google SymptomAI (July 2026, n=13,917): agents that actively asked structured history questions **significantly outperformed** a purely user-driven "Base" condition. (Note: SymptomAI ends in a differential diagnosis — the opposite of what Zeeba Health may show; relevant only for the *question-asking* finding.) — [Google Research](https://research.google/blog/symptomai-towards-a-conversational-ai-agent-for-everyday-symptom-assessment/)
 
 ### Inferences
-- Atossa "Here's what I noted" card: fields such as *Where / How it felt (in your words) / How strong / When & how long / What it got in the way of / Anything that helped*, each a tappable row to edit, with the **user's exact phrase quoted in the row** ("'like a hot knife, low down on the left'") and the tidy label in secondary/gray — Granola's two-tone rule.
+- Zeeba Health "Here's what I noted" card: fields such as *Where / How it felt (in your words) / How strong / When & how long / What it got in the way of / Anything that helped*, each a tappable row to edit, with the **user's exact phrase quoted in the row** ("'like a hot knife, low down on the left'") and the tidy label in secondary/gray — Granola's two-tone rule.
 - Unfilled fields shown as soft "Add?" chips, not errors. Buttons: "Looks right — save" (primary), "Fix something", "Add more".
 - Never output interpretive fields (cause, condition, likelihood). The card mirrors, it doesn't interpret — this also fits the SymptomAI finding that structured follow-ups improve completeness without needing to give a verdict.
 - Since people give thinner reports to bots, the opening prompt should explicitly invite narrative ("Describe it however it comes — messy is fine").
@@ -88,9 +88,9 @@ Plain words, second person, brief; warmth via acknowledgement and no-pressure op
 - NN/g: pleasantries lengthen replies; users want concise, scannable answers. — [NN/g](https://www.nngroup.com/articles/less-chat-more-answer/)
 - Finch is praised for being "compassionate rather than preachy"; warmth makes self-care feel doable for users with ADHD, anxiety or depression. — [Slate, Sept 2026](https://slate.com/technology/2026/09/finch-app-self-care-wellness-review.html); [HabitBox review](https://habitbox.app/blog/finch-app-review)
 - Symptom checker users complained about unexplained, oddly-ordered questions (e.g. asked about alcohol right after reporting vomiting). — [PMC8075525](https://pmc.ncbi.nlm.nih.gov/articles/PMC8075525/)
-- K Health frames outputs statistically ("people like you often have X") rather than clinically — an example of the diagnostic framing Atossa must avoid. — [iatroX](https://www.iatrox.com/blog/k-health-review-uk-clinicians-ai-physician-mode-evidence)
+- K Health frames outputs statistically ("people like you often have X") rather than clinically — an example of the diagnostic framing Zeeba Health must avoid. — [iatroX](https://www.iatrox.com/blog/k-health-review-uk-clinicians-ai-physician-mode-evidence)
 
-### Inferences (suggested copy patterns for Atossa)
+### Inferences (suggested copy patterns for Zeeba Health)
 - Openers: "What's been going on with your body?" / "Tell me in your own words — messy is fine."
 - Acknowledge, don't evaluate: "Got it." / "Thanks — that's noted." Avoid "That sounds like…", "This could be…", "Common with…", "normal/abnormal".
 - Why-we-ask: "Your GP often asks this, so it helps to have it ready."
@@ -114,8 +114,8 @@ Gentle, non-punitive rewards (Finch, Rosebud's retroactive date fix) are the cur
 - Daylio's "Year in Pixels" and monthly mood graph are signature payoff visualisations. — [IntuitionLabs](https://intuitionlabs.ai/software/telepsychiatry-digital-mental-health/mood-tracking-and-journaling/daylio)
 
 ### Inferences
-- Atossa should use **accumulation, not streaks**: "12 notes ready for your GP" / a calendar dot-grid of logged days (Year-in-Pixels-lite) with no broken-chain visual. Missing days are neutral, not red.
-- Completion moment: brief card-settle animation + light success haptic as the "noted" card files into the "For my doctor" summary — the payoff is visible progress toward the appointment, which is Atossa's real reward.
+- Zeeba Health should use **accumulation, not streaks**: "12 notes ready for your GP" / a calendar dot-grid of logged days (Year-in-Pixels-lite) with no broken-chain visual. Missing days are neutral, not red.
+- Completion moment: brief card-settle animation + light success haptic as the "noted" card files into the "For my doctor" summary — the payoff is visible progress toward the appointment, which is Zeeba Health's real reward.
 - Allow backdating ("This was yesterday") as Rosebud does — also clinically useful.
 - Reminders: gentle and skippable; never shame copy.
 
@@ -136,7 +136,7 @@ Patients tend to *prefer* chat-style intake (engagement, perceived ease) even th
 - Usability testing of a healthcare chatbot questioned whether conventional usability methods suffice for conversational UIs. — [ACM ECCE 2019](https://dl.acm.org/doi/fullHtml/10.1145/3335082.3335094)
 
 ### Inferences
-- The "save/share" guideline maps directly to Atossa's "For my doctor" export — make the output of every capture visibly flow there.
+- The "save/share" guideline maps directly to Zeeba Health's "For my doctor" export — make the output of every capture visibly flow there.
 - Speed matters: aim for a sub-60-second path (voice → confirm card → save), with chat depth optional.
 
 ### Gaps

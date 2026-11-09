@@ -9,7 +9,7 @@ Branch with all current app work: **`design/native-midnight`** (not merged, not 
 
 | Area | State |
 |---|---|
-| Name | **Zeeba Health** (renamed from Atossa, branch `zeeba-health`; identifiers `com.zeebahealth.app`, scheme `zeebahealth`) |
+| Name | **Zeeba Health** (renamed from Zeeba Health, branch `zeeba-health`; identifiers `com.zeebahealth.app`, scheme `zeebahealth`) |
 | Design | **Native (light) + Midnight (dark)** — owner-approved 9 Nov. Built in the real app. |
 | UX pass | Welcome, sign-in, onboarding, glass tab bar, Evidence tab, back links — done 9 Nov |
 | Checks | `npx tsc --noEmit` clean · `npx expo export --platform ios` OK · backend 186 tests pass |
@@ -19,7 +19,7 @@ Branch with all current app work: **`design/native-midnight`** (not merged, not 
 ### Branch map
 ```
 mvp-symptom-capture   ← what Render deploys (backend). Has NOT got the rename yet.
-└─ zeeba-health        ← Atossa → Zeeba Health rename (2 commits). Live privacy page still says "Atossa" until this ships.
+└─ zeeba-health        ← Zeeba Health → Zeeba Health rename (2 commits). Live privacy page still says "Zeeba Health" until this ships.
    └─ design/burgundy-wren   ← REJECTED palette; kept only for history. Its iOS mechanics were carried forward.
       └─ design/native-midnight  ← CURRENT. All design + UX work. Merge this (after a device check).
 ```
@@ -92,7 +92,7 @@ maps live in three places — keep them in sync: `MainTabBar.tsx` `TAB_BY_TITLE`
 - Server code: `backend/app/services/social_auth.py` (`verify_apple_identity_token` accepts a list),
   `backend/app/config.py` (`apple_allow_expo_go`, default False), `routers/auth.py`.
 - **Before App Store launch: delete `APPLE_ALLOW_EXPO_GO` on Render** (Dashboard → atossa-backend → Environment).
-- Live `apple_bundle_id` default on `mvp-symptom-capture` is still `com.attosa.app`; the new listing uses
+- Live `apple_bundle_id` default on `mvp-symptom-capture` is still `the previous bundle ID`; the new listing uses
   `com.zeebahealth.app` (set on the `zeeba-health` branch). Ship the rename branch to the server before launch.
 
 ---
@@ -115,9 +115,9 @@ maps live in three places — keep them in sync: `MainTabBar.tsx` `TAB_BY_TITLE`
 1. **Device check in Expo Go** (both appearances): native Apple button, blur, haptics, New York/SF Rounded rendering.
 2. **For my doctor** has the new colours/type but not the full redesign (bright paper preview on top, "What I was told
    before" card from her history). Concepts are in the directions board.
-3. **Ship the rename to the server** (`zeeba-health` → `mvp-symptom-capture`): live privacy page still says "Atossa";
+3. **Ship the rename to the server** (`zeeba-health` → `mvp-symptom-capture`): live privacy page still says "Zeeba Health";
    live Apple audience is still the old bundle id.
-4. GitHub repo stays **public** (owner, 9 Nov). Its description still says "Atossa".
+4. GitHub repo stays **public** (owner, 9 Nov). Its description still says "Zeeba Health".
 8. App Store Connect: record created (Apple ID 6832575398) — remaining steps in `store/APP_STORE.md`. Not submitted.
 5. App icon: concepts A/B/C (Wren on bone / bone Wren on burgundy / monogram) — owner to choose.
 6. Android dark mode (currently light only).

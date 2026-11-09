@@ -2,7 +2,7 @@
 
 Reviewer: senior product designer (iOS health). Date: 2026-10-01.
 Build: `mvp-symptom-capture` working tree, served by `npm run preview:web` at http://localhost:8081 (design-preview mode, Sam, "today" = Thu 24 Sep 2026).
-Spec: "Recommended direction" in `reports/Atossa app design research.md` (lines 47–200), `design/KIT.md`, and the hard rules in `review_brief.md`.
+Spec: "Recommended direction" in `reports/Zeeba Health design research.md` (lines 47–200), `design/KIT.md`, and the hard rules in `review_brief.md`.
 Screenshots: `local_review1_screens/` (110 files, `NN_description.jpg`).
 
 **How I tested.** I used the app as Sam in my own Chrome tab. Chrome would not go narrower than 500 CSS px, so screenshots are 500×594. For 320 and 390 px I loaded the app in same-origin iframes and measured it with JS (`scrollWidth`, `getBoundingClientRect`, computed styles). I went through every flow in the brief:
@@ -179,7 +179,7 @@ What stops it being featured quality is a set of **trust and polish failures in 
 - The preview updates live with visit type, agenda, range and section switches.
 - The **sensitive "Sex & intimacy" section** appears only when there is data. It is locked and off by default, and when on it shows only "Sex · 1 day". Sex is never leaked into "What it got in the way of".
 - The heat-strip uses the severity ramp with digits, a clay-tint band and a clay underline for bleeding. Its caption is descriptive ("Notes were logged on 8 of 93 days; 1 of those was a bleeding day.").
-- The footer reads "Patient-reported via Atossa · not clinically verified · … · 11 entries".
+- The footer reads "Patient-reported via Zeeba Health · not clinically verified · … · 11 entries".
 - **Data integrity is good.** A capture's values match exactly across the noted card, the Timeline card, the entry detail, Today's latest note and the document:
   - "Lower tummy left, Lower back · 5/10 usually · 8/10 at worst · mostly in the mornings";
   - "6/10 usually · 9/10 at worst";
@@ -188,7 +188,7 @@ What stops it being featured quality is a set of **trust and polish failures in 
   Note counts agree everywhere: 12 → 11 after a delete on Today, the range line and the footer. Quick logs are kept out of "Symptoms in my words".
 
 **Problems**
-- **"Symptoms in my words" shows only the 5 newest notes**, with no "N more" line (`MAX_QUOTES = 5` in `lib/records/summary.ts`). In the default range 6 of Sam's 10 worded notes are silently missing. Appointments and history *do* say "1 earlier appointment saved in Atossa."
+- **"Symptoms in my words" shows only the 5 newest notes**, with no "N more" line (`MAX_QUOTES = 5` in `lib/records/summary.ts`). In the default range 6 of Sam's 10 worded notes are silently missing. Appointments and history *do* say "1 earlier appointment saved in Zeeba Health."
 - **The "full size" preview is not full size.** Effective type is 6.2–8.5 px at a 500 px viewport, so smaller still at 390, and the web has no pinch-zoom (88, 89).
 - **Empty state:** with 0 notes the page still shows a near-empty document and an enabled **Share PDF** (104).
 - **Show on screen** keeps the tab bar and isn't a full-screen, hand-across-the-desk view (92).
@@ -219,19 +219,19 @@ What stops it being featured quality is a set of **trust and polish failures in 
 ### High
 
 2. **High · For my doctor › document.** `buildDoctorSummary` keeps the first `MAX_QUOTES = 5` worded notes, newest first, and drops the rest silently.
-   **Fix:** In `lib/records/summary.ts`, add `more: "N more notes saved in Atossa."` (same pattern as appointments and history) and render it in `components/atossa/doctor/DocumentView.tsx`. Consider choosing quotes for coverage (highest worst score, then newest, at most 1 per day) rather than newest only. The footer's "11 entries" must stay accurate.
+   **Fix:** In `lib/records/summary.ts`, add `more: "N more notes saved in Zeeba Health."` (same pattern as appointments and history) and render it in `components/zeeba/doctor/DocumentView.tsx`. Consider choosing quotes for coverage (highest worst score, then newest, at most 1 per day) rather than newest only. The footer's "11 entries" must stay accurate.
 
 3. **High · For my doctor › full-size preview.** The "tap to see it full size" sheet renders the same scaled page (6–8.5 px text).
-   **Fix:** In `components/atossa/doctor/DocumentPreview.tsx`, render `DocumentView` unscaled at the sheet width, so body text is at least 13 px, inside a vertical ScrollView. On native, wrap it in a `ScrollView` with `maximumZoomScale={3}` so pinch-zoom works. Keep the scaled card only for the inline thumbnail.
+   **Fix:** In `components/zeeba/doctor/DocumentPreview.tsx`, render `DocumentView` unscaled at the sheet width, so body text is at least 13 px, inside a vertical ScrollView. On native, wrap it in a `ScrollView` with `maximumZoomScale={3}` so pinch-zoom works. Keep the scaled card only for the inline thumbnail.
 
 4. **High · Capture noted card and entry detail › When.** One `when` string holds both the period-timing chip and free text. Choosing a chip silently overwrites "Since Tuesday".
-   **Fix:** Split the field into **When** (Only around my period / At other times too / All the time / Not sure / It varies) and **How long** (`duration`, free text, which already exists in `SymptomData`). Prefill `duration` from phrases like "since Tuesday" in `components/atossa/capture/infer.ts`. Show both rows in `NotedCard.tsx` and `components/atossa/timeline/EntryDetail.tsx`, and never let one chip clear the other value.
+   **Fix:** Split the field into **When** (Only around my period / At other times too / All the time / Not sure / It varies) and **How long** (`duration`, free text, which already exists in `SymptomData`). Prefill `duration` from phrases like "since Tuesday" in `components/zeeba/capture/infer.ts`. Show both rows in `NotedCard.tsx` and `components/zeeba/timeline/EntryDetail.tsx`, and never let one chip clear the other value.
 
 5. **High · Global › dead first tap after a sheet closes (web, reproduced 6×).** After any `Sheet` closes (Discard, Save, X, Escape), the next tap or scroll on the page is ignored. It happened on chips, a calendar day and the month chevron. It looks like a responder or focus lock left by the RN `Modal` on web.
-   **Fix:** In `components/atossa/kit-parts/Sheet.tsx`, return focus and release the responder on dismiss (`onDismiss` → `Keyboard.dismiss()`, then blur `document.activeElement` on web), and unmount the Modal after the exit animation. Verify on an iOS device: if it happens there too, it is a blocker.
+   **Fix:** In `components/zeeba/kit-parts/Sheet.tsx`, return focus and release the responder on dismiss (`onDismiss` → `Keyboard.dismiss()`, then blur `document.activeElement` on web), and unmount the Modal after the exit animation. Verify on an iOS device: if it happens there too, it is a blocker.
 
 6. **High · Timeline tab › stale nested screen.** After a note opened from Timeline (or Today) is deleted or the data is cleared, tapping the **Timeline** tab reopens `/timeline/entry/<id>?from=Today`. It shows "This note isn't here any more" with "‹ Today", and re-tapping the tab does not pop to root.
-   **Fix:** In `components/atossa/MainTabBar.tsx`, when the target tab is already focused, call `navigation.dispatch(StackActions.popToTop())` on that tab's stack. When switching tabs, use `router.navigate('/(tabs)/timeline')` with a reset, so the tab always lands on its root. Also make `EntryDetail` call `router.back()` automatically when the record no longer exists.
+   **Fix:** In `components/zeeba/MainTabBar.tsx`, when the target tab is already focused, call `navigation.dispatch(StackActions.popToTop())` on that tab's stack. When switching tabs, use `router.navigate('/(tabs)/timeline')` with a reset, so the tab always lands on its root. Also make `EntryDetail` call `router.back()` automatically when the record no longer exists.
 
 7. **High · For my doctor › empty state.** With 0 notes the page shows an empty document, "0 entries" and an enabled Share PDF.
    **Fix:** In `app/(tabs)/doctor/index.tsx`, when `noteCount(range) === 0` and nothing else is included, show `EmptyState` ("Nothing to share yet. Notes you add will appear here, in your words.") with a primary "Add a note" button (`openCapture()`), and disable Share PDF, Print and Show on screen.
@@ -245,7 +245,7 @@ What stops it being featured quality is a set of **trust and polish failures in 
    **Fix:** Add a Tried `NotedRow` (quote style, "+ Add what you tried") to `NotedCard.tsx`, the same as `EntryDetail`.
 
 10. **Medium · Capture noted card and entry detail › Where.** Only the 7 pelvic zones are offered, with no free text or Not sure.
-    **Fix:** In `components/atossa/capture/ZoneEditor.tsx`, always show "Somewhere else" (a text input saved to `whereText`) plus Not sure / It varies ghost chips, as the follow-up already does.
+    **Fix:** In `components/zeeba/capture/ZoneEditor.tsx`, always show "Somewhere else" (a text input saved to `whereText`) plus Not sure / It varies ghost chips, as the follow-up already does.
 
 11. **Medium · Capture › Fix something.** It replays all 4 questions.
     **Fix:** Make "Fix something" scroll to the card and open the first filled row's editor (or just say "Tap any row to change it"). Keep the follow-up replay only for Add more.
@@ -257,9 +257,9 @@ What stops it being featured quality is a set of **trust and polish failures in 
     **Fix:** In `EntryDetail.tsx`, `BleedingDetail.tsx` and `RecordDetail.tsx`, pass `onLayout` and call `scrollRef.current?.scrollToEnd()` (or `scrollTo(y − 120)`), so the whole card including both buttons is visible.
 
 14. **Medium · Record forms › year chips.** The selected year isn't scrolled into view.
-    **Fix:** In `components/atossa/records/RecordDateField.tsx`, on mount and on change, `scrollTo` the horizontal year list so the selected chip is centred.
+    **Fix:** In `components/zeeba/records/RecordDateField.tsx`, on mount and on change, `scrollTo` the horizontal year list so the selected chip is centred.
 
-15. **Medium · Switches.** In `components/atossa/doctor/SectionToggles.tsx` the `Switch` has no thumb colour, so it shows RN-web teal. `SwitchRow` (`kit-parts/legacy.tsx`) uses `false: colors.hairline`, so the off track is invisible.
+15. **Medium · Switches.** In `components/zeeba/doctor/SectionToggles.tsx` the `Switch` has no thumb colour, so it shows RN-web teal. `SwitchRow` (`kit-parts/legacy.tsx`) uses `false: colors.hairline`, so the off track is invisible.
     **Fix:** Use `SwitchRow`, or pass `thumbColor={colors.surface}`, `activeThumbColor={colors.surface}` (web) and `trackColor={{ true: colors.plum, false: colors.borderStrong }}` everywhere.
 
 16. **Medium · For my doctor › Show on screen.** The tab bar stays visible.
@@ -272,7 +272,7 @@ What stops it being featured quality is a set of **trust and polish failures in 
     **Fix:** In `RecordDetail.tsx`, hide "I was told / Tests or prescriptions / What happens next" when the date is in the future. Show them, under "After the appointment", once the date has passed.
 
 19. **Medium · Health history list.**
-    **Fix:** In `components/atossa/records/RecordsList.tsx`, the row subtitle should show the first non-empty of told / done / result ("Test or scan · Around March 2023 · MRI was clear").
+    **Fix:** In `components/zeeba/records/RecordsList.tsx`, the row subtitle should show the first non-empty of told / done / result ("Test or scan · Around March 2023 · MRI was clear").
 
 20. **Medium · Accessibility.** On web, `accessibilityState={{checked/selected}}` produces no `aria-checked` or `aria-selected` for SeverityRow radios, chips, filter radios or switches. At 320 the SeverityRow hit area is 40 px wide.
     **Fix:** Also pass `aria-checked` / `aria-selected` (RN 0.86 supports `aria-*` props) in `kit-parts/severity.tsx` and `controls.tsx`. Give each cell a `hitSlop` of at least 2, or reduce the gap, so the hit area is ≥ 44. Verify with VoiceOver on device.

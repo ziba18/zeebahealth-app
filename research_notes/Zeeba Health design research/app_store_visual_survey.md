@@ -41,7 +41,7 @@ The market splits into four visual families: (a) **warm or pastel light** (Flo l
 - In-app: very light pink/white. The home hero is a large soft **circle/blob** with "Period in: 2 days" (big black bold) and a coral pill "Log period". Below it, "My daily insights" cards are small rounded tiles with pastel fills.
 - Logging: round illustrated **icon buttons** (Cramps, Mood swings, Fatigue) in pastel circles with a purple check badge, and a discharge row of small icons. A **hand illustration** (flat, terracotta skin) taps the screen.
 - Calendar: pink period days, teal fertile days and a big teal circle for "ovulation".
-- Their "Symptom Checker" frame lists **named conditions with match strength** ("PCOS – Significant match", "Endometriosis – Low match"). This is exactly the diagnostic pattern Atossa must avoid.
+- Their "Symptom Checker" frame lists **named conditions with match strength** ("PCOS – Significant match", "Endometriosis – Low match"). This is exactly the diagnostic pattern Zeeba Health must avoid.
 - Mood: friendly, consumer and polished, but generic.
 
 **Clue** — [App Store](https://apps.apple.com/us/app/clue-period-cycle-tracker/id657189652)
@@ -107,7 +107,7 @@ The market splits into four visual families: (a) **warm or pastel light** (Flo l
 **Ada (symptom assessment)** — [App Store](https://apps.apple.com/us/app/ada-your-health-portal/id1099986434)
 - Frame: very pale blue-white (~#EEF4FB) with faint blurred circles. Headlines are a dark navy **serif** (~#1E2A3A) with **key word in light blue** (~#4A90D9): "Enter your *symptoms*".
 - In-app: white, with a **serif chat-style prompt** ("Hi, I'm Ada. Let's take a few minutes…"), a blue pill "Continue" button right-aligned, and answer options as **outlined blue pills** ("Myself" / "Someone else"). The home hero is a small abstract dot-and-dash logo glyph (blue/teal/navy) with "Hi, Alex" in serif and a dark navy pill "Start symptom assessment".
-- The report screen is text-heavy with "Possible causes" cards. This is the diagnostic part Atossa must not copy.
+- The report screen is text-heavy with "Possible causes" cards. This is the diagnostic part Zeeba Health must not copy.
 - Only 4 frames. Mood: calm, trustworthy and clinical-editorial.
 
 **Rosebud (AI journal)** — [App Store](https://apps.apple.com/us/app/rosebud-ai-journal-diary/id6451135127)
@@ -150,7 +150,7 @@ The market splits into four visual families: (a) **warm or pastel light** (Flo l
 ### Inferences
 - Every app with a readable tab bar used 4–5 tabs, and most put a **filled "+" log button in the centre** (Clue, Natural Cycles, Daylio). Oura is the exception with a floating icon-only pill.
 - The **home hero** is almost always one big glanceable object: a ring or gauge (Clue, NC, QENDO, Visible, Oura readiness arc, Welltory BP ring), a mascot (Finch, Headspace), or a mood/emotion field (How We Feel).
-- The "for your doctor" feature appears as a **fanned white PDF/document card** in Guava, Visible and Welltory. It's a recognisable visual shorthand Atossa could use.
+- The "for your doctor" feature appears as a **fanned white PDF/document card** in Guava, Visible and Welltory. It's a recognisable visual shorthand Zeeba Health could use.
 
 ### Gaps
 - I could only read tab-bar labels in about 5 apps. The rest were cropped or unlabelled.
@@ -192,9 +192,9 @@ Premium in this set means restraint: one base colour plus one accent, big type i
 ### Gaps
 - "Premium" here is my judgement from the screenshots. I found no user-perception data to back it up.
 
-## Q3. Candidate visual directions for Atossa (INFERENCE — not observed facts)
+## Q3. Candidate visual directions for Zeeba Health (INFERENCE — not observed facts)
 
-All three directions assume Atossa's constraints: a chat/voice capture flow, a dashboard, and a "For my doctor" summary, with no diagnostic language. The last two points apply to every direction:
+All three directions assume Zeeba Health's constraints: a chat/voice capture flow, a dashboard, and a "For my doctor" summary, with no diagnostic language. The last two points apply to every direction:
 - Avoid Flo/Ada-style "possible causes" or condition-match patterns. Avoid Welltory-style red "CONCERNING" gauges.
 - All fonts named below are on Google Fonts.
 
@@ -208,7 +208,7 @@ All three directions assume Atossa's constraints: a chat/voice capture flow, a d
 
 ### Direction B — "Calm Clinical Light" (after Ada, Visible's light frames and Natural Cycles)
 - Palette: background pale mist `#F3F6FA`; cards `#FFFFFF`; ink navy `#1C2740`; secondary `#5B6780`; primary accent calm blue `#3E6FD8`; secondary mint `#9FD8C0` for "logged" states; highlight peach `#F6C9A8`; hairline `#E3E8F0`.
-- Type: **Source Serif 4** for headlines and Atossa's chat prompts (echoing Ada's serif questions); **Inter** for UI. The key word in each headline is in accent blue, e.g. "Tell me about your *pain*" (Ada pattern).
+- Type: **Source Serif 4** for headlines and Zeeba Health's chat prompts (echoing Ada's serif questions); **Inter** for UI. The key word in each headline is in accent blue, e.g. "Tell me about your *pain*" (Ada pattern).
 - Cards: white, radius 14, 1px `#E3E8F0` border and no shadow. Answer options are outlined pills (Ada) that fill blue when selected.
 - Hero: a semicircular **"week at a glance" arc** (Visible-style mint gauge) showing days logged this cycle as a count, with no scores. Or a large light-weight numeral, e.g. "4 notes this week", with a tiny caps label.
 - Chat: Rosebud/Ada style, with the prompt as serif text and the user's reply in sans, no heavy bubbles. Voice mode is a near-empty white sheet with a waveform in accent colour plus ✕ and ✓ round buttons (Rosebud pattern).
@@ -220,7 +220,7 @@ All three directions assume Atossa's constraints: a chat/voice capture flow, a d
 - Cards: tone-step only (no borders, no shadows), radius 16–20. The tab bar is a floating rounded pill.
 - Hero: a soft gradient "dusk" panel (plum → rose at the horizon, like Rosebud and Oura) with a serif line summarising the week in the user's words, plus a glowing rose mic orb as the capture button.
 - The doctor summary must render as a **light** document (white PDF card) even in this dark UI, as Visible and Welltory do. That keeps it print-friendly for GPs.
-- Risks: dark UIs can feel heavy for people logging pain late at night, though this may also be a plus. Dark mode was deliberately removed from Atossa on 2026-09-24, so this would reverse that decision.
+- Risks: dark UIs can feel heavy for people logging pain late at night, though this may also be a plus. Dark mode was deliberately removed from Zeeba Health on 2026-09-24, so this would reverse that decision.
 
 ### Gaps
 - None of the directions has been tested with PCOS or endometriosis users.

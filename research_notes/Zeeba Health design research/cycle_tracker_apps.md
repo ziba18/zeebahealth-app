@@ -27,7 +27,7 @@ Only a few visual facts can be sourced. Clue's signature red is #E13336. Clue's 
 
 ### Inferences
 - There are two visual families. **Warm lifestyle/consumer** apps (Flo, Stardust, Hormona) use soft gradients, illustration and themed art. **Clinical/data** apps (Clue, Natural Cycles, Apple Health, Oura, Inito, Mira, Oova) use a restrained palette where colour carries meaning (red = bleeding, blue/purple = fertile). For a GP-ready, no-diagnosis tool, the clinical family is the closer model.
-- Apple's convention of solid = logged, striped/hatched = predicted, and dots = other data is reusable. Atossa does not predict, so it can use only the "logged" and "dot" states. That keeps it visibly honest.
+- Apple's convention of solid = logged, striped/hatched = predicted, and dots = other data is reusable. Zeeba Health does not predict, so it can use only the "logged" and "dot" states. That keeps it visibly honest.
 - [unverified] From memory: Flo's app is dominated by pink/coral tones on white with rounded cards; Clue uses lots of white space, a red/terracotta accent and a geometric sans; Oura uses a dark, near-black UI with muted accents. A designer should confirm these from current App Store screenshots or Mobbin.
 
 ### Gaps
@@ -54,7 +54,7 @@ Every mainstream tracker leads with **cycle status**: a ring or circle and the d
 - **Apple Health:** a horizontal swipeable timeline of days is the hero. Selecting a day and tapping categories below it logs data — [Apple Support: Log menstrual cycle info](https://support.apple.com/en-my/guide/iphone/iph51a822b18/ios) (search snippet)
 
 ### Inferences
-- The ring/day-number hero exists because those apps sell prediction. Atossa must not predict, so its hero should be something else: "what you've told us / last captured", or a single large "Describe how you feel" voice/text entry. A ring that implies phases or days-until would carry prediction into the design.
+- The ring/day-number hero exists because those apps sell prediction. Zeeba Health must not predict, so its hero should be something else: "what you've told us / last captured", or a single large "Describe how you feel" voice/text entry. A ring that implies phases or days-until would carry prediction into the design.
 - Hormona's note that its curve "differs" for irregular cycles, together with PCOS criticism of prediction (section 8), suggests that cycle-phase heroes alienate the PCOS/endo audience.
 
 ### Gaps
@@ -80,7 +80,7 @@ The dominant pattern is **"+" → a grid of icon chips grouped by category → m
 - **Oova:** logging of symptoms such as "mood, sleep, energy" alongside strip-scan results; tests are captured with the phone camera — [Oova app page](https://www.oova.life/app)
 
 ### Inferences
-- The minimum-tap pattern is roughly 3 taps (+ → chip → Apply). This is the bar a structured confirmation step in Atossa should aim to match after voice/text capture: show extracted symptoms as pre-selected chips the user can deselect or add to, then one "Save".
+- The minimum-tap pattern is roughly 3 taps (+ → chip → Apply). This is the bar a structured confirmation step in Zeeba Health should aim to match after voice/text capture: show extracted symptoms as pre-selected chips the user can deselect or add to, then one "Save".
 - Clue's "not all bleeding is period bleeding" framing and its user-reorderable categories fit PCOS/endo well: irregular bleeding and pain need their own categories.
 - Stardust's intensity slider (severity per symptom) gives the severity dimension a GP needs; flat chip lists do not capture it.
 - [unverified] From memory, Flo and Clue open logging in a full-screen scroll of categories rather than a bottom sheet. Confirm on-device.
@@ -106,7 +106,7 @@ Calendars mark each day with a colour or shape (logged vs predicted). Charts app
 - **Mira:** calendar marks period, ovulation and testing days; a chart shows all test results plus the fertile window; a reviewer preferred how it "broke down each hormone trend visually over time" — [Mira App Store](https://apps.apple.com/us/app/mira-fertility-cycle-tracker/id1434970941); [Mira: reading charts](https://shop.miracare.com/blogs/resources/read-mira-charts-with-mira-app); [Heyyliv review](https://www.heyyliv.blog/post/an-honest-review-of-the-mira-fertility-tracker)
 
 ### Inferences
-- A GP-useful history view for Atossa is closer to Clue's doctor report than to a cycle ring: a **symptom × day heat-grid** or a timeline of captured entries with severity. A small-multiples strip per symptom (days on the x axis, severity as dot size or opacity) would show frequency without implying any cause.
+- A GP-useful history view for Zeeba Health is closer to Clue's doctor report than to a cycle ring: a **symptom × day heat-grid** or a timeline of captured entries with severity. A small-multiples strip per symptom (days on the x axis, severity as dot size or opacity) would show frequency without implying any cause.
 
 ### Gaps
 - No sourced screenshots or descriptions of Flo's current graph visuals.
@@ -125,7 +125,7 @@ Consumer leaders run **long quiz-style onboardings that end in a soft paywall wi
 - **Stardust:** "the onboarding flow is quite long, with numerous questions and permission requests… could also be a point of drop-off for users seeking immediate utility" — [ScreensDesign summary](https://screensdesign.com/showcase/stardust-period-pregnancy)
 
 ### Inferences
-- For Atossa (free, no paywall, no prediction), a short onboarding is a real point of difference. The trust patterns are worth copying without the dark patterns: Stardust's trial-timeline transparency, and Flo's "validate each answer" micro-feedback.
+- For Zeeba Health (free, no paywall, no prediction), a short onboarding is a real point of difference. The trust patterns are worth copying without the dark patterns: Stardust's trial-timeline transparency, and Flo's "validate each answer" micro-feedback.
 - Flo's "tap and hold to commit" gesture and the "gift" discount are the manipulative pieces that reviewers dislike (section 8). Avoid them.
 
 ### Gaps
@@ -148,7 +148,7 @@ Tab bars were poorly documented in accessible sources. Sourced items: Flo has an
 
 ### Inferences
 - [unverified] From memory: Flo has 4 bottom tabs (Today, Insights/Content, Messages/Secret Chats, Partner/Profile), and Clue has about 4 (Cycle/Home, Calendar, Analysis, Learn/Profile). Verify on current builds.
-- Atossa's current 3 tabs (Chat, Dashboard, For my doctor) are in line with the category norm of 3–5.
+- Zeeba Health's current 3 tabs (Chat, Dashboard, For my doctor) are in line with the category norm of 3–5.
 
 ### Gaps
 - No authoritative current tab names for Flo, Clue, NC, Mira, Oova, Hormona or Stix.
@@ -169,8 +169,8 @@ Tones split into **factual/science** (Clue's "straightforward, factual approach"
 - **Apple Health:** clinical, neutral framing: a "cycle deviation" is detected for irregular, infrequent or prolonged periods or persistent spotting over the prior 6 months, with the option to export a PDF for a provider — [Apple Support 120356](https://support.apple.com/en-us/120356)
 
 ### Inferences
-- Apple's "deviation" framing is the closest precedent for Atossa: it notes a pattern and sends the user to a provider without naming a condition. Even that goes a step further than Atossa's rules allow (it is an alert), so Atossa should only restate what the user logged.
-- A voice that suits Atossa: Clue-like factual, warmed with Flo-style validation of each entry ("Got it — noted for your summary"), with no mysticism and no predictions.
+- Apple's "deviation" framing is the closest precedent for Zeeba Health: it notes a pattern and sends the user to a provider without naming a condition. Even that goes a step further than Zeeba Health's rules allow (it is an alert), so Zeeba Health should only restate what the user logged.
+- A voice that suits Zeeba Health: Clue-like factual, warmed with Flo-style validation of each entry ("Got it — noted for your summary"), with no mysticism and no predictions.
 
 ### Gaps
 - No sourced empty-state copy for any app.
@@ -187,7 +187,7 @@ The complaints are consistent: **paywall creep and upsell pop-ups** (Flo, Clue, 
 - **Flo praise:** a reviewer credits Flo's pattern recognition with prompting a doctor visit that led to a PCOS diagnosis — [Flo App Store](https://apps.apple.com/us/app/flo-cycle-period-tracker/id1038369065)
 - **Flo privacy:** offers "Anonymous Mode" and cites dual ISO 27001 certification — [Flo App Store](https://apps.apple.com/us/app/flo-cycle-period-tracker/id1038369065)
 - **Flo and PCOS:** calendar-based prediction trained on regular cycles "struggle[s] with PCOS" (the source claims 18% accuracy for irregular cycles), and educational articles are increasingly behind the Premium paywall — [Go Go Gaia blog](https://www.go-go-gaia.com/blog/best-pcos-tracking-app.html) (competitor's blog; treat the stat with caution)
-- **Flo Premium symptom checker:** claims to show "how closely you match common symptoms of conditions like PCOS and endometriosis" via a 5-minute self-assessment to share with a doctor — [Flo help: Premium](https://help.flo.health/hc/en-us/articles/360042141812-What-is-included-in-Flo-Premium). (Relevant contrast: this is exactly the kind of condition-naming Atossa must avoid.)
+- **Flo Premium symptom checker:** claims to show "how closely you match common symptoms of conditions like PCOS and endometriosis" via a 5-minute self-assessment to share with a doctor — [Flo help: Premium](https://help.flo.health/hc/en-us/articles/360042141812-What-is-included-in-Flo-Premium). (Relevant contrast: this is exactly the kind of condition-naming Zeeba Health must avoid.)
 - **Clue complaints:** "It was a great app I can't figure out why they changed all of it" (the redesign removed customisation); frequent premium pop-ups on the free tier; predictions poor until months of data exist; no birth-event reporting — [Clue App Store](https://apps.apple.com/us/app/clue-period-ovulation-tracker/id657189652)
 - **Clue praise:** "It's lovely again and has lots of customization options"; "a staple in my own health/self care journey" — [Clue App Store](https://apps.apple.com/us/app/clue-period-ovulation-tracker/id657189652)
 - **Clue privacy:** the App Store privacy label shows health, location, contact and identifier data linked to identity, and tracking across apps, despite GDPR positioning — [Clue App Store](https://apps.apple.com/us/app/clue-period-ovulation-tracker/id657189652)
@@ -198,7 +198,7 @@ The complaints are consistent: **paywall creep and upsell pop-ups** (Flo, Clue, 
 - **Privacy-first alternatives praised:** Euki ("the period tracker that doesn't track you"; free, no paywalls, gender-inclusive); Period app (no accounts, no ads); drip (free, open source) — [Euki](https://eukiapp.org/); [period-app.com](https://period-app.com/); [AlternativeTo](https://alternativeto.net/software/flo-period-and-ovulation-tracker)
 
 ### Inferences
-- Atossa's positioning (free, no prediction, no condition-naming, doctor-first) answers the main complaints directly. The design should make those promises visible: no upsell surfaces at all, and a plain privacy statement near the capture input.
+- Zeeba Health's positioning (free, no prediction, no condition-naming, doctor-first) answers the main complaints directly. The design should make those promises visible: no upsell surfaces at all, and a plain privacy statement near the capture input.
 - "Pink cliché" criticism is not directly sourced here, but the praised privacy-first apps and Clue's factual brand suggest a neutral, non-pink palette signals seriousness.
 
 ### Gaps
@@ -209,7 +209,7 @@ The complaints are consistent: **paywall creep and upsell pop-ups** (Flo, Clue, 
 ## 9. Doctor report / export features and their contents
 
 ### Takeaway
-**Flo** has a Premium, iOS-only "Report for a Doctor" covering 6 months of cycles and symptoms. **Clue** has a doctor's report (via Clue Plus) summarising the last 6 completed cycles. **Apple Health** has a free Export PDF of 12 months of cycle history. **Oova** offers "HIPAA-compliant provider-ready reports". All are cycle-centric. None turns free-text descriptions into a structured narrative, and that is Atossa's gap to fill.
+**Flo** has a Premium, iOS-only "Report for a Doctor" covering 6 months of cycles and symptoms. **Clue** has a doctor's report (via Clue Plus) summarising the last 6 completed cycles. **Apple Health** has a free Export PDF of 12 months of cycle history. **Oova** offers "HIPAA-compliant provider-ready reports". All are cycle-centric. None turns free-text descriptions into a structured narrative, and that is Zeeba Health's gap to fill.
 
 ### Cited Findings
 - **Flo:** Premium "personalized doctor's report (iOS only)" of "the last six months of your cycle and symptom history", highlighting patterns — [Flo Help: Premium](https://help.flo.health/hc/en-us/articles/360042141812-What-is-included-in-Flo-Premium)
@@ -223,8 +223,8 @@ The complaints are consistent: **paywall creep and upsell pop-ups** (Flo, Clue, 
 - **Oova:** "HIPAA compliant provider-ready reports that can be exported directly from the app" — [Oova app page](https://www.oova.life/app)
 
 ### Inferences
-- Common report pattern: header (date range) → cycle stats table (start date, cycle length, period length) → symptom frequency (most-logged list or heat-grid) → meds/conditions → chart. Atossa's "For my doctor" summary could keep the tabular and heat-grid parts. It should add what none of these have: the user's own words (quoted), onset, duration, severity, impact on daily life, and what they want to ask. It must omit Flo-style "matches PCOS" scoring.
-- Paywalling the doctor report (Flo, Clue) is a known pain point, and Apple's is free. A free report is a differentiator for Atossa.
+- Common report pattern: header (date range) → cycle stats table (start date, cycle length, period length) → symptom frequency (most-logged list or heat-grid) → meds/conditions → chart. Zeeba Health's "For my doctor" summary could keep the tabular and heat-grid parts. It should add what none of these have: the user's own words (quoted), onset, duration, severity, impact on daily life, and what they want to ask. It must omit Flo-style "matches PCOS" scoring.
+- Paywalling the doctor report (Flo, Clue) is a known pain point, and Apple's is free. A free report is a differentiator for Zeeba Health.
 
 ### Gaps
 - No verified primary-source description of Clue's report layout, and no sample PDF of any app's report was retrievable. Mira, Inito, Natural Cycles and Hormona doctor-export features were not found.

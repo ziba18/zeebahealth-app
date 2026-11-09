@@ -2,7 +2,7 @@
 
 Reviewer: senior product + visual designer (iOS health). Date: 2026-10-02.
 Build: `mvp-symptom-capture` working tree, web preview at http://localhost:8081 (design-preview mode, Sam, today = Thu 24 Sep 2026).
-Spec: "Warm Paper, Deep Ink" (`reports/Atossa app design research.md` lines 47–200), `design/KIT.md`, `review_brief.md`, plus the round-1 reviews `local_review1_ux.md` (1–31) and `local_review1_visual.md` (V1–V31).
+Spec: "Warm Paper, Deep Ink" (`reports/Zeeba Health design research.md` lines 47–200), `design/KIT.md`, `review_brief.md`, plus the round-1 reviews `local_review1_ux.md` (1–31) and `local_review1_visual.md` (V1–V31).
 Screenshots: `local_review2_screens/` (58 files, `NN_description.jpg`).
 
 **How I tested.** I used a visible Chrome tab (the window can't go below 500 × 589 CSS px). For 390 and 320 I loaded routes in same-origin iframes and measured them with JS. I checked visibility (`document.visibilityState = visible`) before testing scroll and tap behaviour. I went through every flow in the brief:
@@ -72,7 +72,7 @@ What still stops it being featured quality:
 | # | Item | Result | Evidence / note |
 |---|---|---|---|
 | 1 | Friends cycle phase | **Pending** | Still on Profile: "Share only your cycle phase with people you invite". Awaiting the user's decision. |
-| 2 | Summary drops notes | Pass | "4 more notes in my words, saved in Atossa." |
+| 2 | Summary drops notes | Pass | "4 more notes in my words, saved in Zeeba Health." |
 | 3 | Full-size preview unreadable | Pass | The reader sheet renders unscaled: body 15/21, quotes 17/23 (46). |
 | 4 | When overwrote duration | Pass | "since Tuesday" was inferred into How long. Changing When to "Only around my period" kept "Since Tuesday" in the noted card, the entry detail and the document (11, 15). |
 | 5 | Dead first tap | **Partial** | See above and N1. |
@@ -149,18 +149,18 @@ Counts: **Critical 0 · High 1 · Medium 9 · Low 12.** File ownership follows `
 
 **N1. High · Log bleeding (Today "My period", DaySheet "Log bleeding", Timeline "Log a period") › first tap after Save is lost.**
 - **Problem:** reproduced 3 of 3 times at a 1.5 s delay; a tap at 4.5 s works. Closing with X, and saving a capture, do not have the bug. `LogBleedingSheet.save()` awaits `savePeriodDays`, then calls `onClose()` and `showToast()` while the Save button is still the active press responder. On web, `Sheet` unmounts the Modal synchronously on close, so RN-web's responder system is left holding a removed node, and the next press only clears it. Sam taps a day or chip and nothing happens.
-- **Fix:** in `components/atossa/LogBleedingSheet.tsx`, close on the next frame: `requestAnimationFrame(() => { onClose(); showToast(...); })`. Do the same wherever a Sheet closes from inside an async onPress (audit `RecordDetail` sheets, Today's add-appointment sheet). Or, in `components/atossa/kit-parts/Sheet.tsx`, defer the web unmount: `setTimeout(() => setMounted(false), 0)` after `releaseFocus()`.
+- **Fix:** in `components/zeeba/LogBleedingSheet.tsx`, close on the next frame: `requestAnimationFrame(() => { onClose(); showToast(...); })`. Do the same wherever a Sheet closes from inside an async onPress (audit `RecordDetail` sheets, Today's add-appointment sheet). Or, in `components/zeeba/kit-parts/Sheet.tsx`, defer the web unmount: `setTimeout(() => setMounted(false), 0)` after `releaseFocus()`.
 - **Verify:** Save → tap a calendar day within 1 s → the DaySheet opens. Check on an iOS device too.
 
 ### Medium
 
 **N2. Medium · Tab bar › re-tapping the active tab while a detail is open logs "POP_TO_TOP was not handled".**
 - **Problem:** the stack pops correctly, but in dev the error raises a full-screen LogBox that eats every tap until it is dismissed (19). `MainTabBar` emits `tabPress`, and the nested native stack already pops to top on `tabPress`. Then `resetToRoot()` dispatches a RESET, or a second pop runs against an empty stack.
-- **Fix:** in `components/atossa/MainTabBar.tsx`, call `resetToRoot()` only when `!isCurrent` (switching tabs). When the tab is current, rely on the stack's own `tabPress` pop-to-top, or call `event.preventDefault()` and do the reset yourself. Do one or the other, never both.
+- **Fix:** in `components/zeeba/MainTabBar.tsx`, call `resetToRoot()` only when `!isCurrent` (switching tabs). When the tab is current, rely on the stack's own `tabPress` pop-to-top, or call `event.preventDefault()` and do the reset yourself. Do one or the other, never both.
 
 **N3. Medium · For my doctor › the preview "thumbnail" is the whole document in a nested scroll.**
 - **Problem:** the card is 871 px tall at 390 and 1,135 px at 500. It renders all 2 pages at 0.47–0.77 scale (6–9 px text) inside its own ScrollView (scrollHeight 1,485 / 869) inside the page scroll. That makes a scroll trap, and Sections are pushed about 900 px down (43, 58).
-- **Fix:** in `components/atossa/doctor/DocumentPreview.tsx`, render a fixed-height A4 crop of page 1:
+- **Fix:** in `components/zeeba/doctor/DocumentPreview.tsx`, render a fixed-height A4 crop of page 1:
   - `height = width × 1.414`, capped at 420;
   - `overflow: hidden` and `pointerEvents="none"` on the content, with no inner ScrollView;
   - a 48 px white→transparent fade at the bottom, and a caption under the card: "About 2 pages · tap to read it".
@@ -169,7 +169,7 @@ Counts: **Critical 0 · High 1 · Medium 9 · Low 12.** File ownership follows `
 
 **N4. Medium · GP document › spotting is reported as bleeding.**
 - **Problem:** with spotting on 8, 17 and 24 Sep, the page strip draws the same clay underline under those days, and the caption says "Notes were logged on 8 of 93 days; 3 of those were bleeding days." The in-app calendar distinguishes spotting (hatch), but the GP page doesn't.
-- **Fix:** in `lib/records/summary.ts` (`stripSvg`, caption) and `components/atossa/doctor/HeatStrip.tsx`:
+- **Fix:** in `lib/records/summary.ts` (`stripSvg`, caption) and `components/zeeba/doctor/HeatStrip.tsx`:
   - draw spotting as a 1.5 pt dashed clay underline, and add "┄ = spotting logged" to the key;
   - make the caption count them separately: "…; 1 was a bleeding day and 2 were spotting days."
 
@@ -185,15 +185,15 @@ Counts: **Critical 0 · High 1 · Medium 9 · Low 12.** File ownership follows `
 
 **N7. Medium · Timeline cards › the severity line reads broken.**
 - **Problem:** "[9/10] at worst · Across my lower belly and down my / legs". The "at worst" sits outside the pill and wraps under it (18, 57). A quick log shows the pill alone, and Today's latest-note card shows plain "7/10" for the same record.
-- **Fix:** in `components/atossa/timeline/EntryCard.tsx`, render `SeverityTag value={worst} suffix=" at worst"` so the words sit inside the pill, then the facts on the same baseline (`FactLine` with `numberOfLines={2}`). Use the same SeverityTag in Today's `LatestNoteCard` (`components/atossa/capture/TodayCards.tsx`).
+- **Fix:** in `components/zeeba/timeline/EntryCard.tsx`, render `SeverityTag value={worst} suffix=" at worst"` so the words sit inside the pill, then the facts on the same baseline (`FactLine` with `numberOfLines={2}`). Use the same SeverityTag in Today's `LatestNoteCard` (`components/zeeba/capture/TodayCards.tsx`).
 
 **N8. Medium · Timeline › period run screen is a wall of cards.**
 - **Problem:** six bordered cards, each with its own clay edge, droplet and chevron (22). It is the noisiest screen in the app.
-- **Fix:** in `components/atossa/timeline/PeriodRun.tsx`, show one white card with the clay edge once, and 56 pt rows "Fri 21 Aug · Started · Medium" with hairline dividers inset by 20 and a chevron per row. Use the same grouped pattern as Profile (`records/GroupedRows.tsx`).
+- **Fix:** in `components/zeeba/timeline/PeriodRun.tsx`, show one white card with the clay edge once, and 56 pt rows "Fri 21 Aug · Started · Medium" with hairline dividers inset by 20 and a chevron per row. Use the same grouped pattern as Profile (`records/GroupedRows.tsx`).
 
 **N9. Medium · Noted card and entry detail › the inline editor opens below the fold.**
 - **Problem:** tapping When or Tried near the bottom expands the editor off-screen. Only the top chip row or the field top is visible (10, 13), and Sam has to scroll to find Done.
-- **Fix:** in `components/atossa/capture/NotedCard.tsx` and `components/atossa/timeline/EntryDetail.tsx`, on row open measure the row (`onLayout`) and scroll the sheet or page so the row's top sits 16 pt below the sticky header (`scrollRef.scrollTo({y: rowY − 16})`).
+- **Fix:** in `components/zeeba/capture/NotedCard.tsx` and `components/zeeba/timeline/EntryDetail.tsx`, on row open measure the row (`onLayout`) and scroll the sheet or page so the row's top sits 16 pt below the sticky header (`scrollRef.scrollTo({y: rowY − 16})`).
 
 **N10. Medium · Bleeding › switching to Spotting keeps the old flow.**
 - **Problem:** today was logged "Started · Medium" and then changed to Spotting. It saved "Spotting · Medium" (32), which contradicts itself and flows into the GP page.
@@ -211,11 +211,11 @@ Counts: **Critical 0 · High 1 · Medium 9 · Low 12.** File ownership follows `
 
 **N13. Low · Timeline list › a period is grouped under the week it ends.**
 - **Problem:** "21–26 Aug" sits under "24–30 Aug".
-- **Fix:** in `components/atossa/timeline/feed.ts`, group period runs by their start date.
+- **Fix:** in `components/zeeba/timeline/feed.ts`, group period runs by their start date.
 
 **N14. Low · Capture › "Tried …" in Sam's words isn't prefilled.**
 - **Problem:** "…Tried a hot water bottle" left Tried empty.
-- **Fix:** in `components/atossa/capture/infer.ts`, prefill `tried` from a `tried|took|used …` clause (her words, verbatim).
+- **Fix:** in `components/zeeba/capture/infer.ts`, prefill `tried` from a `tried|took|used …` clause (her words, verbatim).
 
 **N15. Low · Show on screen › content runs under the floating Done pill.**
 - **Problem:** content scrolls under the Done pill with no backing, and the meta wraps an orphan year ("Wed 23 Sep / 2026") (50).
@@ -233,7 +233,7 @@ Counts: **Critical 0 · High 1 · Medium 9 · Low 12.** File ownership follows `
 
 **N17. Low · Records lists don't match Profile.**
 - **Problem:** Medicines, Appointments and Health history are still one bordered card per item (35, 39).
-- **Fix:** in `components/atossa/records/RecordsList.tsx`, use `GroupedRows` (one inset-grouped card).
+- **Fix:** in `components/zeeba/records/RecordsList.tsx`, use `GroupedRows` (one inset-grouped card).
 
 **N18. Low · Record detail Save.**
 - **Problem:** it is always enabled and carries a check icon. Bleeding detail Save is disabled until something changes and has no icon.
@@ -277,4 +277,4 @@ Counts: **Critical 0 · High 1 · Medium 9 · Low 12.** File ownership follows `
 - I did not complete a live re-test of #31: navigating reloaded the app and re-seeded the data. I verified it in code.
 - Share PDF, Print, the PDF/print rendering, voice capture, haptics, the keyboard, swipe-to-dismiss, VoiceOver and Dynamic Type are not testable in the web preview.
 - Viewport: the window minimum is 500 × 589. I checked 390 and 320 in iframes for horizontal overflow (none at page level), the hero rag, the share bar and SeverityRow geometry.
-- I used the pre-existing Atossa tab in the MCP group (`1584914827`) for the visible-tab checks, because new tabs opened hidden behind it. I left it open.
+- I used the pre-existing Zeeba Health tab in the MCP group (`1584914827`) for the visible-tab checks, because new tabs opened hidden behind it. I left it open.

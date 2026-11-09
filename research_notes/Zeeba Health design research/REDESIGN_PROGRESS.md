@@ -1,11 +1,11 @@
-# Atossa redesign — progress & handoff (started 2026-09-29)
+# Zeeba Health redesign — progress & handoff (started 2026-09-29)
 
 User request: act as PM + UI specialist + graphic designer; deep research of related
 apps; drive the Lovable prototype to a professional look & flow; use agentic UI and
 graphic-design reviewers to judge every page interactively. User approved going ahead.
 
 ## Done
-1. Deep research → `reports/Atossa app design research.md` (direction "Warm Paper,
+1. Deep research → `reports/Zeeba Health design research.md` (direction "Warm Paper,
    Deep Ink": 3 tabs Today · Timeline · For my doctor, capture as full-screen sheet,
    palette/type/components/tone/do-not-do). Notes in this folder.
 2. Lovable project knowledge set with the permanent rules + visual system
@@ -49,7 +49,7 @@ graphic-design reviewers to judge every page interactively. User approved going 
 7. Stage 3: polish pass (motion, empty states, onboarding/sign-in screens re-skin,
    final full-app review by both reviewers).
 8. Afterwards (ask user): port the approved design to the Expo app
-   (`constants/atossaUI.ts`, `components/atossa/kit.tsx`, screens). Not started.
+   (`constants/zeebaUI.ts`, `components/zeeba/kit.tsx`, screens). Not started.
 
 ## Rules for continuing
 - Every Lovable send pauses on a plan the USER must approve in the editor; don't send a

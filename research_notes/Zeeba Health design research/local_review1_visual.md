@@ -2,7 +2,7 @@
 
 Reviewer: senior graphic / visual designer (iOS health). Date: 2026-10-01.
 Build: `mvp-symptom-capture` working tree, `npm run preview:web` at http://localhost:8081 (design preview, Sam, today = Thu 24 Sep 2026).
-Spec: "Warm Paper, Deep Ink" (`reports/Atossa app design research.md` lines 47–200), `design/KIT.md`, `review_brief.md`.
+Spec: "Warm Paper, Deep Ink" (`reports/Zeeba Health design research.md` lines 47–200), `design/KIT.md`, `review_brief.md`.
 This is a companion to `local_review1_ux.md`. **I do not repeat its findings.** Where I agree with one, I cite it as "UX #n". Everything below is visual craft that review did not cover.
 Screenshots: `local_review1_screens/v01–v33_*.jpg`. v01–v20 were taken at a 500 px viewport. v21–v33 were taken in a same-origin 390 × 640 iframe, because Chrome would not size the window below 500.
 
@@ -61,14 +61,14 @@ Severity counts: **Critical 0 · High 5 · Medium 18 · Low 8**. File ownership 
 
 **V1. High · Severity selection (Rough day, follow-ups, StrengthEditor).**
 - **Problem:** the selected disc is plum-tint `#EFE6EF` on white (1.15:1), with a 2 px plum ring and a plum 600 digit. At arm's length "3 selected" and "3 unselected" look nearly the same (v03). It is also a 36 px disc floating in a 70–77 px column, smaller than every other control (44 chip, 48/56 button). This is the product's single most important input.
-- **Fix** in `components/atossa/kit-parts/severity.tsx`:
+- **Fix** in `components/zeeba/kit-parts/severity.tsx`:
   - Raise `DOT` from 36 to 44.
   - Make `dotSelected` `{ backgroundColor: colors.plum, borderColor: colors.plum, borderWidth: 0 }` and `digitSelected` `{ color: colors.surface, fontFamily: fonts.semibold }`. Plum = selection/action, so this stays within the rules.
   - Keep pressed = sunken.
   - Unselected stays white with a border-strong outline.
 
 **V2. High · GP document print type scale.**
-- **Problem:** on the 595 pt page, body is 9.5 pt, meta 8 pt, strip labels 7.5 pt, strip digits 8.5 pt and the footer 7.5 pt. Section heads are 10 pt/600, only 1.05× the body, so sections don't separate when a GP skims. These are in `SIZES.page` in `components/atossa/doctor/DocumentView.tsx`, and in the PDF CSS in `lib/records/summary.ts` (lines 584–605: body 9.5pt, h2 10pt, .meta 8pt, tfoot 7.5pt) plus `stripSvg` (7.5 / 8.5).
+- **Problem:** on the 595 pt page, body is 9.5 pt, meta 8 pt, strip labels 7.5 pt, strip digits 8.5 pt and the footer 7.5 pt. Section heads are 10 pt/600, only 1.05× the body, so sections don't separate when a GP skims. These are in `SIZES.page` in `components/zeeba/doctor/DocumentView.tsx`, and in the PDF CSS in `lib/records/summary.ts` (lines 584–605: body 9.5pt, h2 10pt, .meta 8pt, tfoot 7.5pt) plus `stripSvg` (7.5 / 8.5).
 - **Fix:** in both places, use:
 
   | Element | Change to |
@@ -86,7 +86,7 @@ Severity counts: **Critical 0 · High 5 · Medium 18 · Low 8**. File ownership 
 
 **V3. High · Heat-strip in black-and-white print.**
 - **Problem:** the bleeding band fills clay-tint `#F3DED6` (relative luminance 0.76). Severity step 1 `#E4D6E6` is 0.70, so the two are **1.07:1 apart in greyscale**: a printed band and a 0–2 cell are indistinguishable. The band is also the largest mass in the strip, with 1–2 px white seams between days (v23, v27), while the data cells are small.
-- **Fix** in `components/atossa/doctor/HeatStrip.tsx` and `summary.ts stripSvg`:
+- **Fix** in `components/zeeba/doctor/HeatStrip.tsx` and `summary.ts stripSvg`:
   - Remove the clay-tint `Rect`.
   - Mark bleeding only with the clay underline. Make it 3 pt (4 pt in large mode) and continuous across consecutive bleeding days: draw one rect per run, not per day.
   - Add a tiny inline key under the strip: a 10 × 3 clay bar plus "bleeding logged".
@@ -94,7 +94,7 @@ Severity counts: **Critical 0 · High 5 · Medium 18 · Low 8**. File ownership 
 
 **V4. High · Label/value hierarchy in NotedRow (noted card, entry detail).**
 - **Problem:** the label is 13/18 500 ink-3 `#756C64` and the tidy value is 15/20 400 ink-2 `#5A534D`. Both are grey and close in size, so Sam's answers recede and the card reads as metadata (v05). Granola's rule is grey label, *ink* content.
-- **Fix** in `components/atossa/kit-parts/layout.tsx` (`NotedRow`): set the value to `variant="body"` (17/24, ink). Keep labels as caption ink-3, and keep 4 pt between label and value. FactLine on Timeline cards stays 15 ink-2 (see V11).
+- **Fix** in `components/zeeba/kit-parts/layout.tsx` (`NotedRow`): set the value to `variant="body"` (17/24, ink). Keep labels as caption ink-3, and keep 4 pt between label and value. FactLine on Timeline cards stays 15 ink-2 (see V11).
 
 **V5. High · Field-label system (five styles for one job).**
 - **Problem:** measured styles:
@@ -108,7 +108,7 @@ Severity counts: **Critical 0 · High 5 · Medium 18 · Low 8**. File ownership 
 
   "Optional" also appears under the label (Dose), right-aligned (Stopped) and in brackets (Flow) (v07, v15, v20). Inside the follow-up, the group labels "Usually" / "At worst" share the style of the "0 = none" captions and "Why I'm asking", so the two severity groups run together.
 - **Fix:**
-  - Add `FieldLabel({label, optional?, hint?})` to `components/atossa/kit-parts/controls.tsx`: label 17/24 600 ink, optional rendered inline as " · Optional" in 15/400 ink-2, hint below in 15/20 ink-2, then 12 pt to the control.
+  - Add `FieldLabel({label, optional?, hint?})` to `components/zeeba/kit-parts/controls.tsx`: label 17/24 600 ink, optional rendered inline as " · Optional" in 15/400 ink-2, hint below in 15/20 ink-2, then 12 pt to the control.
   - Use it in `LogBleedingSheet.tsx`, `timeline/BleedingDetail.tsx`, `records/RecordDetail.tsx`, `capture/FollowUp.tsx` and `StrengthEditor.tsx` (Usually / At worst), `doctor/AgendaField.tsx` and `app/(tabs)/doctor/index.tsx`.
   - Leave caption style for in-card row labels (NotedRow) and scale captions only.
   - Leave 32 pt between field groups.
@@ -117,7 +117,7 @@ Severity counts: **Critical 0 · High 5 · Medium 18 · Low 8**. File ownership 
 
 **V6. Medium · Today hero wash.**
 - **Problem:** `WASH = plum 0A → transparent` sits *inside* the white card. 4% plum over white is ≈ `#F8F7F8`, which is cooler than the canvas `#F7F3EE`, so the hero reads as a cold grey card on warm paper (v01). The spec says "plum-to-canvas gradient behind the Today hero".
-- **Fix** in `components/atossa/capture/TodayCards.tsx`: blend the wash toward the warm canvas instead (`[colors.plumTint + '66', colors.surface]`, top 40% only), or drop it and rely on the hero shadow. Do not let the card get cooler than the canvas.
+- **Fix** in `components/zeeba/capture/TodayCards.tsx`: blend the wash toward the warm canvas instead (`[colors.plumTint + '66', colors.surface]`, top 40% only), or drop it and rely on the hero shadow. Do not let the card get cooler than the canvas.
 
 **V7. Medium · Hero hierarchy and padding.**
 - **Problem:** "Tap to talk" (the primary action's label) is 15/500 ink, while the secondary "Type instead" is 17/600 plum and visually louder. Hero padding is 32/24/20 (top/sides/bottom), which looks bottom-heavy, with the link 20 pt from the edge.
@@ -135,18 +135,18 @@ Severity counts: **Critical 0 · High 5 · Medium 18 · Low 8**. File ownership 
 
 **V9. Medium · SegmentedControl.**
 - **Problem:** it is the only rounded-rectangle control (radius 14/11) in an all-pill system. On canvas sheets the sunken track `#EFE9E1` vs `#F7F3EE` is 1.08:1, and the white thumb on sunken is 1.17:1 with no border or shadow, so List/Month and Speak/Type barely read as a control (v02, v08).
-- **Fix** in `components/atossa/kit-parts/controls.tsx` (`segTrack`, `seg`):
+- **Fix** in `components/zeeba/kit-parts/controls.tsx` (`segTrack`, `seg`):
   - `borderRadius: radii.pill` on both.
   - Thumb gets `borderWidth: StyleSheet.hairlineWidth, borderColor: colors.hairline` plus `boxShadow: '0 1px 2px rgba(31,27,24,0.10)'` (the one allowed micro-shadow, as on iOS).
   - Unselected label stays 15/500 ink-2.
 
 **V10. Medium · Timeline week headers.**
 - **Problem:** "This week" / "7–13 Sep" are 17/24 600 ink, identical to card titles such as "Specialist clinic", so headers don't group.
-- **Fix** in `app/(tabs)/timeline/index.tsx` / `components/atossa/timeline/feed.ts` render: header = 15/20 600 ink-2, 32 pt above and 8 pt below (12 pt between cards stays).
+- **Fix** in `app/(tabs)/timeline/index.tsx` / `components/zeeba/timeline/feed.ts` render: header = 15/20 600 ink-2, 32 pt above and 8 pt below (12 pt between cards stays).
 
 **V11. Medium · EntryCard internal hierarchy.**
 - **Problem:** the top line "Thu 24 Sep · 15:10" and the fact line "Lower belly · 8/10 at worst" are both 15/20 ink-2, so the quote sits between two equal grey lines. The strongest data point (worst score) has no visual anchor, which makes the feed a uniform wall (v09).
-- **Fix** in `components/atossa/timeline/EntryCard.tsx`:
+- **Fix** in `components/zeeba/timeline/EntryCard.tsx`:
   - GlyphLine text → caption 13/18 500 ink-3.
   - Render the worst value as `SeverityTag` (ramp pill + digit, already in the kit) at the start of the fact line, and drop "x/10 at worst" from the text.
   - Optional, bigger win: group each week into **one** card with hairline inset dividers (Apple Health / Bearable pattern). This removes about 70% of the border noise.
@@ -157,15 +157,15 @@ Severity counts: **Critical 0 · High 5 · Medium 18 · Low 8**. File ownership 
 
 **V13. Medium · Noted-card actions.**
 - **Problem:** a 56 primary plus two full-width 48 outline pills make about 190 pt of stacked buttons (v06). It is heavy, and the two secondaries look as important as the primary.
-- **Fix** in `components/atossa/capture/NotedCard.tsx`: keep "Looks right, save" (primary), then one row of two `variant="text"` buttons, "Fix something" · "Add more" (plum, 44 pt), with 8 pt between the rows.
+- **Fix** in `components/zeeba/capture/NotedCard.tsx`: keep "Looks right, save" (primary), then one row of two `variant="text"` buttons, "Fix something" · "Add more" (plum, 44 pt), with 8 pt between the rows.
 
 **V14. Medium · Sticky sheet header edge.**
 - **Problem:** in CaptureSheet, content scrolls under the sticky header ("A little more detail · 1 of up to 2" / X) with no separator. Clipped glyph tops of the question and the card's side borders show at the cut (v04, v06). This complements UX #8.
-- **Fix** in `components/atossa/kit-parts/Sheet.tsx`: track `onScroll`, and when `y > 0` show a hairline bottom border on the header (canvas background, 160 ms fade).
+- **Fix** in `components/zeeba/kit-parts/Sheet.tsx`: track `onScroll`, and when `y > 0` show a hairline bottom border on the header (canvas background, 160 ms fade).
 
 **V15. Medium · Horizontal chip scrollers.**
 - **Problem:** Today's starter chips bleed to the screen edge with a 32 px fade. Timeline filters are clipped hard at the 20 pt gutter ("Me|", v10).
-- **Fix** in `components/atossa/timeline/FilterChips.tsx`: use the same pattern as Today (`marginHorizontal: -layout.gutter`, `contentContainerStyle={{ paddingHorizontal: layout.gutter }}`, right fade). Consider moving the fade into `ChipGroup scroll` in the kit, so it is shared.
+- **Fix** in `components/zeeba/timeline/FilterChips.tsx`: use the same pattern as Today (`marginHorizontal: -layout.gutter`, `contentContainerStyle={{ paddingHorizontal: layout.gutter }}`, right fade). Consider moving the fade into `ChipGroup scroll` in the kit, so it is shared.
 
 **V16. Medium · Add affordances.**
 - **Problem:** there are three different "add" treatments:
@@ -173,7 +173,7 @@ Severity counts: **Critical 0 · High 5 · Medium 18 · Low 8**. File ownership 
   - Medicines uses a "+ Add" outline pill (v19).
   - Timeline's empty state shows the "+" disc *and* a 56 "Add a note" primary (v33).
 - **Fix:**
-  - Make the header add an `IconButton` with a plain plum `plus` glyph at 24, unfilled (`filled` false), in Timeline and every records list. Change `app/(tabs)/timeline/index.tsx` and `components/atossa/records/RecordsList.tsx`.
+  - Make the header add an `IconButton` with a plain plum `plus` glyph at 24, unfilled (`filled` false), in Timeline and every records list. Change `app/(tabs)/timeline/index.tsx` and `components/zeeba/records/RecordsList.tsx`.
   - Hide the header "+" while the empty state shows its own primary.
 
 **V17. Medium · Profile layout.**
@@ -186,7 +186,7 @@ Severity counts: **Critical 0 · High 5 · Medium 18 · Low 8**. File ownership 
 
 **V18. Medium · Tab bar on Profile.**
 - **Problem:** on `/profile` every tab label is ink-3, so the user appears to be nowhere (v17).
-- **Fix** in `components/atossa/MainTabBar.tsx`: tint the tab named by the `from` param (default Today) while Profile and its records are focused.
+- **Fix** in `components/zeeba/MainTabBar.tsx`: tint the tab named by the `from` param (default Today) while Profile and its records are focused.
 
 **V19. Medium · Show on screen type scale.**
 - **Problem:** `SIZES.large` has head 28/34 600 against title 34 serif and quotes 24 serif. Section names ("How often and how strong", which wraps to 2 lines) outshout Sam's words, and meta at 18 wraps to 3 lines (v26, v27).
@@ -206,7 +206,7 @@ Severity counts: **Critical 0 · High 5 · Medium 18 · Low 8**. File ownership 
 
 **V23. Medium · Bleeding identity missing on its own surfaces.**
 - **Problem:** the Log bleeding sheet and the bleeding detail page have no droplet and no clay (v07, v15). Clay appears only in the list and the calendar.
-- **Fix:** add a 20 pt clay `droplet` before the sheet title in `components/atossa/LogBleedingSheet.tsx`, and a `GlyphLine` with `clay` under the title in `components/atossa/timeline/BleedingDetail.tsx`. Clay icon = bleeding, so this stays within the rules.
+- **Fix:** add a 20 pt clay `droplet` before the sheet title in `components/zeeba/LogBleedingSheet.tsx`, and a `GlyphLine` with `clay` under the title in `components/zeeba/timeline/BleedingDetail.tsx`. Clay icon = bleeding, so this stays within the rules.
 
 ### Low
 
@@ -223,7 +223,7 @@ Severity counts: **Critical 0 · High 5 · Medium 18 · Low 8**. File ownership 
 
 **V26. Low · Month: a period as separate discs.**
 - **Problem:** six consecutive clay discs (v13) read as six events, not one span. The numerals on clay are 15/400 white.
-- **Fix** in `components/atossa/timeline/MonthCalendar.tsx`: join consecutive bleeding days with a clay capsule (36 pt tall, square inner edges, rounded at run ends, wrapping at week boundaries). Use numerals 15/600 white.
+- **Fix** in `components/zeeba/timeline/MonthCalendar.tsx`: join consecutive bleeding days with a clay capsule (36 pt tall, square inner edges, rounded at run ends, wrapping at week boundaries). Use numerals 15/600 white.
 
 **V27. Low · Interactive icon colour.**
 - **Problem:** the spec says "ink, or plum when interactive", but the month chevrons and the sheet X are ink `#1F1B18` while BackChevron is plum.
@@ -231,7 +231,7 @@ Severity counts: **Critical 0 · High 5 · Medium 18 · Low 8**. File ownership 
 
 **V28. Low · Toast separation.**
 - **Problem:** saved-tint `#E2EEE6` on canvas is about 1.1:1, with only the 6% hero shadow, so it reads like an inline banner fused with the card behind it.
-- **Fix** in `components/atossa/kit-parts/toast.tsx`: `boxShadow: '0 6px 24px rgba(31,27,24,0.12)'` plus `borderWidth: 1, borderColor: colors.saved + '33'`.
+- **Fix** in `components/zeeba/kit-parts/toast.tsx`: `boxShadow: '0 6px 24px rgba(31,27,24,0.12)'` plus `borderWidth: 1, borderColor: colors.saved + '33'`.
 
 **V29. Low · Hero prompt rag at 390.**
 - **Problem:** the prompt breaks as "What’s been going on with / your body?" (v29), a long line followed by a short one.

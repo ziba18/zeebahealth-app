@@ -2,7 +2,7 @@
 
 Reviewer: senior product designer (health / iOS). Date: 2026-09-29.
 Prototype: https://id-preview--b0b66a36-69d0-4fd8-93eb-5a9f0a3a2ccd.lovable.app
-Spec: "Recommended direction" in `reports/Atossa app design research.md`.
+Spec: "Recommended direction" in `reports/Zeeba Health design research.md`.
 Screenshots: `stage1_screens/` (50 files, listed at the end).
 
 **How I tested.** I used the app as Sam in Chrome. I did a full voice capture (record, stop, two follow-ups, edit a row, save), a typed capture, all four starter chips, a Rough day save, the toast, Profile, every Timeline sub-page, the calendar, and For my doctor. Chrome's window would not shrink below **500 CSS px wide**, so every screenshot is at 500×594. Where I say "at 390", the number is worked out from measured sizes. I measured type, radii, colours and tap targets read-only with JS.
@@ -68,7 +68,7 @@ The good news is that the core Today → capture → noted → save loop is fast
 - "That's all for now" is visible.
 
 **Problems**
-- **The questions are not gap-based.** The voice note said "low down on the left since Tuesday", but Where and When were not filled. The typed note said "had to leave work", but Atossa still asked the same strength question. Every capture gets the same questions.
+- **The questions are not gap-based.** The voice note said "low down on the left since Tuesday", but Where and When were not filled. The typed note said "had to leave work", but Zeeba Health still asked the same strength question. Every capture gets the same questions.
 - **Answers are lost.** Tapping "It varies" on strength left How strong as "+ Add" on the noted card (21).
 - The 0–10 rows are clipped at 8, as on Today (08, 09).
 - "Got in the way of" and "Where do you feel it?" are **single-select** and advance on the first tap, so Sam cannot pick Work *and* Sleep, or two body zones.
@@ -142,7 +142,7 @@ The good news is that the core Today → capture → noted → save loop is fast
 **What works**
 - "Your summary" in serif.
 - The static safety line is present.
-- "This page only repeats information entered in Atossa".
+- "This page only repeats information entered in Zeeba Health".
 
 **Problems**
 - It is an accordion wall of 8 sections.

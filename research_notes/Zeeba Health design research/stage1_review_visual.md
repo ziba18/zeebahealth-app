@@ -2,7 +2,7 @@
 
 Reviewer: senior graphic / visual designer (iOS health). Date: 2026-10-01.
 Prototype: https://id-preview--b0b66a36-69d0-4fd8-93eb-5a9f0a3a2ccd.lovable.app
-Spec: "Warm Paper, Deep Ink" (`reports/Atossa app design research.md`, lines 47–200).
+Spec: "Warm Paper, Deep Ink" (`reports/Zeeba Health design research.md`, lines 47–200).
 Read alongside `stage1_review_ux.md`. I don't repeat its findings; "UX #n" points to its fix list.
 
 **How I tested.** I did a live run in Chrome at 500 CSS px wide (Chrome won't go narrower): Today, then voice capture, two follow-ups, the noted card, save and toast, then each tab. I measured computed styles read-only with JS, converted every colour to hex, and worked out contrast. I also used the UX reviewer's screenshots 01–49. My own captures are `stage1_screens/v01–v05`.

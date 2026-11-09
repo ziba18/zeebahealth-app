@@ -1,5 +1,5 @@
 // The "Sam" persona used in design-preview mode — ported from the Lovable prototype
-// (design/lovable-reference/AtossaApp.tsx, initial* arrays) and mapped onto our record types.
+// (design/lovable-reference/ZeebaApp.tsx, initial* arrays) and mapped onto our record types.
 // Preview "today" is 2026-09-24 (lib/preview/flag.ts).
 import type {
   AppointmentData, DataMap, HistoryData, MedicineData, PeriodDayData, Rec, RecordKind, SymptomData,

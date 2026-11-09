@@ -1,9 +1,9 @@
-# Atossa redesign — review brief
+# Zeeba Health redesign — review brief
 
 Live prototype (web, review at phone width ~390 px): https://id-preview--b0b66a36-69d0-4fd8-93eb-5a9f0a3a2ccd.lovable.app
 
 Design spec to judge against: the "Recommended direction" section of
-/Users/ziba/projects/atossa/reports/Atossa app design research.md (lines 47–200) —
+/Users/ziba/projects/zeebahealth-app/reports/Zeeba Health design research.md (lines 47–200) —
 palette with fixed colour meanings (plum = action only, clay = logged bleeding only,
 severity = single plum ramp with number, green/red = system status only), Inter +
 Instrument Serif Italic (serif only for user quotes, Today hero prompt, summary title),

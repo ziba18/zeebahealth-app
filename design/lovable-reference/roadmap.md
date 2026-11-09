@@ -1,6 +1,6 @@
 # Roadmap
 
-- [x] Replace the pitch slide with a simple patient-facing Atossa experience.
+- [x] Replace the pitch slide with a simple patient-facing Zeeba Health experience.
 - [x] Make one daily path obvious: check in, see the pattern, prepare the doctor summary.
 - [x] Reduce navigation choices and explain labels in plain language.
 - [x] Apply the approved Portland-inspired palette, Editorial Humanist type, soft-clinical components, and quiet motion.

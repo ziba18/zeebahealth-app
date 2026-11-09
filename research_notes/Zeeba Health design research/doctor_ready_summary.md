@@ -1,6 +1,6 @@
 # What makes a patient-generated gynaecological symptom summary useful to a GP (2025–2026)
 
-Researcher notes for Atossa ("For my doctor" tab + PDF export). UK/GP-centric; US differences noted.
+Researcher notes for Zeeba Health ("For my doctor" tab + PDF export). UK/GP-centric; US differences noted.
 Method note: NICE pages (NG73, NG88) were read directly from nice.org.uk (full recommendation text). NICE CKS pages returned 403 and could not be read. The ACOG 2026 guideline press release returned 402; ACOG content below comes from search-result snippets only.
 
 ## 1. What GPs need in a 10-minute appointment, and what the guidance says about symptom diaries
@@ -26,9 +26,9 @@ UK guidance tells GPs what to take a history of: for suspected endometriosis, a 
 - US: ACOG published a new endometriosis Clinical Practice Guideline in Feb/Mar 2026, framed as shortening time to diagnosis. Per search snippets, it says to suspect endometriosis with at least one "cyclic or noncyclic" sign: chronic pelvic pain, dysmenorrhea, dyspareunia, dysuria, dyschezia, or infertility with any of these. — [ACOG news release 2026](https://www.acog.org/news/news-releases/2026/02/acog-publishes-new-endometriosis-clinical-guidance-aiming-shorten-time-diagnosis-improve-access-care); [Obstet Gynecol 2026 abstract](https://journals.lww.com/greenjournal/abstract/2026/03000/diagnosis_of_endometriosis__acog_clinical_practice.25.aspx) (full text not accessed)
 
 ### Inferences
-- The best evidence for "what a GP wants" is the NICE history list itself. A summary that maps one-to-one onto NG73 1.3.1 and NG88 1.2.1 fields (pain with periods and its effect on daily life, pain during/after sex, bowel symptoms, urinary symptoms, bleeding pattern, bleeding between periods or after sex, pressure symptoms, impact, previous treatments, family history) saves the GP work without Atossa naming a condition. The fields can be labelled neutrally, e.g. "Pain when opening bowels: during period only", never "possible endometriosis".
+- The best evidence for "what a GP wants" is the NICE history list itself. A summary that maps one-to-one onto NG73 1.3.1 and NG88 1.2.1 fields (pain with periods and its effect on daily life, pain during/after sex, bowel symptoms, urinary symptoms, bleeding pattern, bleeding between periods or after sex, pressure symptoms, impact, previous treatments, family history) saves the GP work without Zeeba Health naming a condition. The fields can be labelled neutrally, e.g. "Pain when opening bowels: during period only", never "possible endometriosis".
 - The NHS heavy-period criteria are all lay-reportable (pad-change interval, double protection, >7 days, clots bigger than a 10p coin, flooding onto clothes/bedding, missed activities, tiredness/breathlessness). They make good capture questions and summary fields.
-- For PCOS, the useful things to capture are cycle length and variability (the numbers above), cycles per year, longest gap, years since first period, excess hair / acne / scalp hair thinning, and mood/eating/body-image impact if the user chooses to share. Atossa should report raw facts ("cycles ranged 28–62 days; 6 periods in last 12 months"). It must not flag them against the thresholds, since that would be diagnostic.
+- For PCOS, the useful things to capture are cycle length and variability (the numbers above), cycles per year, longest gap, years since first period, excess hair / acne / scalp hair thinning, and mood/eating/body-image impact if the user chooses to share. Zeeba Health should report raw facts ("cycles ranged 28–62 days; 6 periods in last 12 months"). It must not flag them against the thresholds, since that would be diagnostic.
 - "Family history of endometriosis (first-degree relative)" is now an explicit NICE 2024 item. It belongs in health history.
 - NG73 1.3.4 supports quoting the patient's own words (verbatim descriptions) next to structured fields.
 
@@ -91,8 +91,8 @@ Existing tools are mostly paper diaries (Endometriosis UK, Bupa) or raw exports 
 - Around 3 in 4 menstrual-app users would share symptom data with clinicians. Clinicians cite lack of integration into digital health infrastructure. — [Curr Opin Endocrinol review, symptom tracking in menstrual apps](https://doi.org/10.1097/MED.0000000000000682) (search snippet)
 
 ### Inferences
-- The main failure mode is "several months of statistics" that doesn't get read. Atossa's differentiator should be a short, pre-digested page, not more data. Keep raw logs as an optional appendix.
-- Accuracy/trust concerns suggest the PDF should state its provenance: "Patient-reported via Atossa; not clinically verified; date range X–Y; N entries". It should separate what the patient reported on the day from later recollection.
+- The main failure mode is "several months of statistics" that doesn't get read. Zeeba Health's differentiator should be a short, pre-digested page, not more data. Keep raw logs as an optional appendix.
+- Accuracy/trust concerns suggest the PDF should state its provenance: "Patient-reported via Zeeba Health; not clinically verified; date range X–Y; N entries". It should separate what the patient reported on the day from later recollection.
 - Guava Health and other "doctor report" layouts were not examined, so there is no evidence on them here.
 
 ### Gaps
