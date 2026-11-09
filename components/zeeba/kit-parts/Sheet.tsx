@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden', ...shadows.sheet,
   },
   grabberHit: { height: 20, alignItems: 'center', justifyContent: 'center' },
-  grabber: { width: 48, height: 6, borderRadius: radii.pill, backgroundColor: colors.borderStrong },
+  grabber: { width: 36, height: 5, borderRadius: radii.pill, backgroundColor: colors.borderStrong },
   titleRow: { flexDirection: 'row', alignItems: 'center', gap: space.sm, paddingLeft: layout.gutter, paddingRight: space.sm, minHeight: 44 },
   titleWrap: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: space.xs },
   edge: { height: StyleSheet.hairlineWidth * 2, backgroundColor: colors.hairline, marginBottom: -StyleSheet.hairlineWidth * 2, zIndex: 1 },
