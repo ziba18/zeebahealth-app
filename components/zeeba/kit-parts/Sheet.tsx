@@ -62,6 +62,17 @@ export function Sheet({
   const { height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const reduceMotion = useReduceMotion();
+  // Keyboard height, tracked directly: the sheet SHRINKS to the space above the keyboard (its
+  // header — e.g. Speak/Type — stays on screen) instead of being pushed up off the top.
+  const [kb, setKb] = useState(0);
+  useEffect(() => {
+    if (Platform.OS === 'web') return;
+    const showEvt = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvt = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+    const a = Keyboard.addListener(showEvt, (e) => setKb(e.endCoordinates.height));
+    const b = Keyboard.addListener(hideEvt, () => setKb(0));
+    return () => { a.remove(); b.remove(); };
+  }, []);
   const [mounted, setMounted] = useState(visible);
   const progress = useRef(new Animated.Value(0)).current; // 0 hidden → 1 shown
   const drag = useRef(new Animated.Value(0)).current;
@@ -137,7 +148,9 @@ export function Sheet({
 
   if (!mounted) return null;
 
-  const maxHeight = height - insets.top - space.xs;
+  const DONE_BAR = 44;
+  const kbSpace = kb > 0 ? kb + (Platform.OS === 'ios' ? DONE_BAR : 0) : 0;
+  const maxHeight = height - insets.top - space.xs - kbSpace;
   const translateY = reduceMotion
     ? drag
     : Animated.add(progress.interpolate({ inputRange: [0, 1], outputRange: [height, 0] }), drag);
@@ -172,15 +185,12 @@ export function Sheet({
           <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityLabel={closeLabel} accessibilityRole="button" />
         )}
       </Animated.View>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        style={styles.anchor}
-      >
+      <View style={[styles.anchor, { paddingBottom: kbSpace }]}>
         <Animated.View
           accessibilityViewIsModal
           style={[
             styles.sheet,
-            { maxHeight, paddingBottom: footer ? 0 : Math.max(insets.bottom, space.lg), opacity: sheetOpacity, transform: [{ translateY }] },
+            { maxHeight, paddingBottom: footer ? 0 : kb > 0 ? space.sm : Math.max(insets.bottom, space.lg), opacity: sheetOpacity, transform: [{ translateY }] },
             full && { height: maxHeight },
           ]}
         >
@@ -209,10 +219,18 @@ export function Sheet({
           <Animated.View style={[styles.edge, { opacity: edge }]} />
           {body}
           {footer ? (
-            <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, space.lg) }]}>{footer}</View>
+            <View style={[styles.footer, { paddingBottom: kb > 0 ? space.sm : Math.max(insets.bottom, space.lg) }]}>{footer}</View>
           ) : null}
         </Animated.View>
-      </KeyboardAvoidingView>
+      </View>
+      {/* iOS "Done" bar on top of the keyboard, like Notes and Messages: one tap puts it away. */}
+      {kb > 0 && Platform.OS === 'ios' ? (
+        <View style={[styles.doneBar, { bottom: kb }]}>
+          <Pressable onPress={() => Keyboard.dismiss()} accessibilityRole="button" accessibilityLabel="Done, hide keyboard" hitSlop={8} style={styles.doneBtn}>
+            <Txt variant="headline" color={colors.accent}>Done</Txt>
+          </Pressable>
+        </View>
+      ) : null}
       </View>
     </Modal>
   );
@@ -223,6 +241,11 @@ const styles = StyleSheet.create({
   // box-none in StyleSheet.create, never inline: RN-web drops an inline 'box-none' (invalid CSS),
   // which made this full-screen anchor swallow scrim taps on web.
   anchor: { flex: 1, justifyContent: 'flex-end', alignItems: 'center', pointerEvents: 'box-none' },
+  doneBar: {
+    position: 'absolute', left: 0, right: 0, height: 44, flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center',
+    paddingHorizontal: space.md, backgroundColor: colors.tabBar, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.hairline,
+  },
+  doneBtn: { paddingHorizontal: space.xs, paddingVertical: space.xxs },
   sheet: {
     width: '100%', maxWidth: layout.maxContentWidth,
     backgroundColor: colors.canvas, borderTopLeftRadius: radii.sheet, borderTopRightRadius: radii.sheet,

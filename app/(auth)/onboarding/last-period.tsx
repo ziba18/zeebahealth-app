@@ -27,11 +27,9 @@ export default function OnboardingLastPeriod() {
     setLoading(true);
     setError('');
     try {
-      // Timeline reads period days; Friends reads /cycles. Save to both.
-      await Promise.all([
-        savePeriodDays([{ date: selected, status: 'started', isStart: true, isEnd: false, note: '' }]),
-        api.post('/cycles', { period_start: selected }),
-      ]);
+      // Period days are the one source of truth. (The old /cycles endpoint was removed from the
+      // server in Sept 2026; posting to it returned 404 and showed a false "connection" error.)
+      await savePeriodDays([{ date: selected, status: 'started', isStart: true, isEnd: false, note: '' }]);
       track('Onboarding Step Completed', { step: 'last_period', skipped: false });
       router.push('/(auth)/onboarding/reminders');
     } catch {

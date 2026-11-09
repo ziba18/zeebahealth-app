@@ -41,9 +41,11 @@ export default function TodayScreen() {
   const capture = (
     <>
       <HeroCard first={!!loadedFor && symptoms.length === 0} />
-      <View style={{ marginTop: space.md }}>
+      <View style={{ marginTop: space.sm }}>
         <QuickRows onPeriod={() => setBleeding(true)} />
       </View>
+      {/* Fastest log first: one tap. Then the week's evidence. */}
+      <View style={{ marginTop: space.md }}><RoughDayCard /></View>
     </>
   );
 
@@ -62,7 +64,6 @@ export default function TodayScreen() {
       <View style={{ marginTop: space.lg, gap: space.lg }}>
         {latest ? <LatestNoteCard note={latest} /> : loadedFor && symptoms.length === 0 ? <GhostNoteCard /> : null}
         {loadedFor ? <AppointmentCard inviteOnly /> : null}
-        <RoughDayCard />
       </View>
       )}
       <View style={{ marginTop: space.lg, alignItems: 'center', gap: space.xxs }}>

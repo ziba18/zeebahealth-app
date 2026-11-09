@@ -7,6 +7,7 @@ import {
   Button, Card, ConfirmCard, InlineError, ScreenLarge, TextField, Txt,
 } from '../../../components/zeeba/kit';
 import { useAuthStore } from '../../../stores/authStore';
+import { useRecordsStore } from '../../../stores/recordsStore';
 import { api } from '../../../lib/api';
 import { IS_PREVIEW } from '../../../lib/preview/flag';
 import { computeCycleMath, PHASE_LABEL } from '../../../algorithms/cyclePhase';
@@ -49,11 +50,22 @@ export default function FriendsScreen() {
     // Design preview has no backend: show the empty state, not a network error.
     if (IS_PREVIEW) { setLoading(false); return; }
     try {
-      const [pendingRes, friendsRes, myLogs] = await Promise.all([
+      const [pendingRes, friendsRes] = await Promise.all([
         api.get<PendingInvite[]>('/connections/pending'),
         api.get<FriendSummary[]>('/connections/friends'),
-        api.get<CycleLog[]>('/cycles?limit=12'),
       ]);
+      // Her period starts come from her own period-day records (the old /cycles endpoint was
+      // removed from the server in Sept 2026 and made this whole page fail to load).
+      const starts = useRecordsStore.getState().records.period_day
+        .filter((r) => r.data.isStart)
+        .map((r) => r.data.date)
+        .sort()
+        .reverse()
+        .slice(0, 12);
+      const myLogs: CycleLog[] = starts.map((d) => ({
+        id: d, user_id: user.id, period_start: d, period_end: null, cycle_length: null,
+        period_length: null, flow_intensity: null, is_confirmed: true, notes: null, created_at: d, updated_at: d,
+      }));
       setPending(pendingRes);
       setFriends(friendsRes);
       const mine = computeCycleMath({

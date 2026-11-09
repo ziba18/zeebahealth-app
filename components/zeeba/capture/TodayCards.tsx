@@ -1,13 +1,15 @@
 // Today's building blocks: hero capture card, starter chips, Rough day quick log, latest note.
 // No stat tiles, rings, streaks or charts — the screen's one number is the note count.
 import React, { useEffect, useState } from 'react';
-import { Platform, ScrollView, StyleSheet, View } from 'react-native';
+import { Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import {
   Button, Card, Chip, FactLine, HeroNumber, InlineError, QuickTile, PressableCard, Quote, SeverityRow, SeverityTag, Txt, showToast, useReduceMotion,
 } from '../kit';
-import { colors, layout, radii, space, useColors } from '../../../constants/zeebaUI';
+import { colors, font, layout, radii, severityStep, space, useColors } from '../../../constants/zeebaUI';
+import { VOICE_AVAILABLE } from '../../../lib/speechModule';
+import { Icon } from '../../ui/Icon';
 import { openCapture } from '../../../lib/captureStore';
 import { haptics } from '../../../lib/haptics';
 import { todayKey } from '../../../lib/records/dates';
@@ -37,13 +39,13 @@ const PROMPT_BALANCED = 'What’s been going on\nwith your body?';
 const NEXT_STEPS = ['When', 'How strong', 'Where'] as const;
 
 /**
- * The capture hero (direction A layout, B's warmth): Wren beside the question, then Speak + Type.
- * `first` = brand-new user with no notes yet: the prompt becomes a gentle invitation.
+ * The capture hero: Wren beside one short question, then the actions. Speak is offered only where
+ * in-app voice works (installed builds); elsewhere one "Write a note" (the keyboard mic still dictates).
  */
 export function HeroCard({ first }: { first?: boolean } = {}) {
   const c = useColors();
-  const prompt = first ? 'Your first note takes a minute.' : 'How’s your body today?';
-  const web = Platform.OS === 'web';
+  const prompt = first ? 'Start your record' : 'How’s your body today?';
+  const voice = VOICE_AVAILABLE && Platform.OS !== 'web';
   return (
     <Card tone="hero" style={styles.hero}>
       <LinearGradient
@@ -53,27 +55,17 @@ export function HeroCard({ first }: { first?: boolean } = {}) {
         style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]}
       />
       <View style={styles.heroTop}>
-        <Wren mood="idle" size={88} decorative />
-        <View style={styles.heroText}>
-          <Txt variant="hero" style={styles.heroPrompt} accessibilityRole="header">{prompt}</Txt>
-          <Txt variant="secondary">Say it your way. It’s saved with today’s date.</Txt>
-        </View>
+        <Wren mood="idle" size={64} decorative />
+        <Txt variant="hero" style={styles.heroPrompt} accessibilityRole="header">{prompt}</Txt>
       </View>
       <View style={styles.heroBtns}>
-        {web ? (
-          // Browsers have no voice capture here: the typed note is the one action.
-          <Button label="Type a note" icon="pencil" onPress={() => openCapture({ mode: 'type' })} style={{ flex: 1 }} />
-        ) : (
+        {voice ? (
           <>
-            <Button
-              label="Speak"
-              icon="mic"
-              onPress={() => openCapture({ mode: 'speak', startRecording: true })}
-              accessibilityHint="Opens a new note and starts recording"
-              style={{ flex: 1 }}
-            />
+            <Button label="Speak" icon="mic" onPress={() => openCapture({ mode: 'speak', startRecording: true })} accessibilityHint="Opens a new note and starts recording" style={{ flex: 1 }} />
             <Button label="Type" icon="pencil" variant="secondary" onPress={() => openCapture({ mode: 'type' })} style={{ flex: 1 }} />
           </>
+        ) : (
+          <Button label="Write a note" icon="pencil" onPress={() => openCapture({ mode: 'type' })} style={{ flex: 1 }} />
         )}
       </View>
     </Card>
@@ -152,13 +144,15 @@ export function StarterChips({ onPeriod }: { onPeriod: () => void }) {
 
 export function RoughDayCard() {
   const create = useRecordsStore((s) => s.create);
-  const [value, setValue] = useState<number | null>(null);
-  const [saving, setSaving] = useState(false);
+  const c = useColors();
+  const [saving, setSaving] = useState<number | null>(null);
   const [error, setError] = useState('');
 
-  const save = async () => {
-    if (value == null || saving) return;
-    setSaving(true);
+  // One tap logs it (no separate Save): fast, like Apple Health's State of Mind.
+  const log = async (value: number) => {
+    if (saving !== null) return;
+    haptics.selection();
+    setSaving(value);
     setError('');
     try {
       const saved = await create('symptom', {
@@ -166,31 +160,52 @@ export function RoughDayCard() {
         duration: '', stopped: null, stoppedWords: '', source: 'quick', createdAt: noteStamp(todayKey()),
       });
       haptics.success();
-      setValue(null);
-      const hard = value != null && value >= 8;
+      const hard = value >= 8;
       showToast(
         saved.pending ? 'Saved on this phone. It will send when you’re online.'
-          : hard ? 'Saved. That sounded like a hard day.'
-          : `Saved. ${notesLabel(noteCount(useRecordsStore.getState().records.symptom))} ready for your doctor.`,
+          : hard ? `Pain ${value}/10 saved. That sounded like a hard day.`
+          : `Pain ${value}/10 saved.`,
         saved.pending ? undefined : { mood: hard ? 'comfort' : 'proud' },
       );
     } catch {
-      setError("That didn’t save. Check your connection and try again.");
+      setError('That didn’t save. Try again.');
     } finally {
-      setSaving(false);
+      setSaving(null);
     }
   };
 
   return (
-    <Card style={{ gap: space.md }}>
-      <View style={{ gap: space.xxs }}>
-        <Txt variant="headline" accessibilityRole="header">Rough day?</Txt>
-        <Txt variant="secondary">Just the number is enough.</Txt>
+    <Card style={styles.rough}>
+      <View style={styles.roughHead}>
+        <Txt variant="headline" accessibilityRole="header">Pain right now</Txt>
+        <Txt variant="caption">Tap to log</Txt>
       </View>
-      <SeverityRow value={value} onChange={setValue} label="How rough, from 0 to 10" showLabel={false} />
+      <View style={styles.scale} accessibilityRole="adjustable" accessibilityLabel="Pain right now, 0 to 10">
+        {Array.from({ length: 11 }, (_, n) => {
+          const on = saving === n;
+          return (
+            <Pressable
+              key={n}
+              onPress={() => log(n)}
+              accessibilityRole="button"
+              accessibilityLabel={`Log pain ${n} out of 10`}
+              style={({ pressed }) => [
+                styles.cell,
+                { backgroundColor: on || pressed ? c.ramp[severityStep(n)] : c.sunken },
+              ]}
+            >
+              {({ pressed }) => (
+                <Txt style={[styles.cellNum, { color: on || pressed ? c.rampFg[severityStep(n)] : c.ink2 }]}>{n}</Txt>
+              )}
+            </Pressable>
+          );
+        })}
+      </View>
+      <View style={styles.scaleEnds} aria-hidden>
+        <Txt variant="caption">None</Txt>
+        <Txt variant="caption">Worst</Txt>
+      </View>
       <InlineError message={error} />
-      {/* Disabled = sunken + ink2; once a number is chosen it is clearly the action (UX #23). */}
-      <Button label="Save" onPress={save} disabled={value == null} loading={saving} />
     </Card>
   );
 }
@@ -331,7 +346,7 @@ export function HeroChip() {
   const week = noteCount(symptoms, { from: addDays(today, -6), to: today });
   const days = next ? diffDays(today, next.data.date) : -1;
   let label = ''; let target = '/(tabs)/timeline';
-  if (next && days === 0 && total > 0) { label = `${notesLabel(total)} ready · today`; target = '/(tabs)/doctor'; }
+  if (next && days === 0 && total > 0) { label = `${next.data.who.trim() || 'Appointment'} today · ${notesLabel(total)} ready`; target = '/(tabs)/doctor'; }
   else if (next && days > 0) { label = days > 60 ? `${Math.round(days / 7)} weeks to your appointment` : `${days} ${days === 1 ? 'day' : 'days'} to your appointment`; target = '/(tabs)/doctor'; }
   else if (week > 0) label = `${notesLabel(week)} in the last 7 days`;
   if (!label) return null;
@@ -358,33 +373,32 @@ const QUICK_ROWS: { label: string; icon: IconName; tag?: string }[] = [
 ];
 
 const PRIMARY_ROWS = ['Pain', 'Bleeding', 'Tired', 'Something new'];
+/** Short chip labels (the long names stay as note tags). */
+const CHIP_LABEL: Record<string, string> = { 'Tummy, bowel or bladder': 'Bowel or bladder', 'Something new': 'Other' };
 
-/** Icon + label tiles, two across (replace the four outline chips); each opens a note already started on that topic. */
+/** One compact, scrolling row of topic chips (her chosen areas first). Each opens a note on that topic. */
 export function QuickRows({ onPeriod }: { onPeriod: () => void }) {
-  const [more, setMore] = useState(false);
   const focus = useFocusStore((st) => st.areas);
   const primary = topicsFor(focus, PRIMARY_ROWS);
-  const rows = more
-    ? [...primary.map((l) => QUICK_ROWS.find((r) => r.label === l)!).filter(Boolean), ...QUICK_ROWS.filter((r) => !primary.includes(r.label))]
-    : primary.map((l) => QUICK_ROWS.find((r) => r.label === l)!).filter(Boolean);
+  const rows = [
+    ...primary.map((l) => QUICK_ROWS.find((r) => r.label === l)!).filter(Boolean),
+    ...QUICK_ROWS.filter((r) => !primary.includes(r.label)),
+  ];
   return (
-    <View style={styles.qgrid}>
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipRow} style={styles.chipScroll} accessibilityLabel="Log a topic">
       {rows.map((r) => (
-        <QuickTile
+        <Pressable
           key={r.label}
-          label={r.label}
-          icon={r.icon}
-          onPress={() => (r.label === 'Bleeding' ? onPeriod() : openCapture({ mode: 'speak', tag: r.tag }))}
-        />
+          onPress={() => { haptics.selection(); r.label === 'Bleeding' ? onPeriod() : openCapture({ mode: 'type', tag: r.tag }); }}
+          accessibilityRole="button"
+          accessibilityLabel={`Log ${r.label}`}
+          style={({ pressed }) => [styles.topicChip, pressed && { opacity: 0.6 }]}
+        >
+          <Icon name={r.icon} size={15} color={colors.accent} />
+          <Txt variant="secondary" color={colors.ink} style={{ fontWeight: '500' }}>{CHIP_LABEL[r.label] ?? r.label}</Txt>
+        </Pressable>
       ))}
-      <Button
-        label={more ? 'Fewer topics' : 'More topics'}
-        variant="text"
-        small
-        onPress={() => setMore((m) => !m)}
-        style={{ flexBasis: '100%' }}
-      />
-    </View>
+    </ScrollView>
   );
 }
 
@@ -392,9 +406,20 @@ const styles = StyleSheet.create({
   chip: { paddingVertical: space.xs, paddingHorizontal: space.md, alignItems: "center" },
   qgrid: { flexDirection: 'row', flexWrap: 'wrap', gap: space.xs },
   hero: { padding: space.md, gap: space.md },
+  chipScroll: { marginHorizontal: -layout.gutter },
+  chipRow: { paddingHorizontal: layout.gutter, gap: space.xs },
+  topicChip: {
+    flexDirection: 'row', alignItems: 'center', gap: 6, height: 36, paddingHorizontal: space.sm,
+    borderRadius: radii.pill, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.cardBorder,
+  },
+  rough: { paddingVertical: space.sm, gap: space.xs },
+  roughHead: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between' },
+  scale: { flexDirection: 'row', gap: 3 },
+  cell: { flex: 1, height: 34, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
+  cellNum: { ...font.rounded, fontSize: 14 },
+  scaleEnds: { flexDirection: 'row', justifyContent: 'space-between', marginTop: -2 },
   heroTop: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
-  heroText: { flex: 1, minWidth: 0, gap: space.xxs },
-  heroPrompt: { fontSize: 24, lineHeight: 29 },
+  heroPrompt: { flex: 1, minWidth: 0 },
   heroBtns: { flexDirection: 'row', gap: space.xs },
   inTheWay: { marginTop: space.sm, paddingHorizontal: space.xxs },
   center: { textAlign: 'center' },

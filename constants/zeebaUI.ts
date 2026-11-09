@@ -208,14 +208,14 @@ export type TypeVariant =
   | 'fieldLabel' | 'groupLabel' | 'section' | 'eyebrow';
 
 /**
- * iOS text styles. Sans = SF Pro, numbers = SF Rounded, statements = New York, her words = New York italic.
+ * iOS text styles. Everything the app says = SF Pro; numbers = SF Rounded; ONLY her quoted words = New York italic.
  */
 export const type: Record<TypeVariant, TextStyle> = {
   largeTitle: { ...font.bold, fontSize: 34, lineHeight: 41, letterSpacing: 0.37, color: colors.ink },
-  /** The Today prompt: a warm New York line. */
-  hero: { ...font.serif, fontSize: 28, lineHeight: 34, letterSpacing: -0.2, color: colors.ink },
-  /** A data sentence above a chart ("Pain on 18 of the last 91 days."). */
-  statement: { ...font.serif, fontSize: 28, lineHeight: 33, letterSpacing: -0.3, color: colors.ink },
+  /** The Today prompt. SF, like every heading: one family for the app's voice (owner, 9 Nov). */
+  hero: { ...font.bold, fontSize: 22, lineHeight: 27, letterSpacing: -0.26, color: colors.ink },
+  /** A data sentence above a chart ("Symptoms on 10 of the last 28 days."). */
+  statement: { ...font.bold, fontSize: 26, lineHeight: 31, letterSpacing: -0.4, color: colors.ink },
   title: { ...font.bold, fontSize: 22, lineHeight: 28, letterSpacing: 0.35, color: colors.ink },
   quote: { ...font.serifItalic, fontSize: 18, lineHeight: 25, color: colors.ink },
   headline: { ...font.semibold, fontSize: 17, lineHeight: 22, letterSpacing: -0.41, color: colors.ink },

@@ -24,7 +24,7 @@ import { Waveform } from './Waveform';
 
 // Broken evenly so "body?" never sits alone on line 2 (same as the Today hero).
 const PROMPT = 'What’s been going on\nwith your body?';
-const VOICE_UNAVAILABLE = 'Voice isn’t available here, so type instead. Your words are saved the same way.';
+const VOICE_UNAVAILABLE = 'Voice notes come with the App Store version. For now, tap the microphone on your keyboard to dictate.';
 
 type Mode = 'speak' | 'type';
 type Stage = 'capture' | 'questions' | 'review';
@@ -230,7 +230,8 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
 
   // ---- header / footer ----------------------------------------------------------------------
   let header: React.ReactNode;
-  if (!confirmClose && stage === 'capture') {
+  if (!confirmClose && stage === 'capture' && voiceSupported) {
+    // Only offer Speak where it works (not in Expo Go); otherwise no switch at all.
     header = (
       <SegmentedControl<Mode>
         accessibilityLabel="Speak or type"
@@ -311,12 +312,9 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
     body = (
       <View>
         <Txt variant="title" accessibilityRole="header">{PROMPT}</Txt>
-        <Txt variant="secondary" style={{ marginTop: space.xs }}>
-          {mode === 'speak' ? 'Say it however it comes. Messy is fine.' : 'Write it however it comes. Messy is fine.'}
-        </Txt>
         {past ? <Txt variant="caption" style={{ marginTop: space.xs }}>{`Note for ${formatDay(draft.date)}`}</Txt> : null}
-        {voiceNotice && mode === 'type' ? (
-          <Txt variant="secondary" color={colors.ink} style={{ marginTop: space.sm }}>{VOICE_UNAVAILABLE}</Txt>
+        {(voiceNotice || !voiceSupported) && mode === 'type' ? (
+          <Txt variant="caption" style={{ marginTop: space.sm }}>{VOICE_UNAVAILABLE}</Txt>
         ) : null}
 
         {mode === 'speak' ? (
@@ -353,7 +351,8 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
             onChangeText={(words) => patch({ words })}
             autoFocus
             multiline
-            placeholder="Type what’s been happening…"
+            scrollEnabled
+            placeholder="What’s been happening?"
             placeholderTextColor={colors.ink3}
             accessibilityLabel="Your words"
             onFocus={() => setTypedFocus(true)}
@@ -429,7 +428,8 @@ const styles = StyleSheet.create({
     ...font.regular, fontSize: 17, lineHeight: 24, color: colors.ink, textAlign: 'left', textAlignVertical: 'top',
   },
   transcript: { backgroundColor: colors.accentTint, minHeight: 120 },
-  typed: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.borderStrong, minHeight: 180 },
+  // Bounded box that scrolls inside, so the caret and the last line stay visible above the keyboard.
+  typed: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.hairline, minHeight: 132, maxHeight: 220 },
   // Plum 2px ring (padding trimmed 1 so the text does not shift); replaces RN-web's near-black outline.
   typedFocus: { borderColor: colors.accent, borderWidth: 2, padding: space.md - 1, ...({ outlineStyle: 'none' } as object) },
   micAreaIdle: { marginTop: space.xxl * 2 },

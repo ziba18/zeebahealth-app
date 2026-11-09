@@ -16,7 +16,7 @@ const googlePlugin: any[] = googleIosUrlScheme
 const config: ExpoConfig = {
   name: 'Zeeba Health',
   slug: 'zeebahealth',
-  version: '1.1.0',
+  version: '1.0.0',
   // EAS Update: JS-only changes ship to installed builds without a new
   // build. The fingerprint changes whenever native code/config changes, so
   // an update only ever reaches builds it is compatible with.
