@@ -8,3 +8,4 @@ Expo first-party packages: expo-blur (translucent tab bar), expo-haptics, react-
 - 12:26 Profile/Settings/Records: inset grouped lists (ScreenLarge grouped prop, GroupFooter, GroupSwitchRow); tabBarTranslucent token; Button press .97+haptic. GroupedRows.tsx, layout.tsx, profile/*
 - 12:26 Today: removed note-count card + 14-day strip, Wren hero slot (placeholder Wren.tsx, lead overwrites), 4 topics + More, compact week line. TodayCards.tsx, today/index.tsx
 - 12:29 Switch rows: borderStrong off-track, white thumb
+- 12:29 Friends + edit-profile grouped
