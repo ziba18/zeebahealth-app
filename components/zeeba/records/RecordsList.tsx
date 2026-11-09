@@ -1,6 +1,7 @@
 import React from 'react';
 import type { AppointmentData, HistoryData, MedicineData, Rec } from '../../../types/records';
 import { useRecordsStore } from '../../../stores/recordsStore';
+import { Wren } from '../Wren';
 import { AddButton, EmptyState, InlineError, ScreenLarge } from '../kit';
 import { Group, GroupRow } from './GroupedRows';
 import { KIND_INFO, recordFacts, recordTitle, sortRecords, type RecordDataKind } from './recordKinds';
@@ -38,7 +39,7 @@ export function RecordsList({
     >
       {loadError && !loadedFor ? <InlineError message={loadError} /> : null}
       {sorted.length === 0 && loadedFor ? (
-        <EmptyState message={info.empty} action={{ label: info.addLabel, onPress: onAdd }} />
+        <EmptyState illustration={<Wren mood="sleepy" size={96} />} message={info.empty} action={{ label: info.addLabel, onPress: onAdd }} />
       ) : sorted.length ? (
         <Group>
           {sorted.map((r) => {

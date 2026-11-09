@@ -5,23 +5,26 @@ import { create } from 'zustand';
 import { colors, fonts, heights, layout, motion, radii, shadows, space } from '../../../constants/zeebaUI';
 import { Icon } from '../../ui/Icon';
 import { Txt } from './Txt';
+import { Wren } from '../Wren';
 
 interface ToastState {
   message: string | null;
   /** Bumps on every show so the same text shown twice still restarts the timer/animation. */
   seq: number;
+  /** Show a small proud Wren instead of the check (a saved moment). */
+  proud: boolean;
 }
 
-const useToastStore = create<ToastState>(() => ({ message: null, seq: 0 }));
+const useToastStore = create<ToastState>(() => ({ message: null, seq: 0, proud: false }));
 let timer: ReturnType<typeof setTimeout> | null = null;
 
 /**
  * Show the one app toast ("Saved. 13 notes ready for your doctor."). A new toast replaces the
  * previous one. Auto-dismisses after 3 s (longer for long messages). System status only — never health content.
  */
-export function showToast(message: string): void {
+export function showToast(message: string, opts?: { proud?: boolean }): void {
   if (timer) clearTimeout(timer);
-  useToastStore.setState((s) => ({ message, seq: s.seq + 1 }));
+  useToastStore.setState((s) => ({ message, seq: s.seq + 1, proud: !!opts?.proud }));
   AccessibilityInfo.announceForAccessibility?.(message);
   // 3 s for the short "Saved." lines; longer messages stay ~70 ms per character so they can be read.
   timer = setTimeout(dismissToast, Math.max(motion.toastMs, message.length * 70));
@@ -35,7 +38,7 @@ export function dismissToast(): void {
 
 /** Mounted once in app/_layout.tsx, after the navigator. */
 export function ToastHost() {
-  const { message, seq } = useToastStore();
+  const { message, seq, proud } = useToastStore();
   const insets = useSafeAreaInsets();
   const opacity = useRef(new Animated.Value(0)).current;
 
@@ -57,7 +60,7 @@ export function ToastHost() {
           accessibilityRole="alert"
         >
           <Pressable onPress={dismissToast} accessibilityLabel={`${message} Dismiss`} style={styles.inner}>
-            <Icon name="check-circle" size={20} color={colors.saved} />
+            {proud ? <Wren mood="proud" size={40} /> : <Icon name="check-circle" size={20} color={colors.saved} />}
             <Txt style={styles.text}>{message}</Txt>
           </Pressable>
         </Animated.View>

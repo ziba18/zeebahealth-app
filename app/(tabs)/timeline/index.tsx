@@ -1,4 +1,5 @@
 // Timeline tab: List (filterable feed grouped by week) · Month (calendar + DaySheet).
+import { Wren } from '../../../components/zeeba/Wren';
 import { usePageTitle } from '../../../lib/usePageTitle';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { View, type ScrollViewInstance } from 'react-native';
@@ -177,8 +178,7 @@ function ListView({
     return (
       <EmptyState
         fill
-        illustration={<GhostEntry />}
-        icon="list"
+        illustration={<Wren mood="sleepy" size={96} />}
         message="Nothing here yet. Your notes will line up here by date."
         action={{ label: 'Add a note', onPress: () => openCapture() }}
       />
