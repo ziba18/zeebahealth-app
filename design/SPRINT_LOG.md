@@ -16,3 +16,4 @@ Expo first-party packages: expo-blur (translucent tab bar), expo-haptics, react-
 - 12:32 Title bar: tabBar (0.94) on web; native keeps blur over 0.72 bone. Rough-day row already selects burgundy disc + haptic + enabled burgundy Save, no change. layout.tsx
 - 12:32 Row press highlight already sunken (no scale). Login/register/forgot: burgundy wordmark, sunken bg, fields in one white group. rendered /login OK
 - 12:33 Onboarding: continuous burgundy progress bar, happy Wren step 4 only. Rendered OK. OnboardingScreen.tsx
+- 12:33 Comfort Wren + 'Saved. That sounded like a hard day.' toast at strength>=8; showToast opts.mood. toast.tsx, CaptureSheet
