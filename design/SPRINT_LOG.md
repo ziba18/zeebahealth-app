@@ -11,3 +11,4 @@ Expo first-party packages: expo-blur (translucent tab bar), expo-haptics, react-
 - 12:29 Friends + edit-profile grouped
 - 12:29 Wren sleepy in Timeline/Records empty states; proud Wren in save toast. toast.tsx, RecordsList, timeline/index, CaptureSheet
 - 12:30 ScreenLarge: small title fades in on translucent bar when large title scrolls away (Animated, blur on native). layout.tsx
+- 12:31 KIT.md updated; grouped separators true hairline; rendered profile/settings/friends/timeline OK (headless Chrome is 500 wide min)
