@@ -102,7 +102,7 @@ export function GroupSwitchRow({ label, detail, value, onChange }: { label: stri
         <Txt variant="body">{label}</Txt>
         {detail ? <Txt variant="secondary">{detail}</Txt> : null}
       </View>
-      <Switch value={value} onValueChange={(v) => { haptics.selection(); onChange(v); }} accessibilityLabel={label} trackColor={{ true: colors.burgundy }} />
+      <Switch value={value} onValueChange={(v) => { haptics.selection(); onChange(v); }} accessibilityLabel={label} trackColor={{ false: colors.borderStrong, true: colors.burgundy }} thumbColor={colors.white} ios_backgroundColor={colors.borderStrong} />
     </View>
   );
 }
