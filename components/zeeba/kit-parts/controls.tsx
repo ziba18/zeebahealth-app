@@ -90,7 +90,7 @@ export function IconButton({
       hitSlop={4}
       style={({ pressed }) => [
         styles.iconBtn,
-        filled && { backgroundColor: pressed ? colors.plumPressed : colors.plum },
+        filled && { backgroundColor: pressed ? colors.burgundyPressed : colors.burgundy },
         !filled && pressed && { backgroundColor: colors.sunken },
       ]}
     >
@@ -104,7 +104,7 @@ export function IconButton({
  * 44 hit, unfilled. Hide it while an EmptyState shows its own primary for the same action.
  */
 export function AddButton({ label, onPress }: { label: string; onPress: () => void }) {
-  return <IconButton icon="plus" label={label} onPress={onPress} color={colors.plum} />;
+  return <IconButton icon="plus" label={label} onPress={onPress} color={colors.burgundy} />;
 }
 
 // ---- Chips --------------------------------------------------------------------------------
@@ -287,7 +287,7 @@ export function AddFieldChip({ label, onPress }: { label: string; onPress: () =>
     >
       {({ pressed }) => (
         <View style={[styles.addChip, pressed && { backgroundColor: colors.sunken }]}>
-          <Icon name="plus" size={20} color={colors.plum} />
+          <Icon name="plus" size={20} color={colors.burgundy} />
           <Txt maxFontSizeMultiplier={1.6} style={styles.addText}>{label}</Txt>
         </View>
       )}
@@ -370,13 +370,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: space.md, alignItems: 'center', justifyContent: 'center', backgroundColor: 'transparent',
   },
   // Selected border is 2px: trim padding by 1 so the chip doesn't grow.
-  chipSelected: { borderWidth: 2, borderColor: colors.plum, backgroundColor: colors.plumTint, paddingHorizontal: space.md - 1 },
+  chipSelected: { borderWidth: 2, borderColor: colors.burgundy, backgroundColor: colors.burgundyTint, paddingHorizontal: space.md - 1 },
   // Ghost answers (Not sure / It varies / Skip): same outline as chips (a hairline read as
   // disabled — review 1), told apart by ink2 text.
   chipGhost: { borderColor: colors.borderStrong },
   // Selected keeps weight 500 so neighbours never reflow (V25); tint + 2px ring mark it.
   chipText: { fontFamily: fonts.medium, fontSize: 15, lineHeight: 20, color: colors.ink },
-  chipTextSelected: { color: colors.plum },
+  chipTextSelected: { color: colors.burgundy },
   chipWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: space.xs },
   chipRow: { flexDirection: 'row', gap: space.xs, paddingRight: space.xxl },
   bleed: { marginHorizontal: -layout.gutter },
@@ -388,7 +388,7 @@ const styles = StyleSheet.create({
     height: heights.addChip, borderRadius: radii.pill, borderWidth: 1, borderStyle: 'dashed', borderColor: colors.borderStrong,
     paddingHorizontal: space.sm, flexDirection: 'row', alignItems: 'center', gap: space.xxs,
   },
-  addText: { fontFamily: fonts.medium, fontSize: 15, lineHeight: 20, color: colors.plum },
+  addText: { fontFamily: fonts.medium, fontSize: 15, lineHeight: 20, color: colors.burgundy },
 
   // Pill like every other control (V9); the white thumb gets a hairline + the one micro-shadow.
   segTrack: { flexDirection: 'row', height: heights.segmented, borderRadius: radii.pill, backgroundColor: colors.sunken, padding: 3 },

@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
   cell: { flex: 1, height: 44, alignItems: 'center', justifyContent: 'center' },
   day: { width: 36, height: 36, borderRadius: radii.pill, alignItems: 'center', justifyContent: 'center' },
   today: { borderWidth: 1.5, borderColor: colors.ink },
-  selected: { borderWidth: 2, borderColor: colors.plum, backgroundColor: colors.plumTint },
+  selected: { borderWidth: 2, borderColor: colors.burgundy, backgroundColor: colors.burgundyTint },
   num: { fontFamily: fonts.regular, fontSize: 15, lineHeight: 20, color: colors.ink, fontVariant: ['tabular-nums'] },
-  numSelected: { fontFamily: fonts.semibold, color: colors.plum },
+  numSelected: { fontFamily: fonts.semibold, color: colors.burgundy },
 });

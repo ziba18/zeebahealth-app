@@ -16,12 +16,6 @@ export const colors = {
   burgundyPressed: '#5C1529',
   burgundyTint: '#F6E6EA', // selected chips / segments, user bubble
   blush: '#F2C9CF', // Wren's cheeks + brand illustration only, never text
-  /** @deprecated old name — same value as `burgundy`. */
-  plum: '#7A1F3A',
-  /** @deprecated old name — same value as `burgundyPressed`. */
-  plumPressed: '#5C1529',
-  /** @deprecated old name — same value as `burgundyTint`. */
-  plumTint: '#F6E6EA',
   clay: '#B04A2E', // BLEEDING ONLY: calendar fill, entry edge, droplet icon, PDF band (orange-red, distinct from burgundy)
   clayTint: '#F6E0D8', // period-day band in charts
   saved: '#2E6A4F', // system "saved" status — never describes a body
@@ -146,21 +140,21 @@ export const UI = {
     background: colors.canvas,
     foreground: colors.ink,
     card: colors.surface,
-    primary: colors.plum,
-    primaryStrong: colors.plum,
+    primary: colors.burgundy,
+    primaryStrong: colors.burgundy,
     primaryForeground: colors.white,
-    secondary: colors.plumTint,
-    secondaryForeground: colors.plum,
+    secondary: colors.burgundyTint,
+    secondaryForeground: colors.burgundy,
     muted: colors.sunken,
     mutedForeground: colors.ink2,
-    accent: colors.plumTint,
-    accentForeground: colors.plum,
+    accent: colors.burgundyTint,
+    accentForeground: colors.burgundy,
     destructive: colors.error,
     border: colors.hairline,
     success: colors.saved,
     successSoft: colors.savedTint,
     coralSoft: colors.errorTint,
-    blueSoft: colors.plumTint,
+    blueSoft: colors.burgundyTint,
     bleeding: colors.clay,
     bleedingLight: colors.clay,
     bleedingDark: colors.clay,

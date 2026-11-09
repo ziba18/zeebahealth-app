@@ -45,7 +45,7 @@ export function AppointmentCard({ inviteOnly = false }: { inviteOnly?: boolean }
     card = (
       <Card style={{ flexDirection: 'row', gap: space.md }}>
         {/* Same calendar badge as For my doctor's appointment card. */}
-        <View aria-hidden style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: colors.plumTint, alignItems: 'center', justifyContent: 'center' }}>
+        <View aria-hidden style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: colors.burgundyTint, alignItems: 'center', justifyContent: 'center' }}>
           <Icon name="calendar" size={22} color={colors.ink} />
         </View>
         <View style={{ flex: 1, gap: space.xxs }}>

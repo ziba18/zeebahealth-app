@@ -41,7 +41,7 @@ export function MicButton({
       style={({ pressed }) => [
         big ? styles.big : styles.small,
         big || recording
-          ? { backgroundColor: pressed ? colors.plumPressed : colors.plum, borderColor: colors.plum }
+          ? { backgroundColor: pressed ? colors.burgundyPressed : colors.burgundy, borderColor: colors.burgundy }
           : { backgroundColor: pressed ? colors.sunken : colors.surface, borderColor: colors.borderStrong },
         disabled && { opacity: 0.5 },
       ]}
@@ -50,7 +50,7 @@ export function MicButton({
         <Icon
           name={recording ? 'square' : 'mic'}
           size={big ? 32 : 24}
-          color={big || recording ? colors.white : colors.plum}
+          color={big || recording ? colors.white : colors.burgundy}
         />
       </View>
     </Pressable>
@@ -75,7 +75,7 @@ export function MicButton({
 
 const styles = StyleSheet.create({
   wrap: { width: 72, height: 72, alignItems: 'center', justifyContent: 'center' },
-  ring: { position: 'absolute', width: 72, height: 72, borderRadius: radii.pill, borderWidth: 2, borderColor: colors.plum },
+  ring: { position: 'absolute', width: 72, height: 72, borderRadius: radii.pill, borderWidth: 2, borderColor: colors.burgundy },
   big: { width: 72, height: 72, borderRadius: radii.pill, alignItems: 'center', justifyContent: 'center', borderWidth: 1 },
   small: { width: 52, height: 52, borderRadius: radii.input, alignItems: 'center', justifyContent: 'center', borderWidth: 1 },
 });

@@ -111,7 +111,7 @@ export const Composer = forwardRef<ComposerHandle, {
             accessibilityState={{ disabled: !canSend }}
             style={({ pressed }) => [
               styles.send,
-              { backgroundColor: !canSend ? colors.sunken : pressed ? colors.plumPressed : colors.plum },
+              { backgroundColor: !canSend ? colors.sunken : pressed ? colors.burgundyPressed : colors.burgundy },
             ]}
           >
             <Icon name="arrow-up" size={20} color={canSend ? colors.white : colors.ink2} />
@@ -133,10 +133,10 @@ function RoundIcon({ icon, label, onPress, active }: {
       accessibilityState={{ selected: !!active }}
       style={({ pressed }) => [
         styles.round,
-        active ? { backgroundColor: colors.plumTint } : pressed && { backgroundColor: colors.sunken },
+        active ? { backgroundColor: colors.burgundyTint } : pressed && { backgroundColor: colors.sunken },
       ]}
     >
-      <Icon name={icon} size={24} color={colors.plum} />
+      <Icon name={icon} size={24} color={colors.burgundy} />
     </Pressable>
   );
 }
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
     padding: space.xxs,
   },
   /** Plum 2px ring on focus (replaces the browser's near-black outline); padding keeps the content still. */
-  pillFocused: { borderWidth: 2, borderColor: colors.plum, padding: space.xxs - 1 },
+  pillFocused: { borderWidth: 2, borderColor: colors.burgundy, padding: space.xxs - 1 },
   row: { flexDirection: 'row', alignItems: 'flex-end', gap: space.xxs, paddingBottom: space.xxs / 2 },
   round: { width: 44, height: 44, borderRadius: radii.pill, alignItems: 'center', justifyContent: 'center' },
   input: {

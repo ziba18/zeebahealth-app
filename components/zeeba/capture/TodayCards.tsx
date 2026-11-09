@@ -26,7 +26,7 @@ import { addDays, diffDays } from '../../../lib/records/dates';
 
 // Warm wash (V6): a faint plum-tint blush at the very top that settles into the warm canvas,
 // then white — the hero is never cooler than the paper around it. Top 40% only.
-const WASH = [`${colors.plumTint}80`, `${colors.canvas}CC`, `${colors.surface}00`] as const;
+const WASH = [`${colors.burgundyTint}80`, `${colors.canvas}CC`, `${colors.surface}00`] as const;
 const WASH_STOPS = [0, 0.18, 0.4] as const;
 
 const PROMPT = 'What’s been going on with your body?';

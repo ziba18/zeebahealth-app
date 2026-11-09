@@ -120,8 +120,8 @@ export function BackChevron({ label, onPress }: { label: string; onPress?: () =>
       accessibilityLabel={`Back to ${label}`}
       style={({ pressed }) => [styles.back, pressed && { opacity: 0.6 }]}
     >
-      <Icon name="chevron-left" size={24} color={colors.plum} />
-      <Txt variant="body" color={colors.plum}>{label}</Txt>
+      <Icon name="chevron-left" size={24} color={colors.burgundy} />
+      <Txt variant="body" color={colors.burgundy}>{label}</Txt>
     </Pressable>
   );
 }
@@ -143,7 +143,7 @@ export type CardTone = 'default' | 'sunken' | 'selected' | 'error' | 'hero' | 'c
 const toneStyle = (tone: CardTone): ViewStyle => {
   switch (tone) {
     case 'sunken': return { backgroundColor: colors.sunken, borderColor: colors.sunken };
-    case 'selected': case 'blue': return { backgroundColor: colors.plumTint, borderColor: colors.plumTint };
+    case 'selected': case 'blue': return { backgroundColor: colors.burgundyTint, borderColor: colors.burgundyTint };
     case 'error': case 'coral': return { backgroundColor: colors.errorTint, borderColor: colors.error };
     case 'green': return { backgroundColor: colors.savedTint, borderColor: colors.savedTint };
     case 'hero': return { ...shadows.hero };
@@ -229,7 +229,7 @@ export function HeroNumber({
   const body = (
     <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', columnGap: space.md, rowGap: space.xxs }}>
       {big ? (
-        <View style={{ minWidth: tile, height: tile, paddingHorizontal: space.sm, borderRadius: 20, backgroundColor: colors.plumTint, alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ minWidth: tile, height: tile, paddingHorizontal: space.sm, borderRadius: 20, backgroundColor: colors.burgundyTint, alignItems: 'center', justifyContent: 'center' }}>
           <Txt variant="numeral" style={short ? { fontSize: 28, lineHeight: 32 } : compact ? { fontSize: 36, lineHeight: 40 } : { fontSize: 48, lineHeight: 52 }}>{big}</Txt>
         </View>
       ) : null}
@@ -452,7 +452,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: space.sm, paddingVertical: space.xs, borderRadius: 16, backgroundColor: colors.surface,
     borderWidth: StyleSheet.hairlineWidth, borderColor: colors.hairline,
   },
-  qicon: { width: 32, height: 32, borderRadius: 16, backgroundColor: colors.plumTint, alignItems: 'center', justifyContent: 'center' },
+  qicon: { width: 32, height: 32, borderRadius: 16, backgroundColor: colors.burgundyTint, alignItems: 'center', justifyContent: 'center' },
   screen: { flex: 1, backgroundColor: colors.canvas },
   column: { width: '100%', maxWidth: layout.maxContentWidth, alignSelf: 'center', paddingHorizontal: layout.gutter },
   // Ends clear of the toast zone, so a toast never sits over the last action (UX #30).
