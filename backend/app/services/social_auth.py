@@ -68,13 +68,17 @@ def _check_at_hash(claims: dict, access_token: str | None) -> None:
         raise JWTError("Invalid at_hash")
 
 
-def verify_apple_identity_token(id_token: str, bundle_id: str) -> dict:
-    """Verify an Apple `identityToken` from expo-apple-authentication. Returns {sub, email}."""
+def verify_apple_identity_token(id_token: str, bundle_id: str | list[str]) -> dict:
+    """Verify an Apple `identityToken` from expo-apple-authentication. Returns {sub, email}.
+
+    `bundle_id` may be a list of accepted audiences (e.g. the app plus Expo Go while testing).
+    """
     jwks = _get_jwks(APPLE_JWKS_URL)
+    audiences = [bundle_id] if isinstance(bundle_id, str) else [b for b in bundle_id if b]
     try:
         claims = jwt.decode(
             id_token, _signing_key(id_token, jwks), algorithms=["RS256"],
-            audience=bundle_id, issuer=APPLE_ISSUER,
+            audience=audiences, issuer=APPLE_ISSUER,
         )
     except JWTError as e:
         raise SocialAuthError(f"Invalid Apple identity token: {e}")
