@@ -117,8 +117,8 @@ maps live in three places — keep them in sync: `MainTabBar.tsx` `TAB_BY_TITLE`
    before" card from her history). Concepts are in the directions board.
 3. **Ship the rename to the server** (`zeeba-health` → `mvp-symptom-capture`): live privacy page still says "Atossa";
    live Apple audience is still the old bundle id.
-4. **GitHub repo `ziba18/zeebahealth-app` is PUBLIC** (CLAUDE.md says private) and its description says "Atossa" — owner
-   decision pending.
+4. GitHub repo stays **public** (owner, 9 Nov). Its description still says "Atossa".
+8. App Store Connect: record created (Apple ID 6832575398) — remaining steps in `store/APP_STORE.md`. Not submitted.
 5. App icon: concepts A/B/C (Wren on bone / bone Wren on burgundy / monogram) — owner to choose.
 6. Android dark mode (currently light only).
 7. Remove `APPLE_ALLOW_EXPO_GO` before launch (see §5).

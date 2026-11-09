@@ -5,11 +5,11 @@ Current app work is on branch **`design/native-midnight`**: owner-approved desig
 Apple system type, Wren mascot, glass tab bar, tabs Today · Evidence · Doctor, new onboarding. The handover doc has the
 branch map, design-system architecture (dynamic Light/Dark colour tokens — read before touching UI), sign-in facts
 (Google can't run in Expo Go; Apple works there only via server env `APPLE_ALLOW_EXPO_GO`, remove before launch) and
-the open-items list. Design must be research-led (owner rejected a self-picked palette 0/100 on 9 Nov).
+the open-items list. App Store record: Apple ID 6832575398 (see `store/APP_STORE.md`; do NOT submit until the owner says). Design must be research-led (owner rejected a self-picked palette 0/100 on 9 Nov).
 
 ## NAME: the app is now **Zeeba Health** (owner, 2026-11-08)
 Atossa was renamed Zeeba Health ("Zeeba" only as a casual short form in copy; never "Atossa" in anything a user sees).
-Repo is now private `ziba18/zeebahealth-app`, folder `~/projects/zeebahealth-app`. Older notes below still say Atossa; read them as Zeeba Health.
+Repo `ziba18/zeebahealth-app` is PUBLIC and stays public (owner, 2026-11-09), folder `~/projects/zeebahealth-app`. Older notes below still say Atossa; read them as Zeeba Health.
 Identifiers (2026-11-08, new App Store listing): bundle id / Android package `com.zeebahealth.app`, Expo slug + URL scheme
 `zeebahealth`, new EAS project `@zamaniziba18/zeebahealth` (id 69e41ccd-094f-4227-a786-3a2ade8834da; the old `attosa`
 project and App Store app 6762570606 belong to Atossa), on-device keys `zeeba.*` / `zeeba_*`. Backend: Render service
