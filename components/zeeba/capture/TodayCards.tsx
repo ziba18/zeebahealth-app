@@ -122,7 +122,13 @@ export function RoughDayCard() {
       });
       haptics.success();
       setValue(null);
-      showToast(saved.pending ? 'Saved on this phone. It will send when you’re online.' : `Saved. ${notesLabel(noteCount(useRecordsStore.getState().records.symptom))} ready for your doctor.`);
+      const hard = value != null && value >= 8;
+      showToast(
+        saved.pending ? 'Saved on this phone. It will send when you’re online.'
+          : hard ? 'Saved. That sounded like a hard day.'
+          : `Saved. ${notesLabel(noteCount(useRecordsStore.getState().records.symptom))} ready for your doctor.`,
+        saved.pending ? undefined : { mood: hard ? 'comfort' : 'proud' },
+      );
     } catch {
       setError("That didn’t save. Check your connection and try again.");
     } finally {

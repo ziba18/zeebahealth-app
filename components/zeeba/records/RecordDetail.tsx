@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { FieldGroup } from './GroupedRows';
 import { View } from 'react-native';
 import { useNavigation } from 'expo-router';
 import { space } from '../../../constants/zeebaUI';
@@ -234,6 +235,7 @@ export function RecordDetail({
 
   return (
     <ScreenLarge
+      grouped
       title={isNew ? info.newTitle : info.title}
       back={{ label: backLabel, onPress: requestBack }}
       scrollRef={scrollRef}
@@ -297,6 +299,7 @@ function MedicineFields({ d, set, isNew }: { d: MedicineData; set: SetFn; isNew:
   return (
     <>
       <UrgentNote text={textOf(d)} />
+      <FieldGroup>
       <TextField label="Name" value={d.name} onChangeText={(name) => set({ name })} autoCapitalize="sentences" />
       <TextField label="Dose" optional value={d.dose ?? ''} onChangeText={(dose) => set({ dose })} />
       <RecordDateField
@@ -333,6 +336,7 @@ function MedicineFields({ d, set, isNew }: { d: MedicineData; set: SetFn; isNew:
         value={d.happened}
         onChangeText={(happened) => set({ happened })}
       />
+      </FieldGroup>
     </>
   );
 }
@@ -348,6 +352,7 @@ function AppointmentFields({ d, set }: { d: AppointmentData; set: SetFn }) {
   return (
     <>
       <UrgentNote text={textOf(d)} />
+      <FieldGroup>
       <TextField label="Who or where" value={d.who} onChangeText={(who) => set({ who })} autoCapitalize="sentences" />
       <RecordDateField
         label="Date"
@@ -365,13 +370,14 @@ function AppointmentFields({ d, set }: { d: AppointmentData; set: SetFn }) {
       />
       {!ahead || hasAfter ? (
         <>
-          <SectionTitle title="After the appointment" style={{ marginTop: space.xs, marginBottom: 0 }} />
+          <Txt variant="groupLabel" accessibilityRole="header">After the appointment</Txt>
           <TextField label="I was told" hint="In your own words" multiline value={d.told} onChangeText={(told) => set({ told })} />
           <TextField label="Tests or prescriptions" optional multiline value={d.tests} onChangeText={(tests) => set({ tests })} />
           <TextField label="What happens next" optional multiline value={d.next} onChangeText={(next) => set({ next })} />
         </>
       ) : null}
       <TextField label="Anything else" optional multiline value={d.notes} onChangeText={(notes) => set({ notes })} />
+      </FieldGroup>
     </>
   );
 }
@@ -380,6 +386,7 @@ function HistoryFields({ d, set }: { d: HistoryDraft; set: SetFn }) {
   return (
     <>
       <UrgentNote text={textOf(d)} />
+      <FieldGroup>
       <View>
         <FieldLabel label="What it was" />
         <ChipGroup
@@ -399,6 +406,7 @@ function HistoryFields({ d, set }: { d: HistoryDraft; set: SetFn }) {
       <TextField label="What I was told" hint="In your own words" multiline value={d.told} onChangeText={(told) => set({ told })} />
       <TextField label="What was done" optional multiline value={d.done} onChangeText={(done) => set({ done })} />
       <TextField label="Result" optional hint="How it went, in your own words" multiline value={d.result} onChangeText={(result) => set({ result })} />
+      </FieldGroup>
     </>
   );
 }
