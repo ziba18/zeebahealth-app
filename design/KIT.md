@@ -10,7 +10,7 @@ No raw hex, font names or magic numbers in screens.
 ## Hard rules
 - **Serif** (`Txt variant="hero" | "quote"`, `Quote`) ONLY for: Sam's own typed/spoken words,
   the Today hero prompt, the summary title. Never for chip labels, system text, quick logs.
-- **Plum = action only** (buttons, mic, links, selection, selected tab). **Clay = bleeding only**
+- **Burgundy (formerly plum) = action only** (buttons, mic, links, selection, selected tab). **Clay = bleeding only**
   (calendar fill, 4 px card edge `edge="clay"`, droplet icon). **saved/error = system status only**,
   never describing a body. Severity = the single-hue ramp, **always with the digit**.
 - **No `Alert.alert`** — use `ConfirmCard` in-page. **No 700 weight** (Inter 400/500/600 only; never
@@ -47,7 +47,7 @@ No raw hex, font names or magic numbers in screens.
 ## Tokens (`constants/atossaUI.ts`)
 | Export | Values |
 |---|---|
-| `colors` | canvas `#F7F3EE` · surface `#FFF` · sunken `#EFE9E1` · hairline `#E2DAD0` · borderStrong `#8F867C` · ink `#1F1B18` · ink2 `#5A534D` · ink3 `#756C64` (not on sunken — use ink2) · plum `#4A2C4F` · plumPressed `#3A2140` · plumTint `#EFE6EF` · clay `#A6452E` · clayTint `#F3DED6` · saved `#2E6A4F` / savedTint `#E2EEE6` · error `#A12A2A` / errorTint `#F6E0DE` · scrim · tabBar |
+| `colors` | Palette is **Burgundy & Bone** — see `design/BRAND.md`. Tokens: canvas · surface · sunken (grouped-list bg) · hairline · borderStrong · ink / ink2 / ink3 (ink3 not on sunken: use ink2) · **burgundy** (brand + action) / **burgundyPressed** / **burgundyTint** · clay (bleeding only) · saved · error · scrim · tabBar / tabBarTranslucent. Old `plum*` names are deprecated aliases: use `burgundy*` in new code |
 | `severityRamp`, `severityStep(n)`, `severityColor(n)` | 0–2,3–4,5–6,7–8,9–10 → `{bg, fg}` (fg ink on steps 0–1, white on 2–4) |
 | `type` (`Txt` variants) | largeTitle 34/41 600 −0.17 · hero 30/36 serif · title 24/30 600 · quote 20/28 serif · headline 17/24 600 · body 17/24 · secondary 15/20 ink2 · caption 13/18 500 +0.26 ink3 · numeral 44/48 500 tabular · tab 11/13 500 · **fieldLabel** 17/24 600 ink · **groupLabel** 15/20 600 ink2 |
 | `fonts` | regular/medium/semibold = Inter 400/500/600, serif = `InstrumentSerif_400Regular_Italic` |
@@ -59,7 +59,10 @@ No raw hex, font names or magic numbers in screens.
 | `motion` | fast 200 · base 240 · sheet 260 · toastMs 3000 |
 | `UI` | legacy aggregate with old key names mapped to the new palette — for old screens only |
 
-## Components (`components/atossa/kit`)
+## iOS patterns (sprint 2026-11-09)
+`ScreenLarge grouped` = sunken background for inset-grouped screens (Profile, Settings, Records, Friends); use `Group` / `GroupRow` / `GroupSwitchRow` / `GroupHeading` / `GroupFooter` from `records/GroupedRows`. `ScreenLarge` fades a small centred title onto a translucent bar when the large title scrolls away. Tab bar is blurred (solid on web). Wren: max one per screen, never on For my doctor or the PDF.
+
+## Components (`components/zeeba/kit`)
 | Component | Props (key) | Notes |
 |---|---|---|
 | `Txt` | `variant`, `color`, Text props | Legacy variants (`display`, `h2`, `bodyBold`, `small`…) still map, don't use them in new code |
