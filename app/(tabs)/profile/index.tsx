@@ -97,7 +97,7 @@ export default function ProfileScreen() {
     setTimeout(() => scrollRef.current?.scrollTo({ y: Math.max(0, y - space.xxl), animated: true }), 50);
 
   return (
-    <ScreenLarge title="Profile" back={{ label: from, onPress: goBack }} scrollRef={scrollRef}>
+    <ScreenLarge grouped title="Profile" back={{ label: from, onPress: goBack }} scrollRef={scrollRef}>
       <Group>
         <GroupRow
           icon="user"
@@ -138,11 +138,11 @@ export default function ProfileScreen() {
       </Group>
 
       <GroupHeading title="Where your notes are kept" style={{ marginTop: space.xxl }} />
-      <Card>
-        <View style={{ gap: space.sm }}>
+      <Group>
+        <View style={{ gap: space.sm, padding: space.md }}>
           {DATA_LINES.map((line) => <Txt key={line} variant="secondary">{line}</Txt>)}
         </View>
-      </Card>
+      </Group>
 
       <GroupHeading title="About" style={{ marginTop: space.xxl }} />
       <Group>

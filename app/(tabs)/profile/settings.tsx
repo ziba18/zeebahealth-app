@@ -1,7 +1,8 @@
 import React, { useCallback } from 'react';
 import { View } from 'react-native';
 import { space } from '../../../constants/zeebaUI';
-import { Card, ChipGroup, FieldLabel, ScreenLarge, SwitchRow, Txt } from '../../../components/zeeba/kit';
+import { ChipGroup, ScreenLarge } from '../../../components/zeeba/kit';
+import { Group, GroupFooter, GroupHeading, GroupSwitchRow } from '../../../components/zeeba/records/GroupedRows';
 import { useAuthStore } from '../../../stores/authStore';
 import { api } from '../../../lib/api';
 import { syncDailyLogReminder } from '../../../lib/notifications';
@@ -25,43 +26,45 @@ export default function SettingsScreen() {
   const reminderTime = profile?.daily_log_reminder_time ?? '20:00';
 
   return (
-    <ScreenLarge title="Reminders" back={{ label: 'Profile' }}>
-      <Card style={{ gap: space.xs }}>
-        <SwitchRow
+    <ScreenLarge grouped title="Reminders" back={{ label: 'Profile' }}>
+      <Group>
+        <GroupSwitchRow
           label="Notifications"
-          description="Allow Zeeba Health to send you notifications"
+          detail="Allow Zeeba Health to send you notifications"
           value={profile?.notifications_enabled ?? true}
           onChange={(v) => persist({ notifications_enabled: v })}
         />
-        <SwitchRow
+        <GroupSwitchRow
           label="Daily reminder"
-          description="A daily nudge to note how you’re feeling"
+          detail="A daily nudge to note how you’re feeling"
           value={reminderOn}
           onChange={(v) => {
             persist({ daily_log_reminder_enabled: v });
             syncDailyLogReminder(v, reminderTime).catch(() => {});
           }}
         />
-        {reminderOn ? (
-          <View style={{ marginTop: space.xs }}>
-            <FieldLabel label="Reminder time" />
-            <ChipGroup
-              options={REMINDER_TIMES.map((t) => ({ value: t.value, label: t.label }))}
-              ghosts={[]}
-              value={reminderTime}
-              accessibilityLabel="Reminder time"
-              onChange={(v) => {
-                if (!v) return;
-                persist({ daily_log_reminder_time: v });
-                syncDailyLogReminder(true, v).catch(() => {});
-              }}
-            />
-            <Txt variant="caption" style={{ marginTop: space.sm }}>
-              {'The reminder says: “If today’s worth noting, I’m here. Two minutes is plenty.”'}
-            </Txt>
-          </View>
-        ) : null}
-      </Card>
+      </Group>
+      {reminderOn ? (
+        <>
+          <GroupHeading title="Reminder time" style={{ marginTop: space.xxl }} />
+          <Group>
+            <View style={{ padding: space.md }}>
+              <ChipGroup
+                options={REMINDER_TIMES.map((t) => ({ value: t.value, label: t.label }))}
+                ghosts={[]}
+                value={reminderTime}
+                accessibilityLabel="Reminder time"
+                onChange={(v) => {
+                  if (!v) return;
+                  persist({ daily_log_reminder_time: v });
+                  syncDailyLogReminder(true, v).catch(() => {});
+                }}
+              />
+            </View>
+          </Group>
+          <GroupFooter>{'The reminder says: “If today’s worth noting, I’m here. Two minutes is plenty.”'}</GroupFooter>
+        </>
+      ) : null}
     </ScreenLarge>
   );
 }

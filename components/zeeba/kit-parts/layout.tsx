@@ -17,7 +17,7 @@ import { Quote, Txt } from './Txt';
  * content capped at 600 wide. Pass `back` for pushed screens to show a BackChevron above the title.
  */
 export function ScreenLarge({
-  title, subtitle, right, back, children, scroll = true, contentStyle, scrollRef, footer, wide, brand,
+  title, subtitle, right, back, children, scroll = true, contentStyle, scrollRef, footer, wide, brand, grouped,
 }: {
   title: string;
   subtitle?: React.ReactNode;
@@ -33,6 +33,8 @@ export function ScreenLarge({
   wide?: boolean;
   /** Small ZEEBA HEALTH wordmark above the title (sign in / register), so the auth screens carry the brand. */
   brand?: boolean;
+  /** iOS inset-grouped screens (Profile, Settings): sunken background behind white groups. */
+  grouped?: boolean;
 }) {
   const head = (
     <View style={styles.head}>
@@ -50,7 +52,7 @@ export function ScreenLarge({
     </View>
   );
   return (
-    <SafeAreaView edges={["top"]} role="main" style={styles.screen}>
+    <SafeAreaView edges={["top"]} role="main" style={[styles.screen, grouped && { backgroundColor: colors.sunken }]}>
       {scroll ? (
         <ScrollView
           ref={scrollRef as React.RefObject<ScrollViewInstance>}

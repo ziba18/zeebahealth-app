@@ -30,7 +30,7 @@ export function RecordsList({
   const sorted = sortRecords(kind, recs);
 
   return (
-    <ScreenLarge
+    <ScreenLarge grouped
       title={info.listTitle}
       subtitle={sorted.length ? savedLabel(sorted.length) : undefined}
       back={{ label: 'Profile', onPress: onBack }}
