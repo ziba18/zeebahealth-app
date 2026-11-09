@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: ROW_PAD, paddingVertical: space.sm,
   },
   text: { flex: 1, minWidth: 0, gap: 2 },
-  divider: { height: StyleSheet.hairlineWidth * 2, backgroundColor: colors.hairline },
+  divider: { height: StyleSheet.hairlineWidth, backgroundColor: colors.hairline },
   clayEdge: { position: 'absolute', left: 0, top: 0, bottom: 0, width: 4, backgroundColor: colors.clay, zIndex: 1 },
   afterEdge: { marginLeft: 4 },
   tabular: { fontVariant: ['tabular-nums'] },
