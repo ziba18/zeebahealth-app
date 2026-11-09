@@ -90,8 +90,8 @@ export function ChatDrawer({ visible, onClose, onOpenProfile }: {
           accessibilityRole="button"
           style={({ pressed }) => [styles.row, styles.newRow, pressed && { backgroundColor: colors.sunken }]}
         >
-          <Icon name="square-pen" size={20} color={colors.plum} />
-          <Txt variant="headline" color={colors.plum}>New chat</Txt>
+          <Icon name="square-pen" size={20} color={colors.burgundy} />
+          <Txt variant="headline" color={colors.burgundy}>New chat</Txt>
         </Pressable>
 
         <View style={styles.search}>
@@ -128,7 +128,7 @@ export function ChatDrawer({ visible, onClose, onOpenProfile }: {
                     ]}
                   />
                 ) : (
-                  <View key={c.id} style={[styles.chatRow, c.id === activeId && { backgroundColor: colors.plumTint }]}>
+                  <View key={c.id} style={[styles.chatRow, c.id === activeId && { backgroundColor: colors.burgundyTint }]}>
                   <Pressable
                     onPress={() => pick(() => select(c.id))}
                     onLongPress={() => setConfirmId(c.id)}
@@ -143,7 +143,7 @@ export function ChatDrawer({ visible, onClose, onOpenProfile }: {
                     <Icon name="message-circle" size={20} color={colors.ink2} />
                     <Txt variant="secondary" color={colors.ink} numberOfLines={1} style={{ flex: 1 }}>{c.title}</Txt>
                   </Pressable>
-                  <IconButton icon="more-horizontal" size={20} color={colors.plum} label={`Delete chat: ${c.title}`} onPress={() => setConfirmId(c.id)} />
+                  <IconButton icon="more-horizontal" size={20} color={colors.burgundy} label={`Delete chat: ${c.title}`} onPress={() => setConfirmId(c.id)} />
                   </View>
                 )
               ))}
@@ -156,8 +156,8 @@ export function ChatDrawer({ visible, onClose, onOpenProfile }: {
           accessibilityRole="button"
           style={({ pressed }) => [styles.row, styles.footer, pressed && { backgroundColor: colors.sunken }]}
         >
-          <Icon name="settings" size={20} color={colors.plum} />
-          <Txt color={colors.plum}>Profile and settings</Txt>
+          <Icon name="settings" size={20} color={colors.burgundy} />
+          <Txt color={colors.burgundy}>Profile and settings</Txt>
         </Pressable>
       </Animated.View>
     </Modal>

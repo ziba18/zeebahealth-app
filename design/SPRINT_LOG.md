@@ -17,3 +17,8 @@ Expo first-party packages: expo-blur (translucent tab bar), expo-haptics, react-
 - 12:32 Row press highlight already sunken (no scale). Login/register/forgot: burgundy wordmark, sunken bg, fields in one white group. rendered /login OK
 - 12:33 Onboarding: continuous burgundy progress bar, happy Wren step 4 only. Rendered OK. OnboardingScreen.tsx
 - 12:33 Comfort Wren + 'Saved. That sounded like a hard day.' toast at strength>=8; showToast opts.mood. toast.tsx, CaptureSheet
+- 12:33 Month calendar: burgundy today ring/dots/chevrons (clay bleeding, severity tint and 56pt cells already there). MonthCalendar.tsx
+- 12:34 Token rename plum*->burgundy* everywhere, aliases removed; tsc passes
+- 12:35 Today hero says 'Your first note takes a minute.' when no notes. TodayCards, today/index
+- 12:36 pressSpring (Chip, QuickTile spring 0.97 + haptic), FieldGroup hairline fields in login/register/onboarding name; rendered register + onboarding/name OK
+- 12:37 Toast render attempts (temp route + temp timer) captured nothing in headless virtual time; temp code removed. Month view not rendered.

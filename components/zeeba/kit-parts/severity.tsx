@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center', backgroundColor: colors.surface,
   },
   // V1: solid plum, no ring — unmistakable at arm's length.
-  dotSelected: { borderWidth: 0, borderColor: colors.plum, backgroundColor: colors.plum },
+  dotSelected: { borderWidth: 0, borderColor: colors.burgundy, backgroundColor: colors.burgundy },
   digit: { fontFamily: fonts.medium, fontSize: 17, lineHeight: 22, color: colors.ink, fontVariant: ['tabular-nums'] },
   digitSelected: { fontFamily: fonts.semibold, color: colors.white },
   captions: { flexDirection: 'row', justifyContent: 'space-between', marginTop: space.xxs },

@@ -17,7 +17,7 @@ export function GhostEntry({ width = 260 }: { width?: number }) {
       <Rect x={44} y={21} width={84} height={10} rx={5} fill={colors.sunken} />
       <Rect x={20} y={46} width={200} height={10} rx={5} fill={colors.hairline} />
       <Rect x={20} y={64} width={150} height={10} rx={5} fill={colors.hairline} />
-      <Rect x={20} y={84} width={78} height={18} rx={9} fill={colors.plumTint} />
+      <Rect x={20} y={84} width={78} height={18} rx={9} fill={colors.burgundyTint} />
     </Svg>
   );
 }

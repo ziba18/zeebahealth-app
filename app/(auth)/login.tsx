@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Group } from '../../components/zeeba/records/GroupedRows';
+import { FieldGroup } from '../../components/zeeba/records/GroupedRows';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { space } from '../../constants/zeebaUI';
@@ -43,8 +43,7 @@ export default function LoginScreen() {
 
   return (
     <ScreenLarge brand grouped title="Sign in" subtitle="Welcome back." back={{ label: 'Back' }}>
-      <Group>
-      <View style={{ gap: space.lg, padding: space.md }}>
+      <FieldGroup>
         <TextField
           label="Email"
           value={email}
@@ -70,8 +69,7 @@ export default function LoginScreen() {
           />
           <Button label="Forgot your password?" variant="text" small align="start" onPress={() => router.push('/(auth)/forgot-password')} style={{ marginTop: space.xxs }} />
         </View>
-      </View>
-      </Group>
+      </FieldGroup>
 
       <View style={{ marginTop: space.xxl, gap: space.xs }}>
         <InlineError message={error} style={{ marginBottom: space.xs }} />

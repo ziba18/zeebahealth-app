@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { FieldGroup } from '../../../components/zeeba/records/GroupedRows';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { space } from '../../../constants/zeebaUI';
@@ -34,6 +35,7 @@ export default function OnboardingNameScreen() {
 
   return (
     <OnboardingScreen step={1} title="What should we call you?" helper="You can change this any time.">
+      <FieldGroup>
       <TextField
         label="Your name"
         value={name}
@@ -45,6 +47,7 @@ export default function OnboardingNameScreen() {
         returnKeyType="done"
         onSubmitEditing={handleSave}
       />
+      </FieldGroup>
       <View style={{ marginTop: space.xxl, gap: space.sm }}>
         <InlineError message={error} />
         <Button label={loading ? 'Saving…' : 'Continue'} loading={loading} disabled={!name.trim()} onPress={handleSave} />

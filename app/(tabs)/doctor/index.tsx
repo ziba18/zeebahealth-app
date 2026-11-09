@@ -201,7 +201,7 @@ export default function DoctorScreen() {
           {/* Under ~240 pt wide the icon disc goes: the words beside it were breaking mid-word. */}
           {winWidth < 240 || short ? null : (
           <View aria-hidden style={{
-            width: 44, height: 44, borderRadius: 22, backgroundColor: colors.plumTint,
+            width: 44, height: 44, borderRadius: 22, backgroundColor: colors.burgundyTint,
             alignItems: 'center', justifyContent: 'center',
           }}>
             <Icon name="calendar" size={22} color={colors.ink} />
@@ -330,7 +330,7 @@ export default function DoctorScreen() {
             minHeight: heights.secondary, paddingVertical: space.sm,
           }}
         >
-          <Icon name="settings" size={24} color={colors.plum} />
+          <Icon name="settings" size={24} color={colors.burgundy} />
           <View style={{ flex: 1 }}>
             <Txt variant="headline">Customise this summary</Txt>
             <Txt variant="secondary">{joinFacts(visitType ?? 'Any visit', doc.rangeLabel)}</Txt>

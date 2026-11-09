@@ -98,7 +98,7 @@ export function DocumentPreview({ doc, tall }: { doc: DoctorDoc; tall?: boolean 
             }, shadows.hero]}
           >
             <View aria-hidden style={{ width: 44, height: 56, borderRadius: 6, borderWidth: 1, borderColor: colors.borderStrong, backgroundColor: colors.white, alignItems: 'center', justifyContent: 'center' }}>
-              <Icon name="file-text" size={22} color={colors.plum} />
+              <Icon name="file-text" size={22} color={colors.burgundy} />
             </View>
             <View style={{ flex: 1 }}>
               <Txt variant="headline">See the full page</Txt>

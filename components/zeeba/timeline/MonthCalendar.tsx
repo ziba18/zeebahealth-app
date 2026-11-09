@@ -5,7 +5,7 @@
 //   spotting  = 36 clay hatched outline (1.5), clay numeral on a clear disc (hatch never crosses it)
 //   future    = ink3 numeral, no press state (unless something is logged there)
 //   any note  = 5 plum dot under the day
-//   today     = 1.5 ink ring
+//   today     = 1.5 burgundy ring
 // Empty days are plain. No streaks, no "missed" states, no animation.
 import React from 'react';
 import { Pressable, StyleSheet, View, useWindowDimensions, Dimensions } from 'react-native';
@@ -54,11 +54,11 @@ export function MonthCalendar({
   return (
     <View>
       <View style={styles.head}>
-        <IconButton icon="chevron-left" color={colors.plum} label="Previous month" onPress={onPrev} />
+        <IconButton icon="chevron-left" color={colors.burgundy} label="Previous month" onPress={onPrev} />
         <Txt variant="title" accessibilityRole="header" style={[{ textAlign: 'center', flex: 1 }, narrow && { fontSize: 20, lineHeight: 26 }]}>
           {`${MONTH_NAMES[month0]} ${year}`}
         </Txt>
-        <IconButton icon="chevron-right" color={colors.plum} label="Next month" onPress={onNext} />
+        <IconButton icon="chevron-right" color={colors.burgundy} label="Next month" onPress={onNext} />
       </View>
       <View style={styles.row} aria-hidden>
         {WEEKDAY_LETTERS.map((w, i) => (
@@ -207,10 +207,10 @@ const styles = StyleSheet.create({
   discWrap: { width: DISC, height: DISC, alignItems: 'center', justifyContent: 'center' },
   disc: { width: DISC, height: DISC, borderRadius: radii.pill, alignItems: 'center', justifyContent: 'center' },
   todayRing: {
-    position: 'absolute', width: DISC, height: DISC, borderRadius: radii.pill, borderWidth: RING, borderColor: colors.ink,
+    position: 'absolute', width: DISC, height: DISC, borderRadius: radii.pill, borderWidth: RING, borderColor: colors.burgundy,
   },
   todayRingOuter: { width: DISC + 6, height: DISC + 6, top: -3, left: -3 },
   num: { fontFamily: fonts.regular, fontSize: 15, lineHeight: 20, color: colors.ink, fontVariant: ['tabular-nums'] },
   numOnClay: { fontFamily: fonts.semibold, color: colors.white },
-  dot: { width: 5, height: 5, borderRadius: 2.5, backgroundColor: colors.plum, marginTop: space.xxs },
+  dot: { width: 5, height: 5, borderRadius: 2.5, backgroundColor: colors.burgundy, marginTop: space.xxs },
 });
