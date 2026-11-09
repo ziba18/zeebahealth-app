@@ -459,7 +459,7 @@ const styles = StyleSheet.create({
   scrollContent: { paddingBottom: heights.toastClearance },
   navBar: {
     position: 'absolute', top: 0, left: 0, right: 0, height: 44, alignItems: 'center', justifyContent: 'center',
-    backgroundColor: colors.tabBarTranslucent, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.borderStrong,
+    backgroundColor: Platform.OS === 'web' ? colors.tabBar : colors.tabBarTranslucent, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.borderStrong,
     pointerEvents: 'none',
   },
   navTitle: { maxWidth: '60%', textAlign: 'center' },
