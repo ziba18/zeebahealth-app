@@ -38,7 +38,7 @@ export function OnboardingScreen({
             <View style={[styles.fill, { width: `${(step / ONBOARDING_STEPS) * 100}%` }]} />
           </View>
           <Txt variant="caption" style={styles.step}>{`Step ${step} of ${ONBOARDING_STEPS}`}</Txt>
-          {step === ONBOARDING_STEPS ? <View style={styles.wren}><Wren mood="happy" size={96} /></View> : null}
+          {step === ONBOARDING_STEPS ? <View style={styles.wren}><Wren mood="happy" size={96} decorative /></View> : null}
           <Txt variant="largeTitle" accessibilityRole="header">{title}</Txt>
           {helper ? <Txt variant="body" color={colors.ink2} style={{ marginTop: space.xs }}>{helper}</Txt> : null}
         </View>

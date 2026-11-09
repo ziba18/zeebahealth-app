@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Group } from '../../../components/zeeba/records/GroupedRows';
+import { FieldGroup } from '../../../components/zeeba/records/GroupedRows';
 import { View } from 'react-native';
 import { space } from '../../../constants/zeebaUI';
 import { Button, FieldLabel, InlineError, ScreenLarge, TextField, showToast } from '../../../components/zeeba/kit';
@@ -71,8 +71,7 @@ export default function EditProfileScreen() {
 
   return (
     <ScreenLarge grouped title="My details" back={{ label: 'Profile' }}>
-      <Group>
-      <View style={{ gap: space.xl, padding: space.md }}>
+      <FieldGroup>
         <TextField label="Your name" value={name} onChangeText={touch(setName)} autoCapitalize="words" />
 
         <View>
@@ -86,8 +85,7 @@ export default function EditProfileScreen() {
 
         <TextField label="Usual days between periods" hint="From the start of one period to the start of the next" value={cycle} onChangeText={digits(setCycle)} keyboardType="number-pad" maxLength={2} />
         <TextField label="Usual period length in days" value={period} onChangeText={digits(setPeriod)} keyboardType="number-pad" maxLength={2} />
-      </View>
-      </Group>
+      </FieldGroup>
       <View style={{ gap: space.md, marginTop: space.xl }}>
         <InlineError message={error} />
         <Button label="Save my details" icon="check" loading={saving} onPress={save} />

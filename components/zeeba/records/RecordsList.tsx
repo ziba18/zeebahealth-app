@@ -39,7 +39,7 @@ export function RecordsList({
     >
       {loadError && !loadedFor ? <InlineError message={loadError} /> : null}
       {sorted.length === 0 && loadedFor ? (
-        <EmptyState illustration={<Wren mood="sleepy" size={96} />} message={info.empty} action={{ label: info.addLabel, onPress: onAdd }} />
+        <EmptyState illustration={<Wren mood="sleepy" size={96} decorative />} message={info.empty} action={{ label: info.addLabel, onPress: onAdd }} />
       ) : sorted.length ? (
         <Group>
           {sorted.map((r) => {

@@ -178,7 +178,7 @@ function ListView({
     return (
       <EmptyState
         fill
-        illustration={<Wren mood="sleepy" size={96} />}
+        illustration={<Wren mood="sleepy" size={96} decorative />}
         message="Nothing here yet. Your notes will line up here by date."
         action={{ label: 'Add a note', onPress: () => openCapture() }}
       />

@@ -48,7 +48,7 @@ export function HeroCard({ first }: { first?: boolean } = {}) {
         end={{ x: 0.5, y: 1 }}
         style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]}
       />
-      <View style={styles.wren}><Wren mood="idle" size={120} /></View>
+      <View style={styles.wren}><Wren mood="idle" size={120} decorative /></View>
       <Txt variant="hero" style={styles.center} accessibilityRole="header" accessibilityLabel={first ? 'Your first note takes a minute.' : PROMPT}>
         {prompt}
       </Txt>

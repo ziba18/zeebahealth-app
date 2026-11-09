@@ -60,7 +60,7 @@ export function ToastHost() {
           accessibilityRole="alert"
         >
           <Pressable onPress={dismissToast} accessibilityLabel={`${message} Dismiss`} style={styles.inner}>
-            {mood ? <Wren mood={mood} size={40} /> : <Icon name="check-circle" size={20} color={colors.saved} />}
+            {mood ? <Wren mood={mood} size={40} decorative /> : <Icon name="check-circle" size={20} color={colors.saved} />}
             <Txt style={styles.text}>{message}</Txt>
           </Pressable>
         </Animated.View>
