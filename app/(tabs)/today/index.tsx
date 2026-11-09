@@ -40,7 +40,7 @@ export default function TodayScreen() {
 
   const capture = (
     <>
-      <HeroCard />
+      <HeroCard first={!!loadedFor && symptoms.length === 0} />
       <View style={{ marginTop: space.md }}>
         <QuickRows onPeriod={() => setBleeding(true)} />
       </View>

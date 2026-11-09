@@ -36,7 +36,9 @@ const PROMPT_BALANCED = 'What’s been going on\nwith your body?';
 /** The guided follow-ups that fill the structured fields, previewed so the hero reads as step one of three. */
 const NEXT_STEPS = ['When', 'How strong', 'Where'] as const;
 
-export function HeroCard() {
+/** `first` = brand-new user with no notes yet: the prompt becomes a gentle invitation. */
+export function HeroCard({ first }: { first?: boolean } = {}) {
+  const prompt = first ? 'Your first note\ntakes a minute.' : PROMPT_BALANCED;
   return (
     <Card tone="hero" style={styles.hero}>
       <LinearGradient
@@ -47,8 +49,8 @@ export function HeroCard() {
         style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]}
       />
       <View style={styles.wren}><Wren mood="idle" size={120} /></View>
-      <Txt variant="hero" style={styles.center} accessibilityRole="header" accessibilityLabel={PROMPT}>
-        {PROMPT_BALANCED}
+      <Txt variant="hero" style={styles.center} accessibilityRole="header" accessibilityLabel={first ? 'Your first note takes a minute.' : PROMPT}>
+        {prompt}
       </Txt>
       {Platform.OS === 'web' ? (
         // Browsers have no voice capture here: lead with the typed note instead of a mic that opens the Type tab.
