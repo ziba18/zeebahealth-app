@@ -95,13 +95,13 @@ function ChatScreen() {
   return (
     <SafeAreaView role="main" edges={['top']} style={styles.screen}>
       <View style={[styles.column, styles.header]}>
-        <IconButton icon="chevron-left" label="Back to Today" color={colors.burgundy} onPress={() => router.back()} />
+        <IconButton icon="chevron-left" label="Back to Today" color={colors.accent} onPress={() => router.back()} />
         <Txt variant="headline" accessibilityRole="header" style={styles.headerTitle}>Talk it through</Txt>
         <View style={styles.headerRight}>
           {!empty ? (
-            <IconButton icon="square-pen" label="New chat" color={colors.burgundy} onPress={() => useChatStore.getState().newChat()} />
+            <IconButton icon="square-pen" label="New chat" color={colors.accent} onPress={() => useChatStore.getState().newChat()} />
           ) : null}
-          <IconButton icon="menu" label="Open chats" color={colors.burgundy} onPress={() => setDrawer(true)} />
+          <IconButton icon="menu" label="Open chats" color={colors.accent} onPress={() => setDrawer(true)} />
         </View>
       </View>
 
@@ -125,7 +125,7 @@ function ChatScreen() {
                   }}
                   style={({ pressed }) => [styles.starter, pressed && { backgroundColor: colors.sunken }]}
                 >
-                  <Txt variant="secondary" color={colors.burgundy} style={styles.center} maxFontSizeMultiplier={1.6}>{label}</Txt>
+                  <Txt variant="secondary" color={colors.accent} style={styles.center} maxFontSizeMultiplier={1.6}>{label}</Txt>
                 </Pressable>
               ))}
             </View>

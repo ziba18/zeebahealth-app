@@ -24,7 +24,7 @@ const WEEKS: Record<string, string> = { 'P-07': 'Week of 12 Oct', 'P-12': 'Week 
 const COLS = ['ID', 'Joined', 'Notes, last 7 days', 'Next appointment', 'Summary', 'Shared with clinic', 'Last active'];
 
 const Tag = () => (
-  <View style={{ alignSelf: 'flex-start', backgroundColor: colors.burgundyTint, paddingHorizontal: space.sm, paddingVertical: space.xxs, borderRadius: 999 }}>
+  <View style={{ alignSelf: 'flex-start', backgroundColor: colors.accentTint, paddingHorizontal: space.sm, paddingVertical: space.xxs, borderRadius: 999 }}>
     <Txt variant="caption">Mock — pilot feature · example numbers</Txt>
   </View>
 );

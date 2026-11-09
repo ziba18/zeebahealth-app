@@ -7,7 +7,7 @@ import { ScrollView, StyleSheet, TextInput, View, type ScrollViewInstance, type 
 import {
   Button, Card, ConfirmCard, InlineError, SegmentedControl, Sheet, Txt, showToast,
 } from '../kit';
-import { colors, fonts, radii, space } from '../../../constants/zeebaUI';
+import { font, colors, fonts, radii, space } from '../../../constants/zeebaUI';
 import { useDictation } from '../../../hooks/useDictation';
 import { closeCapture, useCaptureStore, type CaptureOptions } from '../../../lib/captureStore';
 import { haptics } from '../../../lib/haptics';
@@ -426,15 +426,15 @@ const styles = StyleSheet.create({
   progressRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', minHeight: 24 },
   box: {
     marginTop: space.lg, borderRadius: radii.input, padding: space.md,
-    fontFamily: fonts.regular, fontSize: 17, lineHeight: 24, color: colors.ink, textAlign: 'left', textAlignVertical: 'top',
+    ...font.regular, fontSize: 17, lineHeight: 24, color: colors.ink, textAlign: 'left', textAlignVertical: 'top',
   },
-  transcript: { backgroundColor: colors.burgundyTint, minHeight: 120 },
+  transcript: { backgroundColor: colors.accentTint, minHeight: 120 },
   typed: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.borderStrong, minHeight: 180 },
   // Plum 2px ring (padding trimmed 1 so the text does not shift); replaces RN-web's near-black outline.
-  typedFocus: { borderColor: colors.burgundy, borderWidth: 2, padding: space.md - 1, ...({ outlineStyle: 'none' } as object) },
+  typedFocus: { borderColor: colors.accent, borderWidth: 2, padding: space.md - 1, ...({ outlineStyle: 'none' } as object) },
   micAreaIdle: { marginTop: space.xxl * 2 },
   micArea: { alignItems: 'center', marginTop: space.xl, gap: space.xs },
-  micLabel: { fontFamily: fonts.medium },
+  micLabel: { ...font.medium },
   actions: { gap: space.xxs },
   secondaryActions: { flexDirection: 'row', gap: space.xs },
 });

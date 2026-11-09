@@ -4,7 +4,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
 import { Button, Chip, ChipGroup, FieldLabel, Txt } from '../kit';
-import { colors, fonts, radii, space } from '../../../constants/zeebaUI';
+import { font, colors, fonts, radii, space } from '../../../constants/zeebaUI';
 import { IMPACT_OPTIONS, WHEN_OPTIONS } from '../../../lib/records/fields';
 import { type Draft, impactLabel, isEscape } from './draft';
 import type { Question } from './infer';
@@ -197,6 +197,6 @@ const styles = StyleSheet.create({
   otherRow: { flexDirection: 'row', alignItems: 'center', gap: space.xs, marginTop: space.sm },
   otherInput: {
     flex: 1, minWidth: 0, height: 52, borderRadius: radii.input, borderWidth: 1, borderColor: colors.borderStrong,
-    backgroundColor: colors.surface, paddingHorizontal: space.md, fontFamily: fonts.regular, fontSize: 17, color: colors.ink,
+    backgroundColor: colors.surface, paddingHorizontal: space.md, ...font.regular, fontSize: 17, color: colors.ink,
   },
 });

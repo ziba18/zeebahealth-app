@@ -1,4 +1,4 @@
-// Timeline tab: List (filterable feed grouped by week) · Month (calendar + DaySheet).
+// Evidence tab: Overview (dashboard + charts) · Notes (filterable feed grouped by week) · Calendar (month + DaySheet).
 import { Wren } from '../../../components/zeeba/Wren';
 import { usePageTitle } from '../../../lib/usePageTitle';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -21,7 +21,7 @@ import {
   AFTER_SHEET_MS, bleedingHref, entryHref, periodHref, recordHref,
 } from '../../../components/zeeba/timeline/navigation';
 import { AREA_FILTERS, TIMELINE_FILTERS, useTimelineSession, type TimelineFilter, type TimelineMode } from '../../../components/zeeba/timeline/session';
-import { colors, fonts, space } from '../../../constants/zeebaUI';
+import { font, colors, fonts, space } from '../../../constants/zeebaUI';
 import { openCapture } from '../../../lib/captureStore';
 import { mondayOf, parseKey, todayKey } from '../../../lib/records/dates';
 import { bleedingStatus, noteCount, notesLabel, worstOf } from '../../../lib/records/format';
@@ -29,16 +29,16 @@ import { useAuthStore } from '../../../stores/authStore';
 import { useRecordsStore } from '../../../stores/recordsStore';
 
 const MODES: { value: TimelineMode; label: string }[] = [
-  { value: 'list', label: 'List' },
-  { value: 'month', label: 'Month' },
-  { value: 'patterns', label: 'Patterns' },
+  { value: 'patterns', label: 'Overview' },
+  { value: 'list', label: 'Notes' },
+  { value: 'month', label: 'Calendar' },
 ];
 
 const dayWord = (n: number) => `${n} ${n === 1 ? 'day' : 'days'}`;
 
 export default function TimelineScreen() {
   const router = useRouter();
-  usePageTitle('Timeline');
+  usePageTitle('Evidence');
   const { mode, setMode, filter, setFilter, focusWeek, setFocusWeek } = useTimelineSession();
   const scrollRef = useRef<ScrollViewInstance | null>(null);
   const symptom = useRecordsStore((s) => s.records.symptom);
@@ -94,11 +94,11 @@ export default function TimelineScreen() {
   );
 
   return (
-    <ScreenLarge title="Timeline" scrollRef={scrollRef} right={header} contentStyle={emptyList ? { flexGrow: 1 } : undefined}>
+    <ScreenLarge title="Evidence" scrollRef={scrollRef} right={header} contentStyle={emptyList ? { flexGrow: 1 } : undefined}>
       {loadError && !loadedFor ? (
         <InlineError message={loadError} onRetry={userId ? () => load(userId) : undefined} style={{ marginBottom: space.md }} />
       ) : null}
-      <SegmentedControl accessibilityLabel="Timeline view" options={MODES} value={mode} onChange={setMode} />
+      <SegmentedControl accessibilityLabel="Evidence view" options={MODES} value={mode} onChange={setMode} />
       {waiting ? (
         <View style={{ marginTop: space.lg }}><SkeletonCards count={3} label="Loading your timeline" /></View>
       ) : failed ? null : mode === 'list' ? (
@@ -212,7 +212,7 @@ function ListView({
           // 32 above (24 under the filters for the first), 8 below, 12 between cards.
           <View key={g.key} onLayout={(e) => { groupY.current[g.key] = e.nativeEvent.layout.y; if (g.key === targetKey) jump(); }} style={{ marginTop: i === 0 ? space.xl : space.xxl }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm, marginBottom: space.sm }}>
-              <Txt variant="groupLabel" accessibilityRole="header" style={{ fontFamily: fonts.serif, fontSize: 22, lineHeight: 28, fontWeight: '400', color: colors.ink }}>{g.label}</Txt>
+              <Txt variant="groupLabel" accessibilityRole="header" style={{ ...font.serifItalic, fontSize: 22, lineHeight: 28, fontWeight: '400', color: colors.ink }}>{g.label}</Txt>
               {/* Hairline rule runs out from the label so each week reads as its own block. */}
               <View style={{ flex: 1, height: 1, backgroundColor: colors.hairline }} />
               {g.key.startsWith('w:') && g.items.some((x) => x.kind === 'symptom') ? (

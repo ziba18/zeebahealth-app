@@ -3,7 +3,7 @@ import { Animated, Platform, Pressable, ScrollView, StyleSheet, View, useWindowD
 import { BlurView } from 'expo-blur';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useSegments } from 'expo-router';
-import { colors, fonts, heights, layout, radii, shadows, space } from '../../../constants/zeebaUI';
+import { font, colors, fonts, heights, layout, radii, shadows, space } from '../../../constants/zeebaUI';
 import { useAuthStore } from '../../../stores/authStore';
 import { isHumanName } from '../../../lib/humanName';
 import { AnimatedPressable, usePressSpring } from './pressSpring';
@@ -44,7 +44,7 @@ export function ScreenLarge({
   const head = (
     <View style={styles.head}>
       {back ? <BackChevron label={back.label} onPress={back.onPress} /> : null}
-      {brand ? <Txt variant="caption" color={colors.burgundy} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{ fontSize: 13, letterSpacing: 3, fontWeight: '600', marginBottom: space.xs }}>ZEEBA HEALTH</Txt> : null}
+      {brand ? <Txt variant="caption" color={colors.accent} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{ fontSize: 13, letterSpacing: 3, fontWeight: '600', marginBottom: space.xs }}>ZEEBA HEALTH</Txt> : null}
       <View style={styles.titleRow}>
         <Txt variant="largeTitle" accessibilityRole="header" numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.7} style={{ flexGrow: 1, flexShrink: 1, flexBasis: 150 }}>{title}</Txt>
         {right ? <View style={styles.right}>{right}</View> : null}
@@ -80,7 +80,7 @@ export function ScreenLarge({
       )}
       {scroll ? (
         <Animated.View style={[styles.navBar, Platform.OS === 'web' && { backgroundColor: grouped ? colors.sunken : colors.canvas }, { opacity: barOpacity }]} aria-hidden>
-          {Platform.OS === 'web' ? null : <BlurView intensity={60} tint="systemChromeMaterialLight" style={StyleSheet.absoluteFill} />}
+          {Platform.OS === 'web' ? null : <BlurView intensity={60} tint="systemChromeMaterial" style={StyleSheet.absoluteFill} />}
           <Txt variant="headline" numberOfLines={1} style={styles.navTitle}>{title}</Txt>
         </Animated.View>
       ) : null}
@@ -122,8 +122,8 @@ export function BackChevron({ label, onPress }: { label: string; onPress?: () =>
       accessibilityLabel={`Back to ${label}`}
       style={({ pressed }) => [styles.back, pressed && { opacity: 0.6 }]}
     >
-      <Icon name="chevron-left" size={24} color={colors.burgundy} />
-      <Txt variant="body" color={colors.burgundy}>{label}</Txt>
+      <Icon name="chevron-left" size={24} color={colors.accent} />
+      <Txt variant="body" color={colors.accent}>{label}</Txt>
     </Pressable>
   );
 }
@@ -145,7 +145,7 @@ export type CardTone = 'default' | 'sunken' | 'selected' | 'error' | 'hero' | 'c
 const toneStyle = (tone: CardTone): ViewStyle => {
   switch (tone) {
     case 'sunken': return { backgroundColor: colors.sunken, borderColor: colors.sunken };
-    case 'selected': case 'blue': return { backgroundColor: colors.burgundyTint, borderColor: colors.burgundyTint };
+    case 'selected': case 'blue': return { backgroundColor: colors.accentTint, borderColor: colors.accentTint };
     case 'error': case 'coral': return { backgroundColor: colors.errorTint, borderColor: colors.error };
     case 'green': return { backgroundColor: colors.savedTint, borderColor: colors.savedTint };
     case 'hero': return { ...shadows.hero };
@@ -231,7 +231,7 @@ export function HeroNumber({
   const body = (
     <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', columnGap: space.md, rowGap: space.xxs }}>
       {big ? (
-        <View style={{ minWidth: tile, height: tile, paddingHorizontal: space.sm, borderRadius: 20, backgroundColor: colors.burgundyTint, alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ minWidth: tile, height: tile, paddingHorizontal: space.sm, borderRadius: 20, backgroundColor: colors.accentTint, alignItems: 'center', justifyContent: 'center' }}>
           <Txt variant="numeral" style={short ? { fontSize: 28, lineHeight: 32 } : compact ? { fontSize: 36, lineHeight: 40 } : { fontSize: 48, lineHeight: 52 }}>{big}</Txt>
         </View>
       ) : null}
@@ -258,7 +258,7 @@ export function QuickTile({ label, icon, onPress }: { label: string; icon: IconN
       accessibilityLabel={label}
       style={[styles.qtile, spring.pressed && { backgroundColor: colors.canvas }, { transform: [{ scale: spring.scale }] }]}
     >
-      <View aria-hidden style={styles.qicon}><Icon name={icon} size={20} color={colors.ink} /></View>
+      <View aria-hidden style={styles.qicon}><Icon name={icon} size={18} color={colors.accent} /></View>
       <Txt variant="secondary" style={{ flex: 1, color: colors.ink }} maxFontSizeMultiplier={1.4}>{label}</Txt>
     </AnimatedPressable>
   );
@@ -454,10 +454,10 @@ export function GlyphLine({
 const styles = StyleSheet.create({
   qtile: {
     flexBasis: '48%', flexGrow: 1, flexDirection: 'row', alignItems: 'center', gap: space.xs, minHeight: 56,
-    paddingHorizontal: space.sm, paddingVertical: space.xs, borderRadius: 16, backgroundColor: colors.surface,
-    borderWidth: StyleSheet.hairlineWidth, borderColor: colors.hairline,
+    paddingHorizontal: space.sm, paddingVertical: space.xs, borderRadius: radii.row + 4, backgroundColor: colors.surface,
+    borderWidth: 1, borderColor: colors.cardBorder,
   },
-  qicon: { width: 32, height: 32, borderRadius: 16, backgroundColor: colors.burgundyTint, alignItems: 'center', justifyContent: 'center' },
+  qicon: { width: 32, height: 32, borderRadius: 16, backgroundColor: colors.accentTint, alignItems: 'center', justifyContent: 'center' },
   screen: { flex: 1, backgroundColor: colors.canvas },
   column: { width: '100%', maxWidth: layout.maxContentWidth, alignSelf: 'center', paddingHorizontal: layout.gutter },
   // Ends clear of the toast zone, so a toast never sits over the last action (UX #30).
@@ -477,12 +477,12 @@ const styles = StyleSheet.create({
     width: 44, height: 44, borderRadius: radii.pill, backgroundColor: colors.sunken,
     borderWidth: StyleSheet.hairlineWidth * 2, borderColor: colors.hairline, alignItems: 'center', justifyContent: 'center',
   },
-  avatarText: { fontFamily: fonts.semibold, fontSize: 17, lineHeight: 22, color: colors.ink2 },
+  avatarText: { ...font.semibold, fontSize: 17, lineHeight: 22, color: colors.ink2 },
   back: { flexDirection: 'row', alignItems: 'center', minHeight: 44, alignSelf: 'flex-start', marginLeft: -6, paddingRight: space.xs },
   sectionTitle: { flexDirection: 'row', alignItems: 'center', gap: space.sm, marginBottom: space.sm },
   card: {
-    backgroundColor: colors.surface, borderRadius: radii.card, borderWidth: 1, borderColor: colors.hairline,
-    padding: space.lg, overflow: 'hidden',
+    backgroundColor: colors.surface, borderRadius: radii.card, borderWidth: 1, borderColor: colors.cardBorder,
+    padding: space.md, overflow: 'hidden',
   },
   confirmRow: { flexDirection: 'row', alignItems: 'center', gap: space.xs },
   pressable: { flexDirection: 'row', alignItems: 'center', gap: space.sm, minHeight: heights.minHit },
@@ -496,5 +496,5 @@ const styles = StyleSheet.create({
     flexDirection: 'row', gap: space.xs, alignItems: 'flex-start', backgroundColor: colors.errorTint,
     borderRadius: radii.input, padding: space.md,
   },
-  errorText: { fontFamily: fonts.medium, fontSize: 15, lineHeight: 20, color: colors.error },
+  errorText: { ...font.medium, fontSize: 15, lineHeight: 20, color: colors.error },
 });

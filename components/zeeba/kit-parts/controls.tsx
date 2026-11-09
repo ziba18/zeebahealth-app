@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View, useWindowDimensions, type StyleProp, type ViewStyle, type ScrollViewInstance } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colors, fonts, heights, layout, radii, shadows, space } from '../../../constants/zeebaUI';
+import { font, colors, fonts, heights, layout, radii, shadows, space, useColors } from '../../../constants/zeebaUI';
 import { AnimatedPressable, usePressSpring } from './pressSpring';
 import { haptics } from '../../../lib/haptics';
 import { formatRelativeDay } from '../../../lib/records/format';
@@ -40,10 +40,10 @@ export function Button({
 }) {
   const inactive = disabled || loading;
   const fg =
-    variant === 'primary' ? (inactive ? colors.ink2 : colors.white)
-    : variant === 'secondary' ? (inactive ? colors.ink3 : colors.ink)
+    variant === 'primary' ? (inactive ? colors.ink2 : colors.onAccent)
+    : variant === 'secondary' ? (inactive ? colors.ink3 : colors.accent)
     : variant === 'destructive' || variant === 'destructiveOutline' ? colors.error
-    : colors.burgundy;
+    : colors.accent;
   return (
     <Pressable
       onPress={() => { if (variant === 'primary') haptics.light(); onPress(); }}
@@ -56,8 +56,8 @@ export function Button({
         styles.btnBase,
         // A 2% press-in on the filled and outlined buttons: the colour change alone is only ~1.2:1.
         pressed && !inactive && (variant === 'primary' || variant === 'secondary' || variant === 'destructiveOutline') && { transform: [{ scale: 0.97 }] },
-        variant === 'primary' && [styles.primary, { backgroundColor: inactive ? colors.sunken : pressed ? colors.burgundyPressed : colors.burgundy }],
-        variant === 'secondary' && [styles.secondary, { borderColor: inactive ? colors.hairline : colors.borderStrong, backgroundColor: pressed ? colors.sunken : 'transparent' }],
+        variant === 'primary' && [styles.primary, { backgroundColor: inactive ? colors.sunken : pressed ? colors.accentPressed : colors.accent }],
+        variant === 'secondary' && [styles.secondary, { backgroundColor: inactive ? colors.sunken : colors.accentTint, opacity: pressed ? 0.75 : 1 }],
         variant === 'destructiveOutline' && [styles.secondary, { borderColor: colors.error, backgroundColor: pressed ? colors.errorTint : 'transparent', opacity: inactive ? 0.5 : 1 }],
         (variant === 'text' || variant === 'destructive') && [styles.textBtn, { opacity: inactive ? 0.5 : pressed ? 0.6 : 1 }],
         align === 'start' && { justifyContent: 'flex-start', alignSelf: 'flex-start', paddingHorizontal: 0 },
@@ -68,7 +68,7 @@ export function Button({
       <Txt
         variant="headline"
         color={fg}
-        style={[{ textAlign: 'center', flexShrink: 1 }, small && { fontFamily: fonts.medium, fontSize: 15, lineHeight: 20 }]}
+        style={[{ textAlign: 'center', flexShrink: 1 }, small && { ...font.medium, fontSize: 15, lineHeight: 20 }]}
       >
         {label}
       </Txt>
@@ -91,11 +91,11 @@ export function IconButton({
       hitSlop={4}
       style={({ pressed }) => [
         styles.iconBtn,
-        filled && { backgroundColor: pressed ? colors.burgundyPressed : colors.burgundy },
+        filled && { backgroundColor: pressed ? colors.accentPressed : colors.accent },
         !filled && pressed && { backgroundColor: colors.sunken },
       ]}
     >
-      <Icon name={icon} size={size} color={color ?? (filled ? colors.white : colors.ink)} />
+      <Icon name={icon} size={size} color={color ?? (filled ? colors.onAccent : colors.ink)} />
     </Pressable>
   );
 }
@@ -105,7 +105,7 @@ export function IconButton({
  * 44 hit, unfilled. Hide it while an EmptyState shows its own primary for the same action.
  */
 export function AddButton({ label, onPress }: { label: string; onPress: () => void }) {
-  return <IconButton icon="plus" label={label} onPress={onPress} color={colors.burgundy} />;
+  return <IconButton icon="plus" label={label} onPress={onPress} color={colors.accent} />;
 }
 
 // ---- Chips --------------------------------------------------------------------------------
@@ -188,6 +188,7 @@ type ChipGroupProps = {
 
 /** A set of Chips, single- or multi-select. Selection haptic is built into Chip. */
 export function ChipGroup(props: ChipGroupProps) {
+  const cc = useColors();
   const ghosts = props.ghosts ?? DEFAULT_GHOSTS;
   const isMulti = props.mode === 'multi';
   const isSelected = (v: string) => (isMulti ? (props.value as string[]).includes(v) : props.value === v);
@@ -244,7 +245,7 @@ export function ChipGroup(props: ChipGroupProps) {
   });
 
   if (props.scroll) {
-    const fade = props.fadeColor ?? colors.canvas;
+    const fade = cc.resolve(props.fadeColor ?? colors.canvas) as string;
     return (
       <View style={[props.bleed && styles.bleed, props.style]}>
         <ScrollView
@@ -292,7 +293,7 @@ export function AddFieldChip({ label, onPress }: { label: string; onPress: () =>
     >
       {({ pressed }) => (
         <View style={[styles.addChip, pressed && { backgroundColor: colors.sunken }]}>
-          <Icon name="plus" size={20} color={colors.burgundy} />
+          <Icon name="plus" size={20} color={colors.accent} />
           <Txt maxFontSizeMultiplier={1.6} style={styles.addText}>{label}</Txt>
         </View>
       )}
@@ -366,7 +367,8 @@ export function DatePill({ value, onPress, label }: { value: string; onPress: ()
 const styles = StyleSheet.create({
   btnBase: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space.xs, borderRadius: radii.pill },
   primary: { minHeight: heights.primary, paddingHorizontal: space.xl },
-  secondary: { minHeight: heights.secondary, paddingHorizontal: space.lg, borderWidth: 1 },
+  // iOS "tinted" button: accent text on a soft accent fill, no outline.
+  secondary: { minHeight: heights.secondary, paddingHorizontal: space.lg },
   textBtn: { minHeight: heights.minHit, paddingHorizontal: space.xs },
   iconBtn: { width: heights.minHit, height: heights.minHit, borderRadius: radii.pill, alignItems: 'center', justifyContent: 'center' },
 
@@ -375,13 +377,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: space.md, alignItems: 'center', justifyContent: 'center', backgroundColor: 'transparent',
   },
   // Selected border is 2px: trim padding by 1 so the chip doesn't grow.
-  chipSelected: { borderWidth: 2, borderColor: colors.burgundy, backgroundColor: colors.burgundyTint, paddingHorizontal: space.md - 1 },
+  chipSelected: { borderWidth: 2, borderColor: colors.accent, backgroundColor: colors.accentTint, paddingHorizontal: space.md - 1 },
   // Ghost answers (Not sure / It varies / Skip): same outline as chips (a hairline read as
   // disabled — review 1), told apart by ink2 text.
   chipGhost: { borderColor: colors.borderStrong },
   // Selected keeps weight 500 so neighbours never reflow (V25); tint + 2px ring mark it.
-  chipText: { fontFamily: fonts.medium, fontSize: 15, lineHeight: 20, color: colors.ink },
-  chipTextSelected: { color: colors.burgundy },
+  chipText: { ...font.medium, fontSize: 15, lineHeight: 20, color: colors.ink },
+  chipTextSelected: { color: colors.accent },
   chipWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: space.xs },
   chipRow: { flexDirection: 'row', gap: space.xs, paddingRight: space.xxl },
   bleed: { marginHorizontal: -layout.gutter },
@@ -393,17 +395,17 @@ const styles = StyleSheet.create({
     height: heights.addChip, borderRadius: radii.pill, borderWidth: 1, borderStyle: 'dashed', borderColor: colors.borderStrong,
     paddingHorizontal: space.sm, flexDirection: 'row', alignItems: 'center', gap: space.xxs,
   },
-  addText: { fontFamily: fonts.medium, fontSize: 15, lineHeight: 20, color: colors.burgundy },
+  addText: { ...font.medium, fontSize: 15, lineHeight: 20, color: colors.accent },
 
   // Pill like every other control (V9); the white thumb gets a hairline + the one micro-shadow.
   segTrack: { flexDirection: 'row', height: heights.segmented, borderRadius: radii.pill, backgroundColor: colors.sunken, padding: 3 },
   seg: { flex: 1, minWidth: 0, paddingHorizontal: 1, alignItems: 'center', justifyContent: 'center', borderRadius: radii.pill, borderWidth: StyleSheet.hairlineWidth, borderColor: 'transparent' },
   segSelected: { backgroundColor: colors.surface, borderColor: colors.hairline, ...shadows.thumb },
-  segText: { fontFamily: fonts.medium, fontSize: 15, lineHeight: 20, color: colors.ink2 },
+  segText: { ...font.medium, fontSize: 15, lineHeight: 20, color: colors.ink2 },
 
   datePill: {
     height: heights.datePill, borderRadius: radii.pill, borderWidth: 1, borderColor: colors.borderStrong,
     paddingLeft: space.sm, paddingRight: space.xs, flexDirection: 'row', alignItems: 'center', gap: space.xxs,
   },
-  datePillText: { fontFamily: fonts.medium, fontSize: 15, lineHeight: 20, color: colors.ink },
+  datePillText: { ...font.medium, fontSize: 15, lineHeight: 20, color: colors.ink },
 });

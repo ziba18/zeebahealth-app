@@ -7,7 +7,7 @@ import { useRouter } from 'expo-router';
 import {
   Button, Card, Chip, FactLine, HeroNumber, InlineError, QuickTile, PressableCard, Quote, SeverityRow, SeverityTag, Txt, showToast, useReduceMotion,
 } from '../kit';
-import { colors, layout, radii, space } from '../../../constants/zeebaUI';
+import { colors, layout, radii, space, useColors } from '../../../constants/zeebaUI';
 import { openCapture } from '../../../lib/captureStore';
 import { haptics } from '../../../lib/haptics';
 import { todayKey } from '../../../lib/records/dates';
@@ -18,15 +18,14 @@ import {
 } from '../../../lib/records/format';
 import { useRecordsStore } from '../../../stores/recordsStore';
 import type { Rec, SymptomData } from '../../../types/records';
-import { MicButton } from './MicButton';
 import { Wren } from '../Wren';
+import { Gauge, MiniBars, SectionHeader, Tile, TileRow } from '../dash/Dash';
 import { nextAppointment } from './AppointmentCard';
 import { type IconName } from '../../ui/Icon';
 import { addDays, diffDays } from '../../../lib/records/dates';
 
 // Warm wash (V6): a faint plum-tint blush at the very top that settles into the warm canvas,
 // then white — the hero is never cooler than the paper around it. Top 40% only.
-const WASH = [`${colors.burgundyTint}80`, `${colors.canvas}CC`, `${colors.surface}00`] as const;
 const WASH_STOPS = [0, 0.18, 0.4] as const;
 
 const PROMPT = 'What’s been going on with your body?';
@@ -36,48 +35,93 @@ const PROMPT_BALANCED = 'What’s been going on\nwith your body?';
 /** The guided follow-ups that fill the structured fields, previewed so the hero reads as step one of three. */
 const NEXT_STEPS = ['When', 'How strong', 'Where'] as const;
 
-/** `first` = brand-new user with no notes yet: the prompt becomes a gentle invitation. */
+/**
+ * The capture hero (direction A layout, B's warmth): Wren beside the question, then Speak + Type.
+ * `first` = brand-new user with no notes yet: the prompt becomes a gentle invitation.
+ */
 export function HeroCard({ first }: { first?: boolean } = {}) {
-  const prompt = first ? 'Your first note\ntakes a minute.' : PROMPT_BALANCED;
+  const c = useColors();
+  const prompt = first ? 'Your first note takes a minute.' : 'How’s your body today?';
+  const web = Platform.OS === 'web';
   return (
     <Card tone="hero" style={styles.hero}>
       <LinearGradient
-        colors={WASH}
-        locations={WASH_STOPS}
-        start={{ x: 0.5, y: 0 }}
-        end={{ x: 0.5, y: 1 }}
+        colors={[c.glow, 'rgba(0,0,0,0)']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0.7, y: 1 }}
         style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]}
       />
-      <View style={styles.wren}><Wren mood="idle" size={120} decorative /></View>
-      <Txt variant="hero" style={styles.center} accessibilityRole="header" accessibilityLabel={first ? 'Your first note takes a minute.' : PROMPT}>
-        {prompt}
-      </Txt>
-      {Platform.OS === 'web' ? (
-        // Browsers have no voice capture here: lead with the typed note instead of a mic that opens the Type tab.
-        <Button label="Type a note" onPress={() => openCapture({ mode: 'type' })} style={{ marginTop: space.md }} />
-      ) : (
-        <>
-          <View style={styles.heroMic}>
-            <MicButton
-              invite
+      <View style={styles.heroTop}>
+        <Wren mood="idle" size={88} decorative />
+        <View style={styles.heroText}>
+          <Txt variant="hero" style={styles.heroPrompt} accessibilityRole="header">{prompt}</Txt>
+          <Txt variant="secondary">Say it your way. It’s saved with today’s date.</Txt>
+        </View>
+      </View>
+      <View style={styles.heroBtns}>
+        {web ? (
+          // Browsers have no voice capture here: the typed note is the one action.
+          <Button label="Type a note" icon="pencil" onPress={() => openCapture({ mode: 'type' })} style={{ flex: 1 }} />
+        ) : (
+          <>
+            <Button
+              label="Speak"
+              icon="mic"
               onPress={() => openCapture({ mode: 'speak', startRecording: true })}
-              accessibilityLabel="Tap to talk"
               accessibilityHint="Opens a new note and starts recording"
+              style={{ flex: 1 }}
             />
-            {/* The primary action's label outranks the secondary link (V7). */}
-            <Txt variant="headline" style={styles.micLabel} aria-hidden>
-              Tap to talk
-            </Txt>
-          </View>
-          <Button label="Type instead" variant="text" small onPress={() => openCapture({ mode: 'type' })} style={{ marginTop: space.xxs }} />
-        </>
-      )}
+            <Button label="Type" icon="pencil" variant="secondary" onPress={() => openCapture({ mode: 'type' })} style={{ flex: 1 }} />
+          </>
+        )}
+      </View>
     </Card>
+  );
+}
+
+const DAY_LETTER = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+
+/** "This week" dashboard: worst pain (gauge) + days recorded (bars), then the days it got in the way. */
+export function WeekDashboard() {
+  const router = useRouter();
+  const symptoms = useRecordsStore((s) => s.records.symptom);
+  const today = todayKey();
+  const days = Array.from({ length: 7 }, (_, i) => addDays(today, i - 6));
+  const perDay = days.map((d) => {
+    const notes = symptoms.filter((x) => x.data.date === d);
+    if (!notes.length) return null;
+    const scores = notes.map((n) => worstOf(n.data)).filter((v): v is number => typeof v === 'number');
+    return scores.length ? Math.max(...scores) : 0;
+  });
+  const recorded = perDay.filter((v) => v !== null).length;
+  const scored = perDay.filter((v): v is number => typeof v === 'number' && v > 0);
+  const worst = scored.length ? Math.max(...scored) : null;
+  const inTheWay = days.filter((d) => symptoms.some((x) => x.data.date === d && (x.data.impacts ?? []).length > 0)).length;
+  const letters = days.map((d) => DAY_LETTER[new Date(`${d}T12:00:00`).getDay()]);
+  const toEvidence = () => router.push('/(tabs)/timeline' as any);
+  return (
+    <View>
+      <SectionHeader title="This week" action="Evidence" onAction={toEvidence} />
+      <TileRow>
+        <Tile label="Worst pain" value={worst === null ? '–' : String(worst)} unit={worst === null ? undefined : '/10'} onPress={toEvidence}>
+          <Gauge value={worst ?? 0} />
+        </Tile>
+        <Tile label="Recorded" value={String(recorded)} unit=" of 7 days" onPress={toEvidence}>
+          <MiniBars values={perDay} labels={letters} />
+        </Tile>
+      </TileRow>
+      {inTheWay > 0 ? (
+        <Txt variant="secondary" style={styles.inTheWay}>
+          It got in the way on <Txt variant="secondary" style={{ fontWeight: '600', color: colors.ink }}>{inTheWay} {inTheWay === 1 ? 'day' : 'days'}</Txt> this week.
+        </Txt>
+      ) : null}
+    </View>
   );
 }
 
 /** Horizontal starter chips that scroll inside the screen (right-edge fade); the page never scrolls sideways. */
 export function StarterChips({ onPeriod }: { onPeriod: () => void }) {
+  const c = useColors();
   return (
     <View style={styles.chipsWrap}>
       <ScrollView
@@ -95,7 +139,7 @@ export function StarterChips({ onPeriod }: { onPeriod: () => void }) {
         ))}
       </ScrollView>
       <LinearGradient
-        colors={[`${colors.canvas}00`, `${colors.canvas}E6`, colors.canvas]}
+        colors={[`${c.canvas}00`, `${c.canvas}E6`, c.canvas]}
         locations={[0, 0.6, 1]}
         start={{ x: 0, y: 0.5 }}
         end={{ x: 1, y: 0.5 }}
@@ -342,8 +386,12 @@ export function QuickRows({ onPeriod }: { onPeriod: () => void }) {
 const styles = StyleSheet.create({
   chip: { paddingVertical: space.xs, paddingHorizontal: space.md, alignItems: "center" },
   qgrid: { flexDirection: 'row', flexWrap: 'wrap', gap: space.xs },
-  wren: { alignItems: 'center', justifyContent: 'center', height: 120, marginBottom: space.sm },
-  hero: { paddingTop: space.xxl, paddingBottom: space.xl + space.xxs, paddingHorizontal: space.xl, alignItems: 'center' },
+  hero: { padding: space.md, gap: space.md },
+  heroTop: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
+  heroText: { flex: 1, minWidth: 0, gap: space.xxs },
+  heroPrompt: { fontSize: 24, lineHeight: 29 },
+  heroBtns: { flexDirection: 'row', gap: space.xs },
+  inTheWay: { marginTop: space.sm, paddingHorizontal: space.xxs },
   center: { textAlign: 'center' },
   ghost: { gap: space.sm, padding: space.md, borderRadius: radii.card, borderWidth: 1, borderStyle: 'dashed', borderColor: colors.hairline },
   wave: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, height: 30, marginBottom: space.md },

@@ -67,6 +67,6 @@ export function Waveform({ recording, seconds }: { recording: boolean; seconds: 
 const styles = StyleSheet.create({
   wrap: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space.sm, minHeight: MAX_H + space.xs },
   bars: { flexDirection: 'row', alignItems: 'center', gap: space.xxs, height: MAX_H },
-  bar: { width: 4, height: MAX_H, borderRadius: 2, backgroundColor: colors.burgundy },
+  bar: { width: 4, height: MAX_H, borderRadius: 2, backgroundColor: colors.accent },
   time: { fontVariant: ['tabular-nums'], color: colors.ink, minWidth: 40 },
 });

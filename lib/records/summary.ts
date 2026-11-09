@@ -9,7 +9,7 @@
 // no data are omitted from `sections` (never an empty label); the 13 PRODUCT §4 areas in `domains`
 // each get one line, "Not recorded" when empty, so a clinician can tell "not logged" from "left out". "Not sure" / "Skip" / "It varies" /
 // "Nothing today" are never counted as impacts; an unanswered strength is never 0.
-import { colors, severityColor } from '../../constants/zeebaUI';
+import { severityColorLight } from '../../constants/zeebaUI';
 import type {
   AppointmentData, Cycle, DatePrecision, HistoryData, MedicineData, PeriodDayData, Rec, SymptomData,
 } from '../../types/records';
@@ -797,15 +797,15 @@ export const daysText = (n: number) => plural(n, 'day');
 
 // ---- PDF / print HTML -----------------------------------------------------------------------
 
-/** Document colours (ink on white). Plum only in the heat-strip; clay only for bleeding. */
+/** Document colours: always ink on white paper, in light AND dark mode and in the PDF. Plain hex. */
 export const DOC_COLORS = {
-  ink: colors.ink, ink2: colors.ink2, ink3: colors.ink3, hairline: colors.hairline,
-  borderStrong: colors.borderStrong, track: colors.sunken, clay: colors.clay, clayTint: colors.clayTint,
-  white: colors.white,
+  ink: '#000000', ink2: '#55555C', ink3: '#6C6C72', hairline: '#D8D8DE',
+  borderStrong: '#8E8E93', track: '#EDEDF0', clay: '#E8562A', clayTint: '#FDE6DC',
+  white: '#FFFFFF',
 };
 
-/** Ramp fill + digit colour for a 0–10 value. */
-export const docSeverity = severityColor;
+/** Ramp fill + digit colour for a 0–10 value (light-only hex: the document is always paper). */
+export const docSeverity = severityColorLight;
 
 /** Split strip days into rows of `perRow`. */
 export function stripRows(days: HeatDay[], perRow: number): HeatDay[][] {

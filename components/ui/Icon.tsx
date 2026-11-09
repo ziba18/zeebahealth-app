@@ -5,6 +5,7 @@
  */
 import React from 'react';
 import Svg, { Path, Circle, Line, Rect } from 'react-native-svg';
+import { useColors } from '../../constants/zeebaUI';
 
 export type IconName =
   | 'headphones'
@@ -109,8 +110,10 @@ interface IconProps {
 export const ICON_STROKE = 1.75;
 
 export function Icon({ name, size = 24, color = 'currentColor', strokeWidth = ICON_STROKE }: IconProps) {
+  // Token colours are Light/Dark pairs; SVG needs the plain hex for the current appearance.
+  const { resolve } = useColors();
   const shared = {
-    stroke: color,
+    stroke: resolve(color) ?? color,
     // The SVG is drawn in a 24-unit viewBox and scaled to `size`; compensate so the
     // stroke on screen is exactly `strokeWidth` points whatever the size.
     strokeWidth: (strokeWidth * 24) / size,

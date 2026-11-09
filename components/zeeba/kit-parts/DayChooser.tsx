@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
-import { colors, fonts, radii, space } from '../../../constants/zeebaUI';
+import { font, colors, fonts, radii, space } from '../../../constants/zeebaUI';
 import { haptics } from '../../../lib/haptics';
 import {
   MONTH_NAMES, WEEKDAY_LETTERS, daysInMonth, firstWeekdayOffset, parseKey, toKey, todayKey,
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
   cell: { flex: 1, height: 44, alignItems: 'center', justifyContent: 'center' },
   day: { width: 36, height: 36, borderRadius: radii.pill, alignItems: 'center', justifyContent: 'center' },
   today: { borderWidth: 1.5, borderColor: colors.ink },
-  selected: { borderWidth: 2, borderColor: colors.burgundy, backgroundColor: colors.burgundyTint },
-  num: { fontFamily: fonts.regular, fontSize: 15, lineHeight: 20, color: colors.ink, fontVariant: ['tabular-nums'] },
-  numSelected: { fontFamily: fonts.semibold, color: colors.burgundy },
+  selected: { borderWidth: 2, borderColor: colors.accent, backgroundColor: colors.accentTint },
+  num: { ...font.regular, fontSize: 15, lineHeight: 20, color: colors.ink, fontVariant: ['tabular-nums'] },
+  numSelected: { ...font.semibold, color: colors.accent },
 });

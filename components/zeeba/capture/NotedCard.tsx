@@ -8,7 +8,7 @@ import { StyleSheet, TextInput, View } from 'react-native';
 import {
   Button, Card, ChipGroup, DatePill, DayChooser, NotedRow, Txt,
 } from '../kit';
-import { colors, fonts, radii, space } from '../../../constants/zeebaUI';
+import { font, colors, fonts, radii, space } from '../../../constants/zeebaUI';
 import { addDays, todayKey } from '../../../lib/records/dates';
 import { IMPACT_OPTIONS, WHEN_OPTIONS } from '../../../lib/records/fields';
 import {
@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
   input: {
     minHeight: 52, borderRadius: radii.input, borderWidth: 1, borderColor: colors.borderStrong,
     backgroundColor: colors.surface, paddingHorizontal: space.md, paddingVertical: space.sm,
-    fontFamily: fonts.regular, fontSize: 17, lineHeight: 24, color: colors.ink,
+    ...font.regular, fontSize: 17, lineHeight: 24, color: colors.ink,
   },
   inputMulti: { minHeight: 120, textAlignVertical: 'top' },
 });

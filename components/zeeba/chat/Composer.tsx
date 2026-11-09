@@ -3,7 +3,7 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { Image, Platform, Pressable, ScrollView, StyleSheet, TextInput, View, type TextInputInstance } from 'react-native';
 import { InlineError, Txt } from '../kit';
-import { colors, fonts, radii, space } from '../../../constants/zeebaUI';
+import { font, colors, fonts, radii, space } from '../../../constants/zeebaUI';
 import { useDictation } from '../../../hooks/useDictation';
 import { haptics } from '../../../lib/haptics';
 import type { ChatAttachment } from '../../../stores/chatStore';
@@ -111,10 +111,10 @@ export const Composer = forwardRef<ComposerHandle, {
             accessibilityState={{ disabled: !canSend }}
             style={({ pressed }) => [
               styles.send,
-              { backgroundColor: !canSend ? colors.sunken : pressed ? colors.burgundyPressed : colors.burgundy },
+              { backgroundColor: !canSend ? colors.sunken : pressed ? colors.accentPressed : colors.accent },
             ]}
           >
-            <Icon name="arrow-up" size={20} color={canSend ? colors.white : colors.ink2} />
+            <Icon name="arrow-up" size={20} color={canSend ? colors.onAccent : colors.ink2} />
           </Pressable>
         </View>
       </View>
@@ -133,10 +133,10 @@ function RoundIcon({ icon, label, onPress, active }: {
       accessibilityState={{ selected: !!active }}
       style={({ pressed }) => [
         styles.round,
-        active ? { backgroundColor: colors.burgundyTint } : pressed && { backgroundColor: colors.sunken },
+        active ? { backgroundColor: colors.accentTint } : pressed && { backgroundColor: colors.sunken },
       ]}
     >
-      <Icon name={icon} size={24} color={colors.burgundy} />
+      <Icon name={icon} size={24} color={colors.accent} />
     </Pressable>
   );
 }
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
     padding: space.xxs,
   },
   /** Plum 2px ring on focus (replaces the browser's near-black outline); padding keeps the content still. */
-  pillFocused: { borderWidth: 2, borderColor: colors.burgundy, padding: space.xxs - 1 },
+  pillFocused: { borderWidth: 2, borderColor: colors.accent, padding: space.xxs - 1 },
   row: { flexDirection: 'row', alignItems: 'flex-end', gap: space.xxs, paddingBottom: space.xxs / 2 },
   round: { width: 44, height: 44, borderRadius: radii.pill, alignItems: 'center', justifyContent: 'center' },
   input: {
@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
     paddingTop: 15,
     paddingBottom: 15,
     paddingHorizontal: space.xxs,
-    fontFamily: fonts.regular,
+    ...font.regular,
     fontSize: 17,
     lineHeight: 22,
     color: colors.ink,

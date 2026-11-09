@@ -11,7 +11,7 @@ import {
 } from '../kit';
 import { StrengthEditor } from '../capture/StrengthEditor';
 import { ZoneEditor } from '../capture/ZoneEditor';
-import { colors, fonts, radii, space } from '../../../constants/zeebaUI';
+import { font, colors, fonts, radii, space } from '../../../constants/zeebaUI';
 import { haptics } from '../../../lib/haptics';
 import { IMPACT_OPTIONS, WHEN_OPTIONS } from '../../../lib/records/fields';
 import {
@@ -302,7 +302,7 @@ const styles = StyleSheet.create({
   divider: { borderTopWidth: 1, borderTopColor: colors.hairline },
   editorActions: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
   input: {
-    fontFamily: fonts.regular, fontSize: 17, lineHeight: 24, color: colors.ink,
+    ...font.regular, fontSize: 17, lineHeight: 24, color: colors.ink,
     backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.borderStrong, borderRadius: radii.input,
     paddingHorizontal: space.md, paddingVertical: space.sm,
   },

@@ -7,7 +7,7 @@ import { Animated, Easing, Pressable, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useReduceMotion } from '../kit-parts/Sheet';
 import { Card, EmptyState, FadeIn, PressableCard, Quote, SegmentedControl, Txt } from '../kit';
-import { colors, fonts, severityColor, severityRamp, space } from '../../../constants/zeebaUI';
+import { font, colors, fonts, severityColor, severityRamp, space } from '../../../constants/zeebaUI';
 import { untaggedLine } from '../../../lib/records/counts';
 import { openCapture } from '../../../lib/captureStore';
 import { todayKey } from '../../../lib/records/dates';
@@ -17,8 +17,9 @@ import {
 import { formatShortDate, joinFacts } from '../../../lib/records/format';
 import { useRecordsStore } from '../../../stores/recordsStore';
 import type { TimelineFilter } from './session';
+import { Tile, TileRow } from '../dash/Dash';
 
-const BAR_AREA = 72;
+const BAR_AREA = 150;
 /** Narrowest a week column may be before its digit is dropped (digits would run together; the text above and the spoken label still give the counts). */
 const MIN_DIGIT_COL = 18;
 const plural = (n: number, one: string) => `${n} ${one}${n === 1 ? '' : 's'}`;
@@ -43,7 +44,7 @@ function Bars({ rows, total }: { rows: { label: string; days: number }[]; total:
 }
 
 /** A week bar that eases up from its baseline once (200 ms); no motion under Reduce Motion. */
-function WeekBar({ height, color }: { height: number; color: string }) {
+function WeekBar({ height, color, strength = 1 }: { height: number; color: string; strength?: number }) {
   const reduce = useReduceMotion();
   const t = useRef(new Animated.Value(reduce ? 1 : 0)).current;
   useEffect(() => {
@@ -52,7 +53,7 @@ function WeekBar({ height, color }: { height: number; color: string }) {
     a.start();
     return () => a.stop();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
-  return <Animated.View style={[styles.weekBar, { height, backgroundColor: color, transformOrigin: 'bottom', transform: [{ scaleY: t }] }]} />;
+  return <Animated.View style={[styles.weekBar, { height, backgroundColor: color, opacity: strength, transformOrigin: 'bottom', transform: [{ scaleY: t }] }]} />;
 }
 
 /** One number with a label under it; the row of three sits above the charts. */
@@ -121,33 +122,35 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
   return (
     <View style={{ gap: space.md, marginTop: space.lg }}>
       {toggle}
-      <Txt variant="caption">{rangeText} · {plural(m.notes, 'note')}</Txt>
-
+      {/* Midnight's statement: the one sentence a doctor needs, set in New York, the key numbers in the accent. */}
       <FadeIn index={0}>
-        {/* Under ~270 wide (200% text on a small phone) three tiles side by side break words letter by letter: stack them. */}
-        <View style={[styles.tiles, stack && { flexDirection: 'column' }]} onLayout={(e) => setStack(e.nativeEvent.layout.width < 270)}>
-          <StatTile wide={stack} value={m.noteDays} label="days with a note" onPress={() => onOpen('Symptoms')} hint="Opens your notes." />
-          <StatTile wide={stack} value={m.strongDays} label={`days at ${STRONG_FROM}+ out of 10`} onPress={() => onOpen('Symptoms')} hint="Opens your notes." />
-          <StatTile wide={stack} value={m.bleedingDays} label="days of bleeding" zeroLabel="No bleeding logged" onPress={() => onOpen('Bleeding')} hint="Opens your bleeding days." />
+        <View style={{ gap: space.xxs }} accessible accessibilityRole="header" accessibilityLabel={`Symptoms on ${m.noteDays} of the last ${m.totalDays} days.${m.strongDays ? ` ${m.strongDays} of them at ${STRONG_FROM} or more out of 10.` : ''}`}>
+          <Txt variant="statement">
+            Symptoms on <Txt variant="statement" style={styles.em}>{m.noteDays} of the last {m.totalDays} days.</Txt>
+            {m.strongDays ? <Txt variant="statement">{` ${m.strongDays} at ${STRONG_FROM}+ out of 10.`}</Txt> : null}
+          </Txt>
+          <Txt variant="caption">{rangeText} · {plural(m.notes, 'note')}</Txt>
         </View>
       </FadeIn>
 
       <FadeIn index={1}>
         <PressableCard
+          chevron={false}
           onPress={() => onOpen('Symptoms')}
           accessibilityLabel={`${noteDaysText(m)}. ${weeksText(m)} Opens your notes.`}
           accessibilityActions={m.weeks.filter((w) => w.noteDays > 0).map((w) => ({ name: `week:${w.from}:${w.to}`, label: `Open the week from ${formatShortDate(w.from, 'always')}` }))}
           onAccessibilityAction={(name) => { const [, from, to] = name.split(':'); if (from && to) onOpenWeek({ from, to }); }}
         >
-          <Txt variant="groupLabel">Days with a note, by week</Txt>
-          <Txt variant="secondary" style={{ marginTop: space.sm }}>
-            {noteDaysText(m)}.
-          </Txt>
+          <Txt variant="eyebrow">Days with symptoms, by week</Txt>
           <View style={styles.chart} onLayout={(e) => setChartW(e.nativeEvent.layout.width)} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
             {m.weeks.map((w) => (
               <Pressable key={w.from} disabled={w.noteDays === 0} onPress={() => onOpenWeek({ from: w.from, to: w.to })} style={styles.weekCol} hitSlop={4}>
                 {chartW === 0 || chartW / m.weeks.length >= MIN_DIGIT_COL ? <Txt variant="caption" style={styles.weekNum}>{w.noteDays}</Txt> : null}
-                <WeekBar height={Math.max(3, (w.noteDays / maxWeek) * (BAR_AREA - 18))} color={w.peak == null ? colors.ink2 : severityColor(w.peak).bg} />
+                <WeekBar
+                  height={Math.max(4, (w.noteDays / maxWeek) * (BAR_AREA - 22))}
+                  color={w.noteDays === 0 ? colors.chartTrack : colors.accent}
+                  strength={w.noteDays === 0 || w.peak == null ? 1 : 0.35 + (w.peak / 10) * 0.65}
+                />
               </Pressable>
             ))}
           </View>
@@ -157,17 +160,33 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
                 <Txt key={w.from} variant="caption" maxFontSizeMultiplier={1.4} style={{ flex: 1, textAlign: 'center' }}>{formatShortDate(w.from)}</Txt>
               ))}
             </View>
-          ) : null}
-          {/* First and last day under the bars so 12 bars are not anonymous (spoken text already gives the range). */}
-          {m.weeks.length > 5 ? <View style={styles.axis} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-            <Txt variant="caption" maxFontSizeMultiplier={1.4}>{formatShortDate(m.from)}</Txt>
-            <Txt variant="caption" maxFontSizeMultiplier={1.4}>{formatShortDate(m.to)}</Txt>
-          </View> : null}
-          <Txt variant="caption" style={{ marginTop: space.xs }}>Height = days with a note · shade = highest number that week</Txt>
+          ) : (
+            <View style={styles.axis} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+              <Txt variant="caption" maxFontSizeMultiplier={1.4}>{formatShortDate(m.from)}</Txt>
+              <Txt variant="caption" maxFontSizeMultiplier={1.4}>{formatShortDate(m.to)}</Txt>
+            </View>
+          )}
+          <View style={styles.legend} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+            <View style={styles.legendItem}><View style={[styles.legendDot, { backgroundColor: colors.accent }]} /><Txt variant="caption">Stronger = worse that week</Txt></View>
+            <View style={styles.legendItem}><View style={[styles.legendDot, { backgroundColor: colors.accent, opacity: 0.4 }]} /><Txt variant="caption">Milder</Txt></View>
+          </View>
           {chartW > 0 && chartW / m.weeks.length < MIN_DIGIT_COL ? (
             <Txt variant="caption" style={{ marginTop: space.xs }}>Most in one week: {plural(maxWeek, 'day')}.</Txt>
           ) : null}
         </PressableCard>
+      </FadeIn>
+
+      <FadeIn index={2}>
+        <TileRow>
+          <Tile label={`At ${STRONG_FROM}+ / 10`} value={String(m.strongDays)} unit={m.strongDays === 1 ? ' day' : ' days'} onPress={() => onOpen('Symptoms')} />
+          <Tile
+            label="Bleeding"
+            value={String(m.bleedingDays)}
+            unit={m.bleedingDays === 1 ? ' day' : ' days'}
+            note={m.spottingDays ? `${plural(m.spottingDays, 'day')} spotting` : undefined}
+            onPress={() => onOpen('Bleeding')}
+          />
+        </TileRow>
       </FadeIn>
 
       {m.zones.length ? (
@@ -273,14 +292,18 @@ const styles = StyleSheet.create({
   tile: { flex: 1, alignItems: 'flex-start', minWidth: 0, minHeight: 104, paddingHorizontal: space.sm, paddingVertical: space.md },
   tileWide: { paddingHorizontal: space.md, paddingVertical: space.sm },
   tileRow: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
-  tileNum: { fontSize: 34, lineHeight: 41, fontFamily: fonts.semibold, fontVariant: ['tabular-nums'] },
+  tileNum: { fontSize: 34, lineHeight: 41, ...font.semibold, fontVariant: ['tabular-nums'] },
   numRow: { flexDirection: 'row', alignItems: 'baseline', gap: space.xs, marginTop: space.xxs },
-  chart: { flexDirection: 'row', alignItems: 'flex-end', gap: 4, height: BAR_AREA, marginTop: space.sm },
+  chart: { flexDirection: 'row', alignItems: 'flex-end', gap: 6, height: BAR_AREA, marginTop: space.md },
+  em: { color: colors.accent },
+  legend: { flexDirection: 'row', gap: space.md, marginTop: space.sm },
+  legendItem: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  legendDot: { width: 8, height: 8, borderRadius: 2 },
   axis: { flexDirection: 'row', justifyContent: 'space-between', marginTop: space.xxs, paddingRight: 10 },
   weekCol: { flex: 1, alignItems: 'center', justifyContent: 'flex-end', gap: 2 },
   weekNum: { fontSize: 11 },
-  weekBar: { width: '100%', maxWidth: 28, borderRadius: 4, backgroundColor: colors.ink2 },
+  weekBar: { width: '100%', maxWidth: 30, borderTopLeftRadius: 7, borderTopRightRadius: 7, borderBottomLeftRadius: 3, borderBottomRightRadius: 3, backgroundColor: colors.ink2 },
   barHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', gap: space.sm },
   track: { height: 8, borderRadius: 4, backgroundColor: colors.sunken, overflow: 'hidden' },
-  fill: { height: 8, borderRadius: 4, backgroundColor: severityRamp[2] },
+  fill: { height: 8, borderRadius: 4, backgroundColor: colors.accent },
 });

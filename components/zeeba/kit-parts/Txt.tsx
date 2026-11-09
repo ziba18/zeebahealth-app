@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, type TextProps, type TextStyle } from 'react-native';
-import { colors, fonts, type as typeScale, type TypeVariant } from '../../../constants/zeebaUI';
+import { font, colors, fonts, type as typeScale, type TypeVariant } from '../../../constants/zeebaUI';
 
 /** Old variant names still used by auth / onboarding / profile sub-screens. Don't use in new code. */
 export type LegacyVariant = 'display' | 'h2' | 'h3' | 'bodyBold' | 'small' | 'smallBold' | 'tiny';
@@ -12,8 +12,8 @@ const LEGACY: Record<LegacyVariant, TextStyle> = {
   h3: typeScale.headline,
   bodyBold: typeScale.headline,
   small: typeScale.secondary,
-  smallBold: { ...typeScale.secondary, fontFamily: fonts.semibold, color: colors.ink },
-  tiny: { fontFamily: fonts.regular, fontSize: 13, lineHeight: 18, color: colors.ink2 },
+  smallBold: { ...typeScale.secondary, ...font.semibold, color: colors.ink },
+  tiny: { ...font.regular, fontSize: 13, lineHeight: 18, color: colors.ink2 },
 };
 
 const styleFor = (v: TxtVariant): TextStyle => (typeScale as Record<string, TextStyle>)[v] ?? LEGACY[v as LegacyVariant];

@@ -8,7 +8,7 @@
 import React from 'react';
 import { View, type TextStyle } from 'react-native';
 import Svg, { Line } from 'react-native-svg';
-import { fonts } from '../../../constants/zeebaUI';
+import { font, fonts } from '../../../constants/zeebaUI';
 import { joinFacts } from '../../../lib/records/format';
 import {
   APPT_AHEAD, APPT_PAST, DOC_COLORS, PAGE_TYPE, SPOT_DASH, SPOT_STROKE, STRIP_BLEED_KEY, STRIP_KEY, STRIP_SPOT_KEY,
@@ -100,8 +100,8 @@ function WordsTable({ quotes, st }: { quotes: DocQuote[]; st: St }) {
   return (
     <View accessible accessibilityRole="summary" accessibilityLabel={quotes.map((q) => joinFacts(q.dateLabel, q.facts, `“${curly(q.text)}”`)).join('. ')}>
       <View style={{ flexDirection: 'row', borderBottomWidth: 0.75, borderBottomColor: C.borderStrong, paddingBottom: 3 }}>
-        {head.map((h, i) => <Txt key={h} style={[st.meta, { fontFamily: fonts.semibold }, cellStyle(i)]}>{h}</Txt>)}
-        <Txt style={[st.meta, { fontFamily: fonts.semibold, flex: 1 }]}>In my words</Txt>
+        {head.map((h, i) => <Txt key={h} style={[st.meta, { ...font.semibold }, cellStyle(i)]}>{h}</Txt>)}
+        <Txt style={[st.meta, { ...font.semibold, flex: 1 }]}>In my words</Txt>
       </View>
       {quotes.map((q) => (
         <View key={q.date + q.text} style={{ flexDirection: 'row', paddingVertical: 4, borderBottomWidth: 0.5, borderBottomColor: C.borderStrong }}>
@@ -109,7 +109,7 @@ function WordsTable({ quotes, st }: { quotes: DocQuote[]; st: St }) {
           <Txt style={[st.meta, { color: C.ink }, cellStyle(1)]}>{dash(q.parts?.where)}</Txt>
           <Txt style={[st.meta, { color: C.ink }, cellStyle(2)]}>{dash(q.parts?.strength)}</Txt>
           <Txt style={[st.meta, { color: C.ink }, cellStyle(3)]}>{dash(q.parts?.timing)}</Txt>
-          <Txt style={[st.body, { flex: 1, fontFamily: fonts.serif }]}>{`“${curly(q.text)}”`}</Txt>
+          <Txt style={[st.body, { flex: 1, ...font.serifItalic }]}>{`“${curly(q.text)}”`}</Txt>
         </View>
       ))}
     </View>
@@ -278,10 +278,10 @@ function SectionBody({ section, st, contentWidth, variant }: { section: DocSecti
         <>
           {section.upcoming.length ? (
             <>
-              <Txt style={[st.label, { fontFamily: fonts.semibold, marginBottom: st.s.gap }]}>{APPT_AHEAD}</Txt>
+              <Txt style={[st.label, { ...font.semibold, marginBottom: st.s.gap }]}>{APPT_AHEAD}</Txt>
               {section.upcoming.map((a, i) => <DatedItemBlock key={`up-${a.date}-${i}`} item={a} st={st} />)}
               {section.items.length ? (
-                <Txt style={[st.label, { fontFamily: fonts.semibold, marginBottom: st.s.gap }]}>{APPT_PAST}</Txt>
+                <Txt style={[st.label, { ...font.semibold, marginBottom: st.s.gap }]}>{APPT_PAST}</Txt>
               ) : null}
             </>
           ) : null}

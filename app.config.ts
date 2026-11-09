@@ -26,8 +26,8 @@ const config: ExpoConfig = {
   },
   orientation: 'portrait',
   icon: './assets/icon.png',
-  // The design is light-only (dark mode was removed), so keep keyboards and system sheets light too.
-  userInterfaceStyle: 'light',
+  // Light = Native, Dark = Midnight: follow the phone's appearance (keyboards and system sheets too).
+  userInterfaceStyle: 'automatic',
   scheme: 'zeebahealth',
   ios: {
     supportsTablet: true,
@@ -84,7 +84,8 @@ const config: ExpoConfig = {
       {
         image: './assets/splash-icon.png',
         resizeMode: 'contain',
-        backgroundColor: '#FBF7F4',
+        backgroundColor: '#F2F2F7',
+        dark: { image: './assets/splash-icon.png', backgroundColor: '#0A0C16' },
       },
     ],
     [

@@ -58,6 +58,6 @@ const styles = StyleSheet.create({
   noBack: { height: 44 },
   step: { marginTop: space.xs, marginBottom: space.xs },
   track: { height: 3, borderRadius: 2, backgroundColor: colors.sunken, marginTop: space.xs, overflow: 'hidden' },
-  fill: { height: 3, borderRadius: 2, backgroundColor: colors.burgundy },
+  fill: { height: 3, borderRadius: 2, backgroundColor: colors.accent },
   wren: { alignItems: 'center', marginBottom: space.md },
 });

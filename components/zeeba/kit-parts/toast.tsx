@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { AccessibilityInfo, Animated, Platform, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { create } from 'zustand';
-import { colors, fonts, heights, layout, motion, radii, shadows, space } from '../../../constants/zeebaUI';
+import { font, colors, fonts, heights, layout, motion, radii, shadows, space } from '../../../constants/zeebaUI';
 import { Icon } from '../../ui/Icon';
 import { Txt } from './Txt';
 import { Wren, type WrenMood } from '../Wren';
@@ -80,9 +80,9 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: layout.maxContentWidth - layout.gutter * 2,
     // Floats clear of the canvas (V28): its own shadow + a faint saved-green edge.
-    backgroundColor: colors.savedTint, borderRadius: radii.input, borderWidth: 1, borderColor: `${colors.saved}33`,
+    backgroundColor: colors.savedTint, borderRadius: radii.input, borderWidth: 1, borderColor: colors.cardBorder,
     ...shadows.toast,
   },
   inner: { flexDirection: 'row', alignItems: 'center', gap: space.xs, paddingHorizontal: space.md, paddingVertical: space.sm, minHeight: heights.toast },
-  text: { flex: 1, fontFamily: fonts.medium, fontSize: 15, lineHeight: 20, color: colors.saved },
+  text: { flex: 1, ...font.medium, fontSize: 15, lineHeight: 20, color: colors.saved },
 });

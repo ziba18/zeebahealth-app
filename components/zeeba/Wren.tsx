@@ -6,7 +6,6 @@ import { AccessibilityInfo, Animated, Easing, View, type ViewStyle } from 'react
 import Svg, {
   Circle, ClipPath, Defs, Ellipse, G, LinearGradient, Path, Pattern, RadialGradient, Rect, Stop,
 } from 'react-native-svg';
-import { colors } from '../../constants/zeebaUI';
 
 export type WrenMood = 'idle' | 'happy' | 'listening' | 'comfort' | 'proud' | 'sleepy';
 
@@ -21,19 +20,19 @@ type Props = {
   style?: ViewStyle;
 };
 
-// Wren's own colours, derived from the brand tokens.
+// Wren's own colours: always burgundy knit, in light and dark mode (owner's favourite; never re-tinted).
 const W = {
   body1: '#93304F',
-  body2: colors.burgundy,
-  knit: colors.burgundyPressed,
-  edge: colors.burgundyPressed,
+  body2: '#7A1F3A',
+  knit: '#5C1529',
+  edge: '#5C1529',
   rib: '#FBF0EC',
-  ribLine: colors.blush,
-  cap: colors.ink,
-  cap2: colors.ink2,
-  face: colors.ink,
+  ribLine: '#F2C9CF',
+  cap: '#22161A',
+  cap2: '#5C4A4F',
+  face: '#22161A',
   cheek: '#E58E9F',
-  accent: colors.blush,
+  accent: '#F2C9CF',
 };
 
 const BODY =
@@ -136,7 +135,7 @@ export function Wren({ mood = 'idle', size = 120, animated = true, decorative = 
             </G>
           )}
 
-          <Ellipse cx="70" cy="170" rx="44" ry="4.5" fill={colors.ink} opacity={0.08} />
+          <Ellipse cx="70" cy="170" rx="44" ry="4.5" fill="#000000" opacity={0.08} />
 
           {/* arms */}
           <G transform={`rotate(${armsUp ? -34 : armsHug ? -22 : 0} 30 112)`}>
@@ -219,7 +218,7 @@ export function Wren({ mood = 'idle', size = 120, animated = true, decorative = 
 
           {/* listening rings */}
           {mood === 'listening' && (
-            <G fill="none" stroke={colors.burgundy} strokeWidth={2.4} strokeLinecap="round" opacity={0.7}>
+            <G fill="none" stroke="#7A1F3A" strokeWidth={2.4} strokeLinecap="round" opacity={0.7}>
               <Path d="M128 84 Q134 92 128 100" />
               <Path d="M134 78 Q143 92 134 106" />
             </G>

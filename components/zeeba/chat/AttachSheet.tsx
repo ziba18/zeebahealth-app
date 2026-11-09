@@ -103,7 +103,7 @@ function Row({ icon, iconColor, label, hint, onPress, disabled }: {
       accessibilityState={{ disabled: !!disabled }}
       style={({ pressed }) => [styles.row, pressed && { backgroundColor: colors.canvas }, disabled && { opacity: 0.5 }]}
     >
-      <Icon name={icon} size={24} color={iconColor ?? colors.burgundy} />
+      <Icon name={icon} size={24} color={iconColor ?? colors.accent} />
       <View style={{ flex: 1 }}>
         <Txt variant="headline">{label}</Txt>
         {hint ? <Txt variant="secondary">{hint}</Txt> : null}

@@ -6,7 +6,7 @@
 import React from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
 import { Chip, ChipGroup, Txt } from '../kit';
-import { colors, fonts, radii, space } from '../../../constants/zeebaUI';
+import { font, colors, fonts, radii, space } from '../../../constants/zeebaUI';
 import { BODY_ZONES, BODY_ZONE_LABELS } from '../../../lib/records/fields';
 import { isEscapeValue } from '../../../lib/records/format';
 
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
   input: {
     minHeight: 52, borderRadius: radii.input, borderWidth: 1, borderColor: colors.borderStrong,
     backgroundColor: colors.surface, paddingHorizontal: space.md, paddingVertical: space.sm,
-    fontFamily: fonts.regular, fontSize: 17, lineHeight: 24, color: colors.ink,
+    ...font.regular, fontSize: 17, lineHeight: 24, color: colors.ink,
   },
   escapes: { flexDirection: 'row', flexWrap: 'wrap', gap: space.xs },
 });

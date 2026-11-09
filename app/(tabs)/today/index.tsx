@@ -9,7 +9,7 @@ import { Button, HeaderAvatar, InlineError, ScreenLarge, SkeletonCards, Txt } fr
 import { LogBleedingSheet } from '../../../components/zeeba/LogBleedingSheet';
 import { AppointmentCard } from '../../../components/zeeba/capture/AppointmentCard';
 import {
-  GhostNoteCard, HeroCard, HeroChip, LatestNoteCard, QuickRows, RoughDayCard, latestNote,
+  GhostNoteCard, HeroCard, HeroChip, LatestNoteCard, QuickRows, RoughDayCard, WeekDashboard, latestNote,
 } from '../../../components/zeeba/capture/TodayCards';
 import { space } from '../../../constants/zeebaUI';
 import { isHumanName } from '../../../lib/humanName';
@@ -53,12 +53,13 @@ export default function TodayScreen() {
         <InlineError message={loadError} onRetry={userId ? () => load(userId) : undefined} style={{ marginBottom: space.md }} />
       ) : null}
       {capture}
-      {/* Compact "this week" line (appointment countdown or notes in the last 7 days). The 14-day strip lives on Timeline. */}
-      {loadedFor ? <View style={{ marginTop: space.lg }}><HeroChip /></View> : null}
+      {/* B's dashboard tiles: worst pain this week (gauge) + days recorded (bars). */}
+      {loadedFor && symptoms.length > 0 ? <View style={{ marginTop: space.xl }}><WeekDashboard /></View> : null}
+      {loadedFor ? <View style={{ marginTop: space.md }}><HeroChip /></View> : null}
       {loading && !loadedFor ? (
         <View style={{ marginTop: space.xl }}><SkeletonCards count={1} label="Loading your notes" /></View>
       ) : (
-      <View style={{ marginTop: space.xl, gap: space.xl }}>
+      <View style={{ marginTop: space.lg, gap: space.lg }}>
         {latest ? <LatestNoteCard note={latest} /> : loadedFor && symptoms.length === 0 ? <GhostNoteCard /> : null}
         {loadedFor ? <AppointmentCard inviteOnly /> : null}
         <RoughDayCard />

@@ -11,7 +11,7 @@ import React from 'react';
 import { Pressable, StyleSheet, View, useWindowDimensions, Dimensions } from 'react-native';
 import Svg, { Circle, ClipPath, Defs, G, Line, Path } from 'react-native-svg';
 import { IconButton, Txt } from '../kit';
-import { colors, fonts, radii, severityColor, space } from '../../../constants/zeebaUI';
+import { font, colors, fonts, radii, severityColor, space, useColors } from '../../../constants/zeebaUI';
 import {
   MONTH_NAMES, WEEKDAY_LETTERS, daysInMonth, firstWeekdayOffset, toKey, todayKey,
 } from '../../../lib/records/dates';
@@ -54,11 +54,11 @@ export function MonthCalendar({
   return (
     <View>
       <View style={styles.head}>
-        <IconButton icon="chevron-left" color={colors.burgundy} label="Previous month" onPress={onPrev} />
+        <IconButton icon="chevron-left" color={colors.accent} label="Previous month" onPress={onPrev} />
         <Txt variant="title" accessibilityRole="header" style={[{ textAlign: 'center', flex: 1 }, narrow && { fontSize: 20, lineHeight: 26 }]}>
           {`${MONTH_NAMES[month0]} ${year}`}
         </Txt>
-        <IconButton icon="chevron-right" color={colors.burgundy} label="Next month" onPress={onNext} />
+        <IconButton icon="chevron-right" color={colors.accent} label="Next month" onPress={onNext} />
       </View>
       <View style={styles.row} aria-hidden>
         {WEEKDAY_LETTERS.map((w, i) => (
@@ -172,6 +172,7 @@ function DayCell({
 
 /** 36 pt clay outline (1.5) with diagonal hatching in a band inside it; the centre stays clear for the numeral. */
 function SpottingHatch() {
+  const c = useColors();
   const id = React.useId().replace(/[^a-zA-Z0-9_-]/g, '');
   const r = DISC / 2;
   const outer = r - RING / 2;
@@ -181,7 +182,7 @@ function SpottingHatch() {
     `M ${r - outer} ${r} a ${outer} ${outer} 0 1 0 ${outer * 2} 0 a ${outer} ${outer} 0 1 0 ${-outer * 2} 0 Z ` +
     `M ${r - inner} ${r} a ${inner} ${inner} 0 1 0 ${inner * 2} 0 a ${inner} ${inner} 0 1 0 ${-inner * 2} 0 Z`;
   const lines = [];
-  for (let k = -DISC; k <= DISC; k += 5) lines.push(<Line key={k} x1={k} y1={DISC} x2={k + DISC} y2={0} stroke={colors.clay} strokeWidth={1.25} />);
+  for (let k = -DISC; k <= DISC; k += 5) lines.push(<Line key={k} x1={k} y1={DISC} x2={k + DISC} y2={0} stroke={c.clay} strokeWidth={1.25} />);
   return (
     <Svg width={DISC} height={DISC} style={StyleSheet.absoluteFill} pointerEvents="none">
       <Defs>
@@ -190,7 +191,7 @@ function SpottingHatch() {
         </ClipPath>
       </Defs>
       <G clipPath={`url(#hatch-${id})`}>{lines}</G>
-      <Circle cx={r} cy={r} r={outer} stroke={colors.clay} strokeWidth={RING} fill="none" />
+      <Circle cx={r} cy={r} r={outer} stroke={c.clay} strokeWidth={RING} fill="none" />
     </Svg>
   );
 }
@@ -207,10 +208,10 @@ const styles = StyleSheet.create({
   discWrap: { width: DISC, height: DISC, alignItems: 'center', justifyContent: 'center' },
   disc: { width: DISC, height: DISC, borderRadius: radii.pill, alignItems: 'center', justifyContent: 'center' },
   todayRing: {
-    position: 'absolute', width: DISC, height: DISC, borderRadius: radii.pill, borderWidth: RING, borderColor: colors.burgundy,
+    position: 'absolute', width: DISC, height: DISC, borderRadius: radii.pill, borderWidth: RING, borderColor: colors.accent,
   },
   todayRingOuter: { width: DISC + 6, height: DISC + 6, top: -3, left: -3 },
-  num: { fontFamily: fonts.regular, fontSize: 15, lineHeight: 20, color: colors.ink, fontVariant: ['tabular-nums'] },
-  numOnClay: { fontFamily: fonts.semibold, color: colors.white },
-  dot: { width: 5, height: 5, borderRadius: 2.5, backgroundColor: colors.burgundy, marginTop: space.xxs },
+  num: { ...font.regular, fontSize: 15, lineHeight: 20, color: colors.ink, fontVariant: ['tabular-nums'] },
+  numOnClay: { ...font.semibold, color: colors.onClay },
+  dot: { width: 5, height: 5, borderRadius: 2.5, backgroundColor: colors.accent, marginTop: space.xxs },
 });

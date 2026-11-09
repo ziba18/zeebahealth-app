@@ -35,7 +35,7 @@ function PageCrop({ doc, width, height, onHeight }: { doc: DoctorDoc; width: num
         <DocumentView doc={doc} />
       </View>
       <LinearGradient
-        colors={['rgba(255,255,255,0)', colors.white]}
+        colors={['rgba(255,255,255,0)', '#FFFFFF']}
         style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: FADE_H }}
         pointerEvents="none"
       />
@@ -98,7 +98,7 @@ export function DocumentPreview({ doc, tall }: { doc: DoctorDoc; tall?: boolean 
             }, shadows.hero]}
           >
             <View aria-hidden style={{ width: 44, height: 56, borderRadius: 6, borderWidth: 1, borderColor: colors.borderStrong, backgroundColor: colors.white, alignItems: 'center', justifyContent: 'center' }}>
-              <Icon name="file-text" size={22} color={colors.burgundy} />
+              <Icon name="file-text" size={22} color={colors.accent} />
             </View>
             <View style={{ flex: 1 }}>
               <Txt variant="headline">See the full page</Txt>

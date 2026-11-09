@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { colors, fonts, heights, layout, radii, space } from '../../../constants/zeebaUI';
+import { font, colors, fonts, heights, layout, radii, space } from '../../../constants/zeebaUI';
 import { Icon, type IconName } from '../../ui/Icon';
 import { Button } from './controls';
 import { Card, ConfirmCard, HeaderAvatar } from './layout';
@@ -93,7 +93,7 @@ export function Toggle({
   value, onChange, label, disabled,
 }: { value: boolean; onChange: (v: boolean) => void; label: string; disabled?: boolean }) {
   // activeThumbColor / activeTrackColor are RN-web-only props (not in RN's types).
-  const webColors = { activeThumbColor: colors.surface, activeTrackColor: colors.burgundy } as object;
+  const webColors = { activeThumbColor: colors.surface, activeTrackColor: colors.accent } as object;
   return (
     <Switch
       value={value}
@@ -101,7 +101,7 @@ export function Toggle({
       disabled={disabled}
       accessibilityLabel={label}
       accessibilityState={{ checked: value, disabled }}
-      trackColor={{ true: colors.burgundy, false: colors.borderStrong }}
+      trackColor={{ true: colors.accent, false: colors.borderStrong }}
       thumbColor={colors.surface}
       ios_backgroundColor={colors.borderStrong}
       {...webColors}
@@ -208,16 +208,16 @@ export function BigButton({
   textColor?: string;
 }) {
   const on = selected === true;
-  const bg = on ? colors.burgundyTint
+  const bg = on ? colors.accentTint
     : disabled && variant === 'primary' ? colors.sunken
-    : variant === 'primary' ? colors.burgundy
+    : variant === 'primary' ? colors.accent
     : variant === 'destructive' ? colors.error
     : 'transparent';
-  const fg = textColor ?? (on ? colors.burgundy
+  const fg = textColor ?? (on ? colors.accent
     : disabled && variant === 'primary' ? colors.ink2
-    : variant === 'primary' || variant === 'destructive' ? colors.white
+    : variant === 'primary' ? colors.onAccent : variant === 'destructive' ? colors.white
     : colors.ink);
-  const border = on ? colors.burgundy : variant === 'outline' ? colors.borderStrong : 'transparent';
+  const border = on ? colors.accent : variant === 'outline' ? colors.borderStrong : 'transparent';
   return (
     <Pressable
       onPress={onPress}
@@ -227,7 +227,7 @@ export function BigButton({
       accessibilityState={{ disabled: !!disabled, selected }}
       style={({ pressed }) => [
         styles.bigButton,
-        { backgroundColor: pressed && variant === 'primary' && !on ? colors.burgundyPressed : bg, borderColor: border, borderWidth: on ? 2 : 1 },
+        { backgroundColor: pressed && variant === 'primary' && !on ? colors.accentPressed : bg, borderColor: border, borderWidth: on ? 2 : 1 },
         pressed && variant !== 'primary' && !on && { backgroundColor: colors.sunken },
         disabled && variant !== 'primary' && { opacity: 0.5 },
         style,
@@ -249,8 +249,8 @@ export function BackButton({ label = 'Back', onPress }: { label?: string; onPres
       accessibilityLabel={label}
       style={({ pressed }) => [styles.back, pressed && { opacity: 0.6 }]}
     >
-      <Icon name="chevron-left" size={24} color={colors.burgundy} />
-      <Txt variant="body" color={colors.burgundy}>{label}</Txt>
+      <Icon name="chevron-left" size={24} color={colors.accent} />
+      <Txt variant="body" color={colors.accent}>{label}</Txt>
     </Pressable>
   );
 }
@@ -273,7 +273,7 @@ export function StepProgress({ step, total }: { step: number; total: number }) {
 export function LoadingScreen({ message }: { message?: string }) {
   return (
     <View style={[styles.screen, { alignItems: 'center', justifyContent: 'center', gap: space.md }]} accessibilityLiveRegion="polite">
-      <ActivityIndicator size="large" color={colors.burgundy} />
+      <ActivityIndicator size="large" color={colors.accent} />
       {message ? <Txt variant="body" color={colors.ink2}>{message}</Txt> : null}
     </View>
   );
@@ -294,7 +294,7 @@ export function ErrorScreen({ error, onRetry }: { error: Error; onRetry: () => v
 /** Green confirmation line, e.g. "Saved." Prefer showToast() in new code. */
 export function SuccessNote({ message }: { message: string }) {
   if (!message) return null;
-  return <Txt variant="secondary" color={colors.saved} accessibilityRole="alert" style={{ fontFamily: fonts.medium }}>{message}</Txt>;
+  return <Txt variant="secondary" color={colors.saved} accessibilityRole="alert" style={{ ...font.medium }}>{message}</Txt>;
 }
 
 export function Upcoming() {
@@ -370,11 +370,11 @@ const styles = StyleSheet.create({
   },
   back: { flexDirection: 'row', alignItems: 'center', minHeight: 44, alignSelf: 'flex-start', marginLeft: -6, paddingRight: space.xs },
   // Plum 2px focus ring on every platform (RN-web's default is a near-black browser outline; iOS had none).
-  inputFocused: { borderColor: colors.burgundy, borderWidth: 2, paddingHorizontal: space.md - 1, paddingVertical: space.sm - 1, ...({ outlineStyle: 'none' } as object) },
+  inputFocused: { borderColor: colors.accent, borderWidth: 2, paddingHorizontal: space.md - 1, paddingVertical: space.sm - 1, ...({ outlineStyle: 'none' } as object) },
   input: {
     marginTop: space.sm, minHeight: heights.primary, borderRadius: radii.input, borderWidth: 1, borderColor: colors.borderStrong,
     backgroundColor: colors.surface, paddingHorizontal: space.md, paddingVertical: space.sm,
-    fontFamily: fonts.regular, fontSize: 17, color: colors.ink,
+    ...font.regular, fontSize: 17, color: colors.ink,
   },
   inputMulti: { minHeight: 112, paddingTop: 14 },
   secretRow: { flexDirection: 'row', alignItems: 'flex-end', gap: space.xs },
@@ -384,7 +384,7 @@ const styles = StyleSheet.create({
   },
   switchRow: { flexDirection: 'row', alignItems: 'center', gap: space.md, minHeight: heights.primary, paddingVertical: space.xs },
   progressTrack: { marginTop: space.xs, height: 8, borderRadius: radii.pill, backgroundColor: colors.sunken, overflow: 'hidden' },
-  progressFill: { height: '100%', backgroundColor: colors.burgundy },
+  progressFill: { height: '100%', backgroundColor: colors.accent },
   upcoming: { backgroundColor: colors.sunken, borderRadius: radii.pill, paddingHorizontal: space.xs, paddingVertical: 2 },
   recordRow: {
     minHeight: 72, flexDirection: 'row', alignItems: 'center', gap: space.sm, padding: space.md,

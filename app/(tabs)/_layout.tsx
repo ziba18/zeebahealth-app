@@ -37,7 +37,7 @@ export default function TabsLayout() {
     <>
     <Tabs tabBar={(props) => <MainTabBar {...props} />} screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: colors.canvas } }}>
       <Tabs.Screen name="today" options={{ title: 'Today' }} />
-      <Tabs.Screen name="timeline" options={{ title: 'Timeline' }} />
+      <Tabs.Screen name="timeline" options={{ title: 'Evidence' }} />
       <Tabs.Screen name="doctor" options={{ title: 'For my doctor' }} />
       {/* Reached from the avatar (HeaderAvatar) top-right on every tab; MainTabBar only draws VISIBLE_TABS. No href:null, which sent web back to Today. */}
       <Tabs.Screen name="profile" options={{ title: 'Profile' }} />

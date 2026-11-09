@@ -47,9 +47,9 @@ export function AgendaField({
           accessibilityRole="button"
           accessibilityLabel={`Add: ${title}`}
           onPress={() => setOpened(true)}
-          style={{ minHeight: heights.minHit, minWidth: heights.minHit, paddingHorizontal: space.md, borderRadius: radii.pill, backgroundColor: colors.burgundyTint, alignItems: 'center', justifyContent: 'center' }}
+          style={{ minHeight: heights.minHit, minWidth: heights.minHit, paddingHorizontal: space.md, borderRadius: radii.pill, backgroundColor: colors.accentTint, alignItems: 'center', justifyContent: 'center' }}
         >
-          <Txt variant="secondary" style={{ color: colors.burgundy, fontWeight: '600' }}>Add</Txt>
+          <Txt variant="secondary" style={{ color: colors.accent, fontWeight: '600' }}>Add</Txt>
         </Pressable>
       </View>
     );
@@ -109,7 +109,7 @@ export function AgendaField({
               icon={dictation.recording ? 'square' : 'mic'}
               label={dictation.recording ? 'Stop dictating' : 'Dictate instead of typing'}
               onPress={toggleMic}
-              color={colors.burgundy}
+              color={colors.accent}
             />
           </View>
         ) : null}

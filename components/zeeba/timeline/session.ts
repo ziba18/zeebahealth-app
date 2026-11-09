@@ -20,7 +20,7 @@ interface TimelineSession {
 }
 
 export const useTimelineSession = create<TimelineSession>((set) => ({
-  mode: 'list',
+  mode: 'patterns',
   filter: 'All',
   focusWeek: null,
   setFocusWeek: (focusWeek) => set({ focusWeek }),

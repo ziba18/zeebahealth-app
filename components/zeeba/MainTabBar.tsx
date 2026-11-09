@@ -10,8 +10,8 @@ import { Txt } from './kit';
 
 const TABS: Record<string, { label: string; icon: IconName }> = {
   today: { label: 'Today', icon: 'sun' },
-  timeline: { label: 'Timeline', icon: 'list' },
-  doctor: { label: 'For my doctor', icon: 'file-text' },
+  timeline: { label: 'Evidence', icon: 'bar-chart' },
+  doctor: { label: 'Doctor', icon: 'file-text' },
 };
 export const VISIBLE_TABS = ['today', 'timeline', 'doctor'];
 
@@ -67,12 +67,12 @@ export function MainTabBar({ state, descriptors, emitter, navigateToTab }: Botto
   return (
     <View role="navigation" aria-label="Main">
     <View style={[styles.bar, Platform.OS === 'web' && styles.barSolid, { paddingBottom: insets.bottom }]} accessibilityRole="tablist">
-      {Platform.OS === 'web' ? null : <BlurView intensity={60} tint="systemChromeMaterialLight" style={StyleSheet.absoluteFill} />}
+      {Platform.OS === 'web' ? null : <BlurView intensity={60} tint="systemChromeMaterial" style={StyleSheet.absoluteFill} />}
       {routes.map((route) => {
         const focused = activeName === route.name;
         const isCurrent = active?.name === route.name;
         const tab = TABS[route.name];
-        const tint = focused ? colors.burgundy : colors.ink3;
+        const tint = focused ? colors.accent : colors.ink3;
         return (
           <Pressable
             key={route.key}

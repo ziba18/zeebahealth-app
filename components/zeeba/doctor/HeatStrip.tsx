@@ -11,7 +11,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import Svg, { Circle, Line, Rect, Text as SvgText } from 'react-native-svg';
-import { fonts } from '../../../constants/zeebaUI';
+import { font, fonts } from '../../../constants/zeebaUI';
 import { formatRange, formatShortDate } from '../../../lib/records/format';
 import {
   DOC_COLORS, PAGE_TYPE, SPOT_DASH, SPOT_STROKE, bleedRuns, docSeverity, stripRows, type HeatDay, type HeatStripModel,
@@ -134,7 +134,7 @@ export function HeatStrip({
         b.kind === 'row' ? (
           <Row key={b.row[0].date} row={b.row} g={g} width={width} />
         ) : (
-          <Txt key={b.from} style={{ fontFamily: fonts.regular, fontSize: textSize, lineHeight: textSize * 1.35, color: C.ink2 }}>
+          <Txt key={b.from} style={{ ...font.regular, fontSize: textSize, lineHeight: textSize * 1.35, color: C.ink2 }}>
             {`No entries ${formatRange(b.from, b.to)}`}
           </Txt>
         ),

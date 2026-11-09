@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ConfirmCard, IconButton, Txt, useReduceMotion } from '../kit';
-import { colors, fonts, motion, radii, space } from '../../../constants/zeebaUI';
+import { font, colors, fonts, motion, radii, space } from '../../../constants/zeebaUI';
 import { addDays, todayKey } from '../../../lib/records/dates';
 import { formatDay } from '../../../lib/records/format';
 import { type Chat, useChatStore } from '../../../stores/chatStore';
@@ -90,8 +90,8 @@ export function ChatDrawer({ visible, onClose, onOpenProfile }: {
           accessibilityRole="button"
           style={({ pressed }) => [styles.row, styles.newRow, pressed && { backgroundColor: colors.sunken }]}
         >
-          <Icon name="square-pen" size={20} color={colors.burgundy} />
-          <Txt variant="headline" color={colors.burgundy}>New chat</Txt>
+          <Icon name="square-pen" size={20} color={colors.accent} />
+          <Txt variant="headline" color={colors.accent}>New chat</Txt>
         </Pressable>
 
         <View style={styles.search}>
@@ -128,7 +128,7 @@ export function ChatDrawer({ visible, onClose, onOpenProfile }: {
                     ]}
                   />
                 ) : (
-                  <View key={c.id} style={[styles.chatRow, c.id === activeId && { backgroundColor: colors.burgundyTint }]}>
+                  <View key={c.id} style={[styles.chatRow, c.id === activeId && { backgroundColor: colors.accentTint }]}>
                   <Pressable
                     onPress={() => pick(() => select(c.id))}
                     onLongPress={() => setConfirmId(c.id)}
@@ -143,7 +143,7 @@ export function ChatDrawer({ visible, onClose, onOpenProfile }: {
                     <Icon name="message-circle" size={20} color={colors.ink2} />
                     <Txt variant="secondary" color={colors.ink} numberOfLines={1} style={{ flex: 1 }}>{c.title}</Txt>
                   </Pressable>
-                  <IconButton icon="more-horizontal" size={20} color={colors.burgundy} label={`Delete chat: ${c.title}`} onPress={() => setConfirmId(c.id)} />
+                  <IconButton icon="more-horizontal" size={20} color={colors.accent} label={`Delete chat: ${c.title}`} onPress={() => setConfirmId(c.id)} />
                   </View>
                 )
               ))}
@@ -156,8 +156,8 @@ export function ChatDrawer({ visible, onClose, onOpenProfile }: {
           accessibilityRole="button"
           style={({ pressed }) => [styles.row, styles.footer, pressed && { backgroundColor: colors.sunken }]}
         >
-          <Icon name="settings" size={20} color={colors.burgundy} />
-          <Txt color={colors.burgundy}>Profile and settings</Txt>
+          <Icon name="settings" size={20} color={colors.accent} />
+          <Txt color={colors.accent}>Profile and settings</Txt>
         </Pressable>
       </Animated.View>
     </Modal>
@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', gap: space.xs, height: 44,
     paddingHorizontal: space.sm, borderRadius: radii.input, backgroundColor: colors.sunken, marginBottom: space.xs,
   },
-  searchInput: { flex: 1, height: 44, fontFamily: fonts.regular, fontSize: 17, color: colors.ink },
+  searchInput: { flex: 1, height: 44, ...font.regular, fontSize: 17, color: colors.ink },
   group: { paddingHorizontal: space.sm, marginTop: space.md, marginBottom: space.xxs },
   empty: { paddingHorizontal: space.sm, marginTop: space.md },
   footer: { borderTopWidth: 1, borderTopColor: colors.hairline, borderRadius: 0, marginTop: space.xs, paddingTop: space.xs },

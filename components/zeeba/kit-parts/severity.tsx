@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   Pressable, StyleSheet, View, type LayoutChangeEvent, type StyleProp, type ViewStyle,
 } from 'react-native';
-import { colors, fonts, heights, radii, severityColor, space } from '../../../constants/zeebaUI';
+import { font, colors, fonts, heights, radii, severityColor, space } from '../../../constants/zeebaUI';
 import { haptics } from '../../../lib/haptics';
 import { FieldLabel } from './FieldLabel';
 import { Txt } from './Txt';
@@ -132,13 +132,13 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center', backgroundColor: colors.surface,
   },
   // V1: solid plum, no ring — unmistakable at arm's length.
-  dotSelected: { borderWidth: 0, borderColor: colors.burgundy, backgroundColor: colors.burgundy },
-  digit: { fontFamily: fonts.medium, fontSize: 17, lineHeight: 22, color: colors.ink, fontVariant: ['tabular-nums'] },
-  digitSelected: { fontFamily: fonts.semibold, color: colors.white },
+  dotSelected: { borderWidth: 0, borderColor: colors.accent, backgroundColor: colors.accent },
+  digit: { ...font.medium, fontSize: 17, lineHeight: 22, color: colors.ink, fontVariant: ['tabular-nums'] },
+  digitSelected: { ...font.semibold, color: colors.onAccent },
   captions: { flexDirection: 'row', justifyContent: 'space-between', marginTop: space.xxs },
   tag: {
     minWidth: 28, height: 28, borderRadius: radii.pill, paddingHorizontal: space.xs,
     alignItems: 'center', justifyContent: 'center',
   },
-  tagText: { fontFamily: fonts.semibold, fontSize: 15, lineHeight: 20, fontVariant: ['tabular-nums'] },
+  tagText: { ...font.semibold, fontSize: 15, lineHeight: 20, fontVariant: ['tabular-nums'] },
 });
