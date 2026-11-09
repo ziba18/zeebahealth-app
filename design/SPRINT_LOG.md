@@ -9,3 +9,4 @@ Expo first-party packages: expo-blur (translucent tab bar), expo-haptics, react-
 - 12:26 Today: removed note-count card + 14-day strip, Wren hero slot (placeholder Wren.tsx, lead overwrites), 4 topics + More, compact week line. TodayCards.tsx, today/index.tsx
 - 12:29 Switch rows: borderStrong off-track, white thumb
 - 12:29 Friends + edit-profile grouped
+- 12:29 Wren sleepy in Timeline/Records empty states; proud Wren in save toast. toast.tsx, RecordsList, timeline/index, CaptureSheet
