@@ -1,35 +1,42 @@
-// Design tokens — "Warm Paper, Deep Ink" (spec: reports/Atossa app design research.md §Visual system;
+// Design tokens — "Burgundy & Bone" (design/BRAND.md; replaced "Warm Paper, Deep Ink" 2026-11-09) (spec: reports/Atossa app design research.md §Visual system;
 // exact values: design/lovable-reference/styles.css). Light only. See design/KIT.md for usage rules.
 import type { TextStyle, ViewStyle } from 'react-native';
 
 /** The palette. Every colour on screen comes from here. */
 export const colors = {
-  canvas: '#F7F3EE', // app background
+  canvas: '#FBF7F4', // app background (bone)
   surface: '#FFFFFF', // cards, sheets, PDF
-  sunken: '#EFE9E1', // input wells, segmented track, disabled primary (use ink2 text on it, never ink3)
-  hairline: '#D6CCBF', // card borders, dividers — decorative only
-  borderStrong: '#8F867C', // input + chip outlines (3:1 UI contrast)
-  ink: '#1F1B18', // body text, Sam's words
-  ink2: '#5A534D', // secondary text, Zeeba Health's tidy values
-  ink3: '#6B625A', // labels, "why I'm asking", timestamps, chevrons
-  plum: '#4A2C4F', // ACTION ONLY: primary buttons, mic, selected tab, links, selection
-  plumPressed: '#3A2140',
-  plumTint: '#EFE6EF', // selected chips / segments, user bubble
-  clay: '#A6452E', // BLEEDING ONLY: calendar fill, entry edge, droplet icon, PDF band
-  clayTint: '#F3DED6', // period-day band in charts
+  sunken: '#F3ECE8', // input wells, segmented track, grouped-list background
+  hairline: '#E6DBD6', // card borders, dividers — decorative only
+  borderStrong: '#918087', // input + chip outlines (3.5:1 UI contrast)
+  ink: '#22161A', // body text, Sam's words (16.5:1 on canvas)
+  ink2: '#5C4A4F', // secondary text (7.7:1)
+  ink3: '#6A585D', // labels, timestamps, chevrons (6.2:1)
+  burgundy: '#7A1F3A', // BRAND + ACTION: primary buttons, mic, selected tab, links (white on it 10:1)
+  burgundyPressed: '#5C1529',
+  burgundyTint: '#F6E6EA', // selected chips / segments, user bubble
+  blush: '#F2C9CF', // Wren's cheeks + brand illustration only, never text
+  /** @deprecated old name — same value as `burgundy`. */
+  plum: '#7A1F3A',
+  /** @deprecated old name — same value as `burgundyPressed`. */
+  plumPressed: '#5C1529',
+  /** @deprecated old name — same value as `burgundyTint`. */
+  plumTint: '#F6E6EA',
+  clay: '#B04A2E', // BLEEDING ONLY: calendar fill, entry edge, droplet icon, PDF band (orange-red, distinct from burgundy)
+  clayTint: '#F6E0D8', // period-day band in charts
   saved: '#2E6A4F', // system "saved" status — never describes a body
   savedTint: '#E2EEE6',
   error: '#A12A2A', // app errors only (network, mic permission)
   errorTint: '#F6E0DE',
   white: '#FFFFFF',
   /** Scrim behind sheets (ink at 20%). */
-  scrim: 'rgba(31,27,24,0.2)',
+  scrim: 'rgba(34,22,26,0.2)',
   /** Tab bar surface. */
   tabBar: 'rgba(255,255,255,0.94)',
 } as const;
 
 /** Single-hue severity ramp for 0–2, 3–4, 5–6, 7–8, 9–10. Always shown with the digit. */
-export const severityRamp = ['#E4D6E6', '#C3A6C7', '#85598B', '#6E4775', '#3E2144'] as const;
+export const severityRamp = ['#F4DEE4', '#E0AEBB', '#A9566F', '#8E3050', '#5A1229'] as const;
 
 /** Ramp step (0–4) for a 0–10 score. */
 export function severityStep(n: number): 0 | 1 | 2 | 3 | 4 {
@@ -112,14 +119,14 @@ export const heights = {
 
 /** Only the Today hero and the document preview get a shadow. */
 export const shadows: { hero: ViewStyle; card: ViewStyle; sheet: ViewStyle; toast: ViewStyle; thumb: ViewStyle } = {
-  hero: { boxShadow: '0 2px 16px rgba(31,27,24,0.06)' }, // y 2, blur 16, ink at 6%
+  hero: { boxShadow: '0 2px 16px rgba(34,22,26,0.06)' }, // y 2, blur 16, ink at 6%
   /** Resting card: two soft layers so white cards lift off the cream canvas. */
-  card: { boxShadow: '0 1px 3px rgba(31,27,24,0.08), 0 6px 20px rgba(31,27,24,0.05)' },
-  sheet: { boxShadow: '0 -8px 32px rgba(31,27,24,0.12)' },
+  card: { boxShadow: '0 1px 3px rgba(34,22,26,0.08), 0 6px 20px rgba(34,22,26,0.05)' },
+  sheet: { boxShadow: '0 -8px 32px rgba(34,22,26,0.12)' },
   /** The floating toast (kit only). */
-  toast: { boxShadow: '0 6px 24px rgba(31,27,24,0.12)' },
+  toast: { boxShadow: '0 6px 24px rgba(34,22,26,0.12)' },
   /** Micro-shadow on the SegmentedControl's selected thumb (kit only, as iOS does). */
-  thumb: { boxShadow: '0 1px 2px rgba(31,27,24,0.10)' },
+  thumb: { boxShadow: '0 1px 2px rgba(34,22,26,0.10)' },
 };
 
 export const motion = { fast: 200, base: 240, sheet: 260, toastMs: 3000 } as const;
