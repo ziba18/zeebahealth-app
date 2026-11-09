@@ -7,13 +7,13 @@ import { Image, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleShee
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Redirect, useRouter } from 'expo-router';
 import { CHAT_ENABLED } from '../../../lib/features';
-import { Button, IconButton, InlineError, Txt, curly } from '../../../components/atossa/kit';
-import { LogBleedingSheet } from '../../../components/atossa/LogBleedingSheet';
-import { AttachSheet } from '../../../components/atossa/chat/AttachSheet';
-import { ChatDrawer } from '../../../components/atossa/chat/ChatDrawer';
-import { Composer, type ComposerHandle } from '../../../components/atossa/chat/Composer';
+import { Button, IconButton, InlineError, Txt, curly } from '../../../components/zeeba/kit';
+import { LogBleedingSheet } from '../../../components/zeeba/LogBleedingSheet';
+import { AttachSheet } from '../../../components/zeeba/chat/AttachSheet';
+import { ChatDrawer } from '../../../components/zeeba/chat/ChatDrawer';
+import { Composer, type ComposerHandle } from '../../../components/zeeba/chat/Composer';
 import { Icon } from '../../../components/ui/Icon';
-import { colors, layout, radii, space } from '../../../constants/atossaUI';
+import { colors, layout, radii, space } from '../../../constants/zeebaUI';
 import { openCapture } from '../../../lib/captureStore';
 import { haptics } from '../../../lib/haptics';
 import { isHumanName } from '../../../lib/humanName';
@@ -95,13 +95,13 @@ function ChatScreen() {
   return (
     <SafeAreaView role="main" edges={['top']} style={styles.screen}>
       <View style={[styles.column, styles.header]}>
-        <IconButton icon="chevron-left" label="Back to Today" color={colors.plum} onPress={() => router.back()} />
+        <IconButton icon="chevron-left" label="Back to Today" color={colors.accent} onPress={() => router.back()} />
         <Txt variant="headline" accessibilityRole="header" style={styles.headerTitle}>Talk it through</Txt>
         <View style={styles.headerRight}>
           {!empty ? (
-            <IconButton icon="square-pen" label="New chat" color={colors.plum} onPress={() => useChatStore.getState().newChat()} />
+            <IconButton icon="square-pen" label="New chat" color={colors.accent} onPress={() => useChatStore.getState().newChat()} />
           ) : null}
-          <IconButton icon="menu" label="Open chats" color={colors.plum} onPress={() => setDrawer(true)} />
+          <IconButton icon="menu" label="Open chats" color={colors.accent} onPress={() => setDrawer(true)} />
         </View>
       </View>
 
@@ -125,7 +125,7 @@ function ChatScreen() {
                   }}
                   style={({ pressed }) => [styles.starter, pressed && { backgroundColor: colors.sunken }]}
                 >
-                  <Txt variant="secondary" color={colors.plum} style={styles.center} maxFontSizeMultiplier={1.6}>{label}</Txt>
+                  <Txt variant="secondary" color={colors.accent} style={styles.center} maxFontSizeMultiplier={1.6}>{label}</Txt>
                 </Pressable>
               ))}
             </View>
@@ -175,10 +175,10 @@ function ChatScreen() {
             placeholder={placeholder}
           />
           <Txt variant="caption" style={[styles.center, { marginTop: space.xs }]}>
-            Messages you type into the chat are processed by Groq in the United States. Notes you save stay in Atossa.
+            Messages you type into the chat are processed by Groq in the United States. Notes you save stay in Zeeba Health.
           </Txt>
           <Txt variant="caption" style={[styles.center, { marginTop: space.xxs }]}>
-            Replies are written by an AI and can contain mistakes. Atossa can’t diagnose. If you feel very unwell, contact your GP, NHS 111 or 999.
+            Replies are written by an AI and can contain mistakes. Zeeba Health can’t diagnose. If you feel very unwell, contact your GP, NHS 111 or 999.
           </Txt>
         </View>
       </KeyboardAvoidingView>

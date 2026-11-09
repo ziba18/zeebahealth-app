@@ -7,7 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { SymptomData } from '../types/records';
 import { ApiError } from './api';
 
-const KEY = 'atossa.outbox.v1';
+const KEY = 'zeeba.outbox.v1';
 
 export interface OutboxItem { clientId: string; userId: string; data: SymptomData; queuedAt: string }
 

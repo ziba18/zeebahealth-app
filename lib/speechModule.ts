@@ -23,3 +23,6 @@ try {
 }
 
 export { SpeechModule, useSpeechEvent };
+
+/** True where in-app voice notes work (an installed iOS/Android build). False in Expo Go and on web. */
+export const VOICE_AVAILABLE = SpeechModule !== null;

@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { FieldGroup } from '../../components/zeeba/records/GroupedRows';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { space } from '../../constants/atossaUI';
-import { Button, InlineError, ScreenLarge, TextField } from '../../components/atossa/kit';
+import { colors, space } from '../../constants/zeebaUI';
+import { StyleSheet } from 'react-native';
+import { Button, InlineError, ScreenLarge, TextField, Txt } from '../../components/zeeba/kit';
 import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
 import { useAuthStore } from '../../stores/authStore';
 import { ApiError } from '../../lib/api';
@@ -41,8 +43,15 @@ export default function LoginScreen() {
   };
 
   return (
-    <ScreenLarge title="Sign in" subtitle="Welcome back." back={{ label: 'Back' }}>
-      <View style={{ gap: space.xl }}>
+    <ScreenLarge brand grouped title="Sign in" subtitle="Welcome back." back={{ label: 'Back' }}>
+      {/* Apple + Google first, so people who signed up with them never scroll (Apple HIG). */}
+      <SocialAuthButtons mode="signin" />
+      <View style={styles.or} aria-hidden>
+        <View style={styles.line} />
+        <Txt variant="caption">or with email</Txt>
+        <View style={styles.line} />
+      </View>
+      <FieldGroup>
         <TextField
           label="Email"
           value={email}
@@ -68,17 +77,18 @@ export default function LoginScreen() {
           />
           <Button label="Forgot your password?" variant="text" small align="start" onPress={() => router.push('/(auth)/forgot-password')} style={{ marginTop: space.xxs }} />
         </View>
-      </View>
+      </FieldGroup>
 
       <View style={{ marginTop: space.xxl, gap: space.xs }}>
         <InlineError message={error} style={{ marginBottom: space.xs }} />
         <Button label={loading ? 'Signing in…' : 'Sign in'} loading={loading} onPress={handleLogin} />
-        <Button label="Create a new account" variant="text" onPress={() => router.replace('/(auth)/register')} />
-      </View>
-
-      <View style={{ marginTop: space.md }}>
-        <SocialAuthButtons mode="signin" />
+        <Button label="New here? Create an account" variant="text" onPress={() => router.replace('/(auth)/welcome')} />
       </View>
     </ScreenLarge>
   );
 }
+
+const styles = StyleSheet.create({
+  or: { flexDirection: 'row', alignItems: 'center', gap: space.sm, marginVertical: space.lg },
+  line: { flex: 1, height: StyleSheet.hairlineWidth, backgroundColor: colors.hairline },
+});

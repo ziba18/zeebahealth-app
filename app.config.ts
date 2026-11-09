@@ -14,24 +14,24 @@ const googlePlugin: any[] = googleIosUrlScheme
   : [];
 
 const config: ExpoConfig = {
-  name: 'Atossa',
-  slug: 'attosa',
-  version: '1.1.0',
+  name: 'Zeeba Health',
+  slug: 'zeebahealth',
+  version: '1.0.0',
   // EAS Update: JS-only changes ship to installed builds without a new
   // build. The fingerprint changes whenever native code/config changes, so
   // an update only ever reaches builds it is compatible with.
   runtimeVersion: { policy: 'fingerprint' },
   updates: {
-    url: 'https://u.expo.dev/8d09758f-8216-49a8-933f-d8e23b1fb914',
+    url: 'https://u.expo.dev/69e41ccd-094f-4227-a786-3a2ade8834da',
   },
   orientation: 'portrait',
   icon: './assets/icon.png',
-  // The design is light-only (dark mode was removed), so keep keyboards and system sheets light too.
-  userInterfaceStyle: 'light',
-  scheme: 'attosa',
+  // Light = Native, Dark = Midnight: follow the phone's appearance (keyboards and system sheets too).
+  userInterfaceStyle: 'automatic',
+  scheme: 'zeebahealth',
   ios: {
     supportsTablet: true,
-    bundleIdentifier: 'com.attosa.app',
+    bundleIdentifier: 'com.zeebahealth.app',
     // Apple's required-reason API declaration for the app's own use (UserDefaults, via local
     // storage). Reason CA92.1 = app-only data, per https://docs.expo.dev/guides/apple-privacy/.
     privacyManifests: {
@@ -52,7 +52,7 @@ const config: ExpoConfig = {
       monochromeImage: './assets/android-icon-monochrome.png',
       backgroundColor: '#FFFFFF',
     },
-    package: 'com.attosa.app',
+    package: 'com.zeebahealth.app',
     allowBackup: false,
     permissions: [
       'android.permission.VIBRATE',
@@ -72,11 +72,11 @@ const config: ExpoConfig = {
     [
       'expo-image-picker',
       {
-        photosPermission: 'Atossa lets you attach a photo to a chat. It stays on your phone.',
-        cameraPermission: 'Atossa lets you take a photo to attach to a chat. It stays on your phone.',
+        photosPermission: 'Zeeba Health lets you attach a photo to a chat. It stays on your phone.',
+        cameraPermission: 'Zeeba Health lets you take a photo to attach to a chat. It stays on your phone.',
         // Not `false`: that deletes NSMicrophoneUsageDescription, which voice
         // dictation (expo-speech-recognition) needs — Apple rejected build 23 for it.
-        microphonePermission: 'Atossa needs access to your microphone to let you describe symptoms by voice.',
+        microphonePermission: 'Zeeba Health needs access to your microphone to let you describe symptoms by voice.',
       },
     ],
     [
@@ -84,7 +84,8 @@ const config: ExpoConfig = {
       {
         image: './assets/splash-icon.png',
         resizeMode: 'contain',
-        backgroundColor: '#fef9f4',
+        backgroundColor: '#F2F2F7',
+        dark: { image: './assets/splash-icon.png', backgroundColor: '#0A0C16' },
       },
     ],
     [
@@ -105,11 +106,11 @@ const config: ExpoConfig = {
     [
       'expo-speech-recognition',
       {
-        microphonePermission: 'Atossa needs access to your microphone to let you describe symptoms by voice.',
+        microphonePermission: 'Zeeba Health needs access to your microphone to let you describe symptoms by voice.',
         // We only ever call requestMicrophonePermissionsAsync() with
         // requiresOnDeviceRecognition: true, so this permission should
         // never actually be requested — kept accurate in case that changes.
-        speechRecognitionPermission: 'Speech recognition is processed on your device — Atossa does not send your voice to a server.',
+        speechRecognitionPermission: 'Speech recognition is processed on your device — Zeeba Health does not send your voice to a server.',
       },
     ],
     'expo-apple-authentication',
@@ -123,7 +124,7 @@ const config: ExpoConfig = {
       origin: false,
     },
     eas: {
-      projectId: '8d09758f-8216-49a8-933f-d8e23b1fb914',
+      projectId: '69e41ccd-094f-4227-a786-3a2ade8834da',
     },
   },
   owner: 'zamaniziba18',

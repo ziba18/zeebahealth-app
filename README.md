@@ -1,7 +1,7 @@
 <div align="center">
-  <img src="assets/Atossa-logo.png" alt="Atossa logo" width="140" />
+  <img src="assets/Zeeba-logo.png" alt="Zeeba Health logo" width="140" />
 
-  # Atossa
+  # Zeeba Health
 
   **A symptom-capture companion for people with PCOS or endometriosis, built with Expo, React Native, and a Python backend.**
 
@@ -14,7 +14,7 @@
 
 ## Features
 
-- **Today** — a calm chat: type or dictate how you're feeling in your own words and Atossa replies with a short follow-up question (via the `/chat` LLM, instructed never to diagnose). "Save as a note for my GP" opens the capture sheet pre-filled, which asks only the missing details (where, how bad 0–10, how long, did it stop you doing things) before saving. The **+** button attaches a photo or file (kept on the phone), logs bleeding, or starts a full note. Chat history lives on the device; a drawer lists past chats.
+- **Today** — a calm chat: type or dictate how you're feeling in your own words and Zeeba Health replies with a short follow-up question (via the `/chat` LLM, instructed never to diagnose). "Save as a note for my GP" opens the capture sheet pre-filled, which asks only the missing details (where, how bad 0–10, how long, did it stop you doing things) before saving. The **+** button attaches a photo or file (kept on the phone), logs bleeding, or starts a full note. Chat history lives on the device; a drawer lists past chats.
 - **Timeline** — every note in your own words, as a filterable list grouped by week or as a month calendar (bleeding days marked), with a detail view for each entry.
 - **For my doctor** — pick a date range and what to include, see an A4 document preview, then share it as a PDF, print it, or show it on screen in the appointment.
 - **Profile & Records** — opened from the header avatar: medicines, appointments and health history (add / edit / delete), settings, and edit profile.
@@ -32,7 +32,7 @@ No diagnostic language anywhere in the product: the app never names a condition,
 - **Framework** — [Expo SDK 57](https://expo.dev) · React Native 0.86 · React 19 · TypeScript
 - **Routing** — [expo-router](https://docs.expo.dev/router/introduction/) (typed file-based routes)
 - **State** — Zustand stores (`stores/`); health records in `stores/recordsStore.ts`
-- **UI** — "Warm Paper, Deep Ink" design system: tokens in `constants/atossaUI.ts`, shared components in `components/atossa/kit.tsx` (rules in [`design/KIT.md`](design/KIT.md)); Inter for UI, Instrument Serif only for the user's own words; 44pt+ tap targets, Dynamic Type, haptics
+- **UI** — "Warm Paper, Deep Ink" design system: tokens in `constants/zeebaUI.ts`, shared components in `components/zeeba/kit.tsx` (rules in [`design/KIT.md`](design/KIT.md)); Inter for UI, Instrument Serif only for the user's own words; 44pt+ tap targets, Dynamic Type, haptics
 - **Voice** — `expo-speech-recognition`, on-device only (no audio ever leaves the device); loaded lazily so the app still runs in Expo Go, where the mic explains that voice needs the App Store build
 - **Sharing** — `expo-print` + `expo-sharing` for the doctor summary PDF
 - **Attachments** — `expo-image-picker`, `expo-document-picker`, `expo-file-system` (files are copied into the app's own folder and never uploaded)
@@ -51,7 +51,7 @@ No diagnostic language anywhere in the product: the app never names a condition,
 ## Project structure
 
 ```
-atossa/
+zeebahealth-app/
 ├── app/
 │   ├── (auth)/                   # welcome, sign in, sign up, onboarding (name, basics, last period, reminders)
 │   └── (tabs)/
@@ -60,7 +60,7 @@ atossa/
 │       ├── doctor/               # "For my doctor" builder + show-on-screen view
 │       └── profile/              # profile, settings, friends, records (opened from the header avatar)
 ├── components/
-│   ├── atossa/                   # kit + kit-parts, tab bar, chat/, capture/, timeline/, doctor/, records/
+│   ├── zeeba/                    # kit + kit-parts, tab bar, chat/, capture/, timeline/, doctor/, records/
 │   ├── auth/                     # Apple / Google sign-in buttons
 │   └── ui/Icon.tsx               # icon set
 ├── lib/records/                  # pure logic: dates, formatting, fields, doctor summary
@@ -87,8 +87,8 @@ atossa/
 ### 1. Set up the Python backend
 
 ```bash
-git clone https://github.com/ziba18/atossa.git
-cd atossa/backend
+git clone https://github.com/ziba18/zeebahealth-app.git
+cd zeebahealth-app/backend
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 ```
@@ -174,7 +174,7 @@ The app downloads the update on launch and uses it from the next launch. `runtim
 
 ## License
 
-All rights reserved © 2026 Atossa. Published for transparency and portfolio purposes — please do not redistribute without permission.
+All rights reserved © 2026 Zeeba Health. Published for transparency and portfolio purposes — please do not redistribute without permission.
 
 ---
 

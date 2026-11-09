@@ -1,5 +1,5 @@
 {
-  "name": "attosa",
+  "name": "zeebahealth-app",
   "version": "1.0.0",
   "main": "index.ts",
   "scripts": {
@@ -12,12 +12,14 @@
   "dependencies": {
     "@expo-google-fonts/instrument-serif": "^0.4.1",
     "@expo-google-fonts/inter": "^0.4.2",
+    "@expo-google-fonts/newsreader": "^0.4.1",
     "@expo/metro-runtime": "~58.0.15",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-google-signin/google-signin": "^16.1.5",
     "date-fns": "^4.1.0",
     "expo": "~58.0.19",
     "expo-apple-authentication": "~58.0.2",
+    "expo-blur": "~58.0.5",
     "expo-build-properties": "~58.0.11",
     "expo-constants": "~58.0.13",
     "expo-device": "~58.0.5",

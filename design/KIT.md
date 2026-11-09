@@ -1,16 +1,16 @@
-# Atossa kit — reference for Phase 1–4 agents
+# Zeeba Health kit — reference for Phase 1–4 agents
 
-"Warm Paper, Deep Ink". Spec: `reports/Atossa app design research.md` lines 47–200. Lovable
+"Warm Paper, Deep Ink". Spec: `reports/Zeeba Health design research.md` lines 47–200. Lovable
 snapshot (reference only, has known bugs): `design/lovable-reference/`. Bugs not to port:
-`research_notes/Atossa app design research/stage2a_fix_message.md` + §5 of `stage2b_doctor_message.md`.
+`research_notes/Zeeba Health design research/stage2a_fix_message.md` + §5 of `stage2b_doctor_message.md`.
 
-**Import UI only from `components/atossa/kit`** and tokens only from `constants/atossaUI`.
+**Import UI only from `components/zeeba/kit`** and tokens only from `constants/zeebaUI`.
 No raw hex, font names or magic numbers in screens.
 
 ## Hard rules
 - **Serif** (`Txt variant="hero" | "quote"`, `Quote`) ONLY for: Sam's own typed/spoken words,
   the Today hero prompt, the summary title. Never for chip labels, system text, quick logs.
-- **Plum = action only** (buttons, mic, links, selection, selected tab). **Clay = bleeding only**
+- **Accent (raspberry light / peach dark; formerly plum, burgundy) = action only** (buttons, mic, links, selection, selected tab). **Clay = bleeding only**
   (calendar fill, 4 px card edge `edge="clay"`, droplet icon). **saved/error = system status only**,
   never describing a body. Severity = the single-hue ramp, **always with the digit**.
 - **No `Alert.alert`** — use `ConfirmCard` in-page. **No 700 weight** (Inter 400/500/600 only; never
@@ -22,16 +22,16 @@ No raw hex, font names or magic numbers in screens.
   threshold labels ("heavy" as a judgement, "irregular"), causation ("linked to"), streaks, praise,
   guilt, emoji. The safety line is static, never content-triggered.
 - Icons: `Icon` sizes 20/24/32 only; stroke is absolute 1.75 by default — don't pass `strokeWidth`.
-- **Selection** = plumTint + 2 px plum ring (chips, segments) — **except the SeverityRow**, whose
-  selected disc is SOLID plum with a white 600 digit (lead decision, review 1 V1: it is the primary input).
+- **Selection** = accentTint + 2 px accent ring (chips, segments) — **except the SeverityRow**, whose
+  selected disc is SOLID accent with an onAccent 600 digit (lead decision, review 1 V1: it is the primary input).
 - **Text hierarchy** (review 1 V4/V5/V10): in-card row label = `caption`; its value = `body` ink
   (grey label, ink content); every form/question field label = `FieldLabel` (17/600 ink, " · Optional"
   inline, hint under); group header over cards (week headers) = `Txt variant="groupLabel"` (15/600 ink2,
   32 above, 8 below); dates/meta on cards = `caption` (GlyphLine) and facts = `secondary`.
-- **One "add" treatment** (V16): header "+" = `AddButton` (plain plum plus glyph, 44 hit, unfilled).
-  Never the filled plum disc. Hide it while an EmptyState shows its own primary. Empty fields in a
+- **One "add" treatment** (V16): header "+" = `AddButton` (plain accent plus glyph, 44 hit, unfilled).
+  Never the filled accent disc. Hide it while an EmptyState shows its own primary. Empty fields in a
   card = `AddFieldChip`.
-- Sheet X is ink (as iOS); every other interactive glyph (BackChevron, month chevrons) is plum.
+- Sheet X is ink (as iOS); every other interactive glyph (BackChevron, month chevrons) is accent.
 - Sam's words on screen go through `Quote` (curls apostrophes for display). Serif system copy uses
   `’` and `…`, never `'` / `...` (or wrap it in `curly()`).
 - Haptics: Chip/ChipGroup/SegmentedControl/SeverityRow/DayChooser already fire `selection`.
@@ -44,10 +44,10 @@ No raw hex, font names or magic numbers in screens.
   Inline `'none'` / `'auto'` are fine.
 - Must run in Expo Go (SDK 57): no new native modules. Web must keep booting (preview).
 
-## Tokens (`constants/atossaUI.ts`)
+## Tokens (`constants/zeebaUI.ts`)
 | Export | Values |
 |---|---|
-| `colors` | canvas `#F7F3EE` · surface `#FFF` · sunken `#EFE9E1` · hairline `#E2DAD0` · borderStrong `#8F867C` · ink `#1F1B18` · ink2 `#5A534D` · ink3 `#756C64` (not on sunken — use ink2) · plum `#4A2C4F` · plumPressed `#3A2140` · plumTint `#EFE6EF` · clay `#A6452E` · clayTint `#F3DED6` · saved `#2E6A4F` / savedTint `#E2EEE6` · error `#A12A2A` / errorTint `#F6E0DE` · scrim · tabBar |
+| `colors` | **Native (light) / Midnight (dark)** — see `design/BRAND.md` and `design/HANDOVER.md` §3. Every token is a Light/Dark pair. Tokens: canvas · surface · raised · sunken · hairline · cardBorder · glassEdge · borderStrong · ink / ink2 / ink3 · **accent** / accentPressed / accentTint / **onAccent** · glow · clay (period only) / clayTint / onClay · saved · error · chartTrack · scrim · tabBar / tabBarTranslucent. For SVG, gradients or string alpha use `useColors()` (plain hex). |
 | `severityRamp`, `severityStep(n)`, `severityColor(n)` | 0–2,3–4,5–6,7–8,9–10 → `{bg, fg}` (fg ink on steps 0–1, white on 2–4) |
 | `type` (`Txt` variants) | largeTitle 34/41 600 −0.17 · hero 30/36 serif · title 24/30 600 · quote 20/28 serif · headline 17/24 600 · body 17/24 · secondary 15/20 ink2 · caption 13/18 500 +0.26 ink3 · numeral 44/48 500 tabular · tab 11/13 500 · **fieldLabel** 17/24 600 ink · **groupLabel** 15/20 600 ink2 |
 | `fonts` | regular/medium/semibold = Inter 400/500/600, serif = `InstrumentSerif_400Regular_Italic` |
@@ -59,7 +59,10 @@ No raw hex, font names or magic numbers in screens.
 | `motion` | fast 200 · base 240 · sheet 260 · toastMs 3000 |
 | `UI` | legacy aggregate with old key names mapped to the new palette — for old screens only |
 
-## Components (`components/atossa/kit`)
+## iOS patterns (sprint 2026-11-09)
+`ScreenLarge grouped` = sunken background for inset-grouped screens (Profile, Settings, Records, Friends); use `Group` / `GroupRow` / `GroupSwitchRow` / `GroupHeading` / `GroupFooter` from `records/GroupedRows`. `ScreenLarge` fades a small centred title onto a translucent bar when the large title scrolls away. Tab bar is blurred (solid on web). Wren: max one per screen, never on For my doctor or the PDF.
+
+## Components (`components/zeeba/kit`)
 | Component | Props (key) | Notes |
 |---|---|---|
 | `Txt` | `variant`, `color`, Text props | Legacy variants (`display`, `h2`, `bodyBold`, `small`…) still map, don't use them in new code |
@@ -69,7 +72,7 @@ No raw hex, font names or magic numbers in screens.
 | `ScreenLarge` | `title`, `subtitle?`, `right?`, `back?: {label,onPress?}`, `scroll?`, `scrollRef?`, `footer?`, `contentStyle?` | Safe-area top, canvas, large title, gutter 20, max 600. Subtitle sits 8 under title (Today greeting). Content starts 24 below |
 | `HeaderAvatar` | — | 44 initial circle (sunken, ink2 initial, hairline) → `/(tabs)/profile`. Top-right on every tab (Timeline: `AddButton` left of it, gap 8) |
 | `IconButton` | `icon`, `label`, `onPress`, `color?`, `size?`, `filled?` (deprecated) | 44×44, ink glyph |
-| `AddButton` | `label`, `onPress` | The one header "+" (plum glyph, unfilled) |
+| `AddButton` | `label`, `onPress` | The one header "+" (accent glyph, unfilled) |
 | `BackChevron` | `label` (previous screen's title), `onPress?` | "‹ Medicines", plum, 44 hit |
 | `SectionTitle` | `title`, `right?` | title 24/30, 12 below |
 | `Card` | `tone?` (`default`/`sunken`/`selected`/`error`/`hero`), `edge?: 'clay'`, `onLayout?` | White, hairline, r20, p20 |
@@ -101,11 +104,11 @@ No raw hex, font names or magic numbers in screens.
 | Legacy: `Screen`, `PageTitle`, `BigButton`, `BackButton`, `RecordRow`, `ConfirmDelete`, `Section`, `SectionHeading`, `StepProgress`, `LoadingScreen`, `ErrorScreen`, `SuccessNote`, `FutureDateMessage` | | Restyled for auth/onboarding/profile sub-screens. Don't use in new screens |
 
 Shared screens/components already built:
-- `components/atossa/LogBleedingSheet.tsx` — `visible`, `onClose`, `date?` (preset, e.g. DaySheet day),
+- `components/zeeba/LogBleedingSheet.tsx` — `visible`, `onClose`, `date?` (preset, e.g. DaySheet day),
   `onSaved?`. Status Started today / Still going / Ended / Spotting (none pre-selected for a new day;
   an already-logged day opens with its values), optional flow None–Heavy (no default), DatePill +
   DayChooser, Save disabled until a status is chosen, saves via `savePeriodDays`, success haptic + toast.
-- `components/atossa/MainTabBar.tsx` — Today (sun) · Timeline (list) · For my doctor (file-text). Every tab press lands on the
+- `components/zeeba/MainTabBar.tsx` — Today (sun) · Timeline (list) · For my doctor (file-text). Every tab press lands on the
   tab's root with ONE mechanism (N2): if the tab's stack isn't at its `index` root, the bar `preventDefault`s the `tabPress`
   (so the native stack's own pop-to-top doesn't also fire) and RESETs the stack; otherwise it leaves the stack alone.
 - `components/ui/Icon.tsx` — Lucide set incl. mic, square, pen-line, droplet, calendar, calendar-days,
@@ -179,11 +182,11 @@ web preview. Never open the iOS Simulator.
 ## File ownership (parallel agents — stay in your lane; ask before editing shared files)
 | Phase | Owns |
 |---|---|
-| 1 Today + capture | `app/(tabs)/today/**`, `components/atossa/capture/**` (capture sheet, MicButton, Waveform, follow-ups, BodyZonePicker, NotedCard, RoughDay, AppointmentCard…) |
-| 2 Timeline | `app/(tabs)/timeline/**`, `components/atossa/timeline/**` (EntryCard, MonthCalendar, DaySheet, entry detail) |
-| 3 Profile + Records | `app/(tabs)/profile/**`, `components/atossa/records/**` |
-| 4 For my doctor | `app/(tabs)/doctor/**`, `components/atossa/doctor/**`, `lib/records/summary.ts` |
-| Shared (Phase 0 owner; additive changes only, note them in PORT_PLAN Status) | `constants/atossaUI.ts`, `components/atossa/kit*.tsx`, `components/atossa/kit-parts/**`, `components/ui/Icon.tsx`, `components/atossa/LogBleedingSheet.tsx`, `components/atossa/MainTabBar.tsx`, `lib/records/format.ts`, `lib/records/dates.ts`, `types/records.ts`, `stores/recordsStore.ts`, `lib/preview/**` |
+| 1 Today + capture | `app/(tabs)/today/**`, `components/zeeba/capture/**` (capture sheet, MicButton, Waveform, follow-ups, BodyZonePicker, NotedCard, RoughDay, AppointmentCard…) |
+| 2 Timeline | `app/(tabs)/timeline/**`, `components/zeeba/timeline/**` (EntryCard, MonthCalendar, DaySheet, entry detail) |
+| 3 Profile + Records | `app/(tabs)/profile/**`, `components/zeeba/records/**` |
+| 4 For my doctor | `app/(tabs)/doctor/**`, `components/zeeba/doctor/**`, `lib/records/summary.ts` |
+| Shared (Phase 0 owner; additive changes only, note them in PORT_PLAN Status) | `constants/zeebaUI.ts`, `components/zeeba/kit*.tsx`, `components/zeeba/kit-parts/**`, `components/ui/Icon.tsx`, `components/zeeba/LogBleedingSheet.tsx`, `components/zeeba/MainTabBar.tsx`, `lib/records/format.ts`, `lib/records/dates.ts`, `types/records.ts`, `stores/recordsStore.ts`, `lib/preview/**` |
 
 Cross-tab navigation: entry details are owned by Timeline (`/(tabs)/timeline/...`); records
 (medicine/appointment/history) by Profile (`/(tabs)/profile/records/...`). Pass a `from` param so
@@ -191,13 +194,13 @@ the BackChevron names the screen it came from.
 
 ## Route + shared-contract map (fixed — all Phase 1–4 agents link to these)
 - Capture sheet: `lib/captureStore.ts` → `openCapture({date?, tag?, mode?, startRecording?})`. The sheet
-  component (`components/atossa/capture/CaptureSheet.tsx`, Phase 1) is mounted ONCE in
+  component (`components/zeeba/capture/CaptureSheet.tsx`, Phase 1) is mounted ONCE in
   `app/(tabs)/_layout.tsx` (Phase 1 adds that one line). Everyone else just calls `openCapture`.
 - Answer lists: `lib/records/fields.ts` (BODY_ZONES + BODY_ZONE_LABELS (chip label "Bottom / when opening
   bowels", stored value stays "Bottom"), WHEN_OPTIONS, IMPACT_OPTIONS, ESCAPE_ANSWERS, STARTER_CHIPS).
 - Symptom editors shared by the noted card and entry detail: Phase 1 builds
-  `components/atossa/capture/StrengthEditor.tsx` (Usually + At worst SeverityRows, It varies / Not sure)
-  and `components/atossa/capture/ZoneEditor.tsx` (multi-select BODY_ZONES; pass `text` + `onTextChange` to
+  `components/zeeba/capture/StrengthEditor.tsx` (Usually + At worst SeverityRows, It varies / Not sure)
+  and `components/zeeba/capture/ZoneEditor.tsx` (multi-select BODY_ZONES; pass `text` + `onTextChange` to
   also offer "Somewhere else" free text and Not sure / It varies — saved to `whereText`; choosing an
   escape clears the zones via `onChange([])`). Phase 2 imports them;
   until they exist Phase 2 may build against the kit directly and switch when they land.
@@ -207,7 +210,7 @@ the BackChevron names the screen it came from.
   - `/(tabs)/timeline/entry/[id]?from=<Label>` — symptom entry detail (Phase 2)
   - `/(tabs)/timeline/bleeding/[date]?from=<Label>` — bleeding day detail (Phase 2)
   - `/(tabs)/timeline/record/[kind]/[id]?from=Timeline` — appointment/medicine/history detail opened
-    from Timeline. Phase 3 builds the screen component `components/atossa/records/RecordDetail.tsx`
+    from Timeline. Phase 3 builds the screen component `components/zeeba/records/RecordDetail.tsx`
     AND this thin route file, so back returns to Timeline.
   - `/(tabs)/profile` · `/(tabs)/profile/records/[kind]` (kind = medicines | appointments | history) ·
     `/(tabs)/profile/records/[kind]/[id]` (id or `new`; back label = the list name)

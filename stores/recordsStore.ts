@@ -68,7 +68,7 @@ let localSeq = 0;
 /** Flag in memory, or in localStorage so it survives a page reload (outbox check). */
 const previewOffline = () => {
   if ((globalThis as { __PREVIEW_OFFLINE__?: boolean }).__PREVIEW_OFFLINE__) return true;
-  try { return globalThis.localStorage?.getItem('atossa.preview.offline') === '1'; } catch { return false; }
+  try { return globalThis.localStorage?.getItem('zeeba.preview.offline') === '1'; } catch { return false; }
 };
 const previewBackend: Backend = {
   // Preview only: ?state=error fails the load, ?state=loading never finishes it (for the Today state renders).

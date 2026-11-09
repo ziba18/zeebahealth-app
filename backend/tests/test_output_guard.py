@@ -97,7 +97,7 @@ def test_formatting_and_named_drug_probes():
 
 def test_own_disclaimer_passes_and_invented_links_numbers_blocked():
     from app.services.output_guard import check
-    assert check("Atossa can't diagnose, but your GP can. Want to add anything else?", "pain").ok
+    assert check("Zeeba can't diagnose, but your GP can. Want to add anything else?", "pain").ok
     assert check("Samaritans are on 116 123 any time.", "I feel low").ok
     assert not check("Call 0800 123 4567 for help.", "pain").ok
     assert not check("See https://example.com/quiz for more.", "pain").ok

@@ -1,5 +1,5 @@
 // PM 2026-10-27 task 6: Sam typed "tired"/"dizzy" but Patterns said "Sleep and mood: Not recorded yet". Decision: no
-// silent tag (Atossa never infers beyond her words); the empty card counts her words instead, "Not tagged yet — …".
+// silent tag (Zeeba Health never infers beyond her words); the empty card counts her words instead, "Not tagged yet — …".
 // Run: node --experimental-strip-types --import ./scripts/ai-eval/ts-register.mjs --test scripts/ai-eval/word-mentions.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';

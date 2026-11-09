@@ -1,4 +1,4 @@
-# Atossa MVP
+# Zeeba Health MVP
 
 Three features, in this order. The real product (turning how someone
 describes their symptoms into a structured, GP-ready summary) does not

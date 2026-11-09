@@ -1,8 +1,8 @@
 import React from 'react';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { space } from '../constants/atossaUI';
-import { Button, ScreenLarge } from '../components/atossa/kit';
+import { space } from '../constants/zeebaUI';
+import { Button, ScreenLarge } from '../components/zeeba/kit';
 
 export default function NotFoundScreen() {
   const router = useRouter();

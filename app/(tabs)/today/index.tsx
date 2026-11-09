@@ -1,18 +1,17 @@
-// Today — capture first. One large "tell Atossa" card (voice or type), quick starters, then the
+// Today — capture first. One large "tell Zeeba Health" card (voice or type), quick starters, then the
 // latest note and the next appointment. Chat is secondary ("Talk it through").
 // Rhythm (8-pt grid): title→greeting 8 · greeting→hero 24 · hero→chips 16 · 24 between cards.
-import { RecentStrip } from '../../../components/atossa/timeline/RecentStrip';
 import { usePageTitle } from '../../../lib/usePageTitle';
 import React, { useState } from 'react';
-import { View, useWindowDimensions } from 'react-native';
+import { View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Button, HeaderAvatar, InlineError, ScreenLarge, SkeletonCards, Txt } from '../../../components/atossa/kit';
-import { LogBleedingSheet } from '../../../components/atossa/LogBleedingSheet';
-import { AppointmentCard } from '../../../components/atossa/capture/AppointmentCard';
+import { Button, HeaderAvatar, InlineError, ScreenLarge, SkeletonCards, Txt } from '../../../components/zeeba/kit';
+import { LogBleedingSheet } from '../../../components/zeeba/LogBleedingSheet';
+import { AppointmentCard } from '../../../components/zeeba/capture/AppointmentCard';
 import {
-  GhostNoteCard, HeroCard, HeroChip, HeroNumberCard, LatestNoteCard, QuickRows, RoughDayCard, latestNote,
-} from '../../../components/atossa/capture/TodayCards';
-import { space } from '../../../constants/atossaUI';
+  GhostNoteCard, HeroCard, HeroChip, LatestNoteCard, QuickRows, RoughDayCard, WeekDashboard, latestNote,
+} from '../../../components/zeeba/capture/TodayCards';
+import { space } from '../../../constants/zeebaUI';
 import { isHumanName } from '../../../lib/humanName';
 import { useAuthStore } from '../../../stores/authStore';
 import { useRecordsStore } from '../../../stores/recordsStore';
@@ -38,15 +37,15 @@ export default function TodayScreen() {
   const loading = useRecordsStore((s) => s.loading);
   const [bleeding, setBleeding] = useState(false);
   const latest = latestNote(symptoms);
-  // Short phones (320x568): capture comes first, the number and week strip follow, so "Type a note" is on the first screen.
-  const short = useWindowDimensions().height < 640;
 
   const capture = (
     <>
-      <HeroCard />
-      <View style={{ marginTop: space.md }}>
+      <HeroCard first={!!loadedFor && symptoms.length === 0} />
+      <View style={{ marginTop: space.sm }}>
         <QuickRows onPeriod={() => setBleeding(true)} />
       </View>
+      {/* Fastest log first: one tap. Then the week's evidence. */}
+      <View style={{ marginTop: space.md }}><RoughDayCard /></View>
     </>
   );
 
@@ -55,20 +54,16 @@ export default function TodayScreen() {
       {loadError && !loadedFor ? (
         <InlineError message={loadError} onRetry={userId ? () => load(userId) : undefined} style={{ marginBottom: space.md }} />
       ) : null}
-      {short && loadedFor ? <HeroChip /> : null}
-      {short ? capture : null}
-      {/* No number until the notes have loaded: a first-run "0 notes" must never flash for someone with a record. */}
-      {loadedFor ? (short && symptoms.length > 0 ? null : <View style={{ marginTop: short ? space.xl : 0, marginBottom: space.md }}><HeroNumberCard /></View>)
-        : loading ? <View style={{ marginBottom: space.md }}><SkeletonCards count={1} label="Loading your notes" /></View> : null}
-      {loadedFor && symptoms.length > 0 ? <View style={{ marginBottom: space.md }}><RecentStrip symptoms={symptoms} flush /></View> : null}
-      {short ? null : capture}
+      {capture}
+      {/* B's dashboard tiles: worst pain this week (gauge) + days recorded (bars). */}
+      {loadedFor && symptoms.length > 0 ? <View style={{ marginTop: space.xl }}><WeekDashboard /></View> : null}
+      {loadedFor ? <View style={{ marginTop: space.md }}><HeroChip /></View> : null}
       {loading && !loadedFor ? (
         <View style={{ marginTop: space.xl }}><SkeletonCards count={1} label="Loading your notes" /></View>
       ) : (
-      <View style={{ marginTop: space.xl, gap: space.xl }}>
+      <View style={{ marginTop: space.lg, gap: space.lg }}>
         {latest ? <LatestNoteCard note={latest} /> : loadedFor && symptoms.length === 0 ? <GhostNoteCard /> : null}
         {loadedFor ? <AppointmentCard inviteOnly /> : null}
-        <RoughDayCard />
       </View>
       )}
       <View style={{ marginTop: space.lg, alignItems: 'center', gap: space.xxs }}>
@@ -82,7 +77,7 @@ export default function TodayScreen() {
           />
         ) : null}
         <Txt variant="caption" style={{ textAlign: 'center' }}>
-          Atossa can’t diagnose. If you feel very unwell, contact your GP, NHS 111 or 999.
+          Zeeba Health can’t diagnose. If you feel very unwell, contact your GP, NHS 111 or 999.
         </Txt>
       </View>
       <LogBleedingSheet visible={bleeding} onClose={() => setBleeding(false)} />

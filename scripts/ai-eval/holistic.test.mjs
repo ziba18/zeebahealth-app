@@ -1,6 +1,6 @@
 // node --experimental-strip-types scripts/ai-eval/holistic.test.mjs  (scores items.holistic-v1.json; exits 1 on any miss)
 import { readFileSync } from 'node:fs';
-import { holisticFrom } from '../../components/atossa/capture/holistic.ts';
+import { holisticFrom } from '../../components/zeeba/capture/holistic.ts';
 const set = JSON.parse(readFileSync(new URL('./items.holistic-v1.json', import.meta.url)));
 let right = 0, wrong = 0, missed = 0;
 const fails = [];

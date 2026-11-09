@@ -1,15 +1,15 @@
 import React, { useRef, useState } from 'react';
 import { ScrollView, View, type ScrollViewInstance } from 'react-native';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
-import { space } from '../../../constants/atossaUI';
+import { space } from '../../../constants/zeebaUI';
 import { DATA_LINES } from '../../../constants/dataLocation';
 import {
   Button, Card, ConfirmCard, SafetyLine, ScreenLarge, Txt, showToast,
-} from '../../../components/atossa/kit';
+} from '../../../components/zeeba/kit';
 import type { IconName } from '../../../components/ui/Icon';
-import { Group, GroupHeading, GroupRow } from '../../../components/atossa/records/GroupedRows';
-import { savedLabel } from '../../../components/atossa/records/RecordsList';
-import { KIND_INFO, firstParam, type RecordDataKind } from '../../../components/atossa/records/recordKinds';
+import { Group, GroupHeading, GroupRow } from '../../../components/zeeba/records/GroupedRows';
+import { savedLabel } from '../../../components/zeeba/records/RecordsList';
+import { KIND_INFO, firstParam, type RecordDataKind } from '../../../components/zeeba/records/recordKinds';
 import { useAuthStore } from '../../../stores/authStore';
 import { useRecordsStore } from '../../../stores/recordsStore';
 import { isHumanName } from '../../../lib/humanName';
@@ -18,7 +18,7 @@ import { cancelAllScheduledNotifications } from '../../../lib/notifications';
 import { openLegal } from '../../../components/auth/LegalLinks';
 
 /** Visible tab title (the `from` param HeaderAvatar passes) → tab route name. */
-const TAB_ROUTES: Record<string, string> = { Today: 'today', Timeline: 'timeline', 'For my doctor': 'doctor' };
+const TAB_ROUTES: Record<string, string> = { Today: 'today', Evidence: 'timeline', Timeline: 'timeline', 'For my doctor': 'doctor' };
 
 const RECORD_KINDS: RecordDataKind[] = ['medicine', 'appointment', 'history'];
 const RECORD_ICONS: Record<RecordDataKind, IconName> = { medicine: 'pill', appointment: 'calendar', history: 'file-text' };
@@ -97,7 +97,7 @@ export default function ProfileScreen() {
     setTimeout(() => scrollRef.current?.scrollTo({ y: Math.max(0, y - space.xxl), animated: true }), 50);
 
   return (
-    <ScreenLarge title="Profile" back={{ label: from, onPress: goBack }} scrollRef={scrollRef}>
+    <ScreenLarge grouped title="Profile" back={{ label: from, onPress: goBack }} scrollRef={scrollRef}>
       <Group>
         <GroupRow
           icon="user"
@@ -138,11 +138,11 @@ export default function ProfileScreen() {
       </Group>
 
       <GroupHeading title="Where your notes are kept" style={{ marginTop: space.xxl }} />
-      <Card>
-        <View style={{ gap: space.sm }}>
+      <Group>
+        <View style={{ gap: space.sm, padding: space.md }}>
           {DATA_LINES.map((line) => <Txt key={line} variant="secondary">{line}</Txt>)}
         </View>
-      </Card>
+      </Group>
 
       <GroupHeading title="About" style={{ marginTop: space.xxl }} />
       <Group>
@@ -170,7 +170,7 @@ export default function ProfileScreen() {
 
       {confirmingSignOut ? (
         <ConfirmCard
-          title="Sign out of Atossa?"
+          title="Sign out of Zeeba Health?"
           message="Your information stays saved. You can sign in again any time."
           style={{ marginTop: space.xl }}
           onLayout={(e) => scrollToCard(e.nativeEvent.layout.y)}
@@ -185,7 +185,7 @@ export default function ProfileScreen() {
         <ConfirmCard
           tone="destructive"
           title="Delete your account?"
-          message="This permanently deletes your account and everything you’ve saved in Atossa: symptoms, periods, appointments, medicines, history and friend connections. It can’t be undone."
+          message="This permanently deletes your account and everything you’ve saved in Zeeba Health: symptoms, periods, appointments, medicines, history and friend connections. It can’t be undone."
           style={{ marginTop: space.xl }}
           onLayout={(e) => scrollToCard(e.nativeEvent.layout.y)}
           actions={[

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
+import { FieldGroup } from '../../../components/zeeba/records/GroupedRows';
 import { View } from 'react-native';
-import { space } from '../../../constants/atossaUI';
-import { Button, FieldLabel, InlineError, ScreenLarge, TextField, showToast } from '../../../components/atossa/kit';
+import { space } from '../../../constants/zeebaUI';
+import { Button, FieldLabel, InlineError, ScreenLarge, TextField, showToast } from '../../../components/zeeba/kit';
 import { haptics } from '../../../lib/haptics';
 import { useAuthStore } from '../../../stores/authStore';
 import { api } from '../../../lib/api';
@@ -69,8 +70,8 @@ export default function EditProfileScreen() {
   };
 
   return (
-    <ScreenLarge title="My details" back={{ label: 'Profile' }}>
-      <View style={{ gap: space.xl }}>
+    <ScreenLarge grouped title="My details" back={{ label: 'Profile' }}>
+      <FieldGroup>
         <TextField label="Your name" value={name} onChangeText={touch(setName)} autoCapitalize="words" />
 
         <View>
@@ -84,7 +85,8 @@ export default function EditProfileScreen() {
 
         <TextField label="Usual days between periods" hint="From the start of one period to the start of the next" value={cycle} onChangeText={digits(setCycle)} keyboardType="number-pad" maxLength={2} />
         <TextField label="Usual period length in days" value={period} onChangeText={digits(setPeriod)} keyboardType="number-pad" maxLength={2} />
-
+      </FieldGroup>
+      <View style={{ gap: space.md, marginTop: space.xl }}>
         <InlineError message={error} />
         <Button label="Save my details" icon="check" loading={saving} onPress={save} />
       </View>

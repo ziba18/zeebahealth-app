@@ -49,7 +49,7 @@ interface ChatState {
 }
 
 const MAX_HISTORY = 20; // matches the backend's MAX_MESSAGES
-const keyFor = (userId: string) => `atossa.chats.v1.${userId}`;
+const keyFor = (userId: string) => `zeeba.chats.v1.${userId}`;
 const uid = () => `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
 
 const PREVIEW_REPLIES = [

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
+import { FieldGroup } from '../../components/zeeba/records/GroupedRows';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { space } from '../../constants/atossaUI';
-import { Button, InlineError, ScreenLarge, TextField } from '../../components/atossa/kit';
-import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
+import { space } from '../../constants/zeebaUI';
+import { Button, InlineError, ScreenLarge, TextField } from '../../components/zeeba/kit';
 import { LegalLinks } from '../../components/auth/LegalLinks';
 import { useAuthStore } from '../../stores/authStore';
 import { ApiError } from '../../lib/api';
@@ -50,13 +50,13 @@ export default function RegisterScreen() {
   };
 
   return (
-    <ScreenLarge title="Create an account" subtitle="Your information stays private to you." back={{ label: 'Back' }}>
-      <View style={{ gap: space.xl }}>
+    <ScreenLarge brand grouped title="Create an account" subtitle="Your information stays private to you." back={{ label: 'Back' }}>
+      <FieldGroup>
         <TextField label="Your name" value={name} onChangeText={(v) => { setName(v); clear('name'); }} autoCapitalize="words" autoComplete="name" textContentType="name" error={errors.name} />
         <TextField label="Email" value={email} onChangeText={(v) => { setEmail(v); clear('email'); }} keyboardType="email-address" autoCapitalize="none" autoComplete="email" textContentType="emailAddress" placeholder="you@example.com" error={errors.email} />
         <TextField label="Password" hint="At least 8 characters" secret value={password} onChangeText={(v) => { setPassword(v); clear('password'); }} autoComplete="new-password" textContentType="newPassword" error={errors.password} />
         <TextField label="Type the password again" secret value={confirm} onChangeText={(v) => { setConfirm(v); clear('confirm'); }} autoComplete="new-password" textContentType="newPassword" returnKeyType="go" onSubmitEditing={handleRegister} error={errors.confirm} />
-      </View>
+      </FieldGroup>
 
       <View style={{ marginTop: space.xxl, gap: space.xs }}>
         <InlineError message={error} style={{ marginBottom: space.xs }} />
@@ -65,9 +65,6 @@ export default function RegisterScreen() {
         <Button label="I already have an account" variant="text" onPress={() => router.replace('/(auth)/login')} />
       </View>
 
-      <View style={{ marginTop: space.md }}>
-        <SocialAuthButtons mode="signup" />
-      </View>
     </ScreenLarge>
   );
 }

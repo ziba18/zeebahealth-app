@@ -14,7 +14,7 @@ import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
 const TEAM_ID   = process.env.APPLE_TEAM_ID;
-const CLIENT_ID = process.env.APPLE_CLIENT_ID   ?? 'com.attosa.app';
+const CLIENT_ID = process.env.APPLE_CLIENT_ID   ?? 'com.zeebahealth.app';
 const KEY_ID    = process.env.APPLE_KEY_ID;
 const P8_PATH   = process.env.APPLE_P8_PATH;
 

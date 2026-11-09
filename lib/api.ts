@@ -16,13 +16,13 @@ const tokenStore = Platform.OS === 'web'
 // This device only: tokens are not carried to another phone by a backup restore.
 const KEYCHAIN = { keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY };
 
-const ACCESS_KEY = 'atossa_access_token';
-const REFRESH_KEY = 'atossa_refresh_token';
+const ACCESS_KEY = 'zeeba_access_token';
+const REFRESH_KEY = 'zeeba_refresh_token';
 
 // Keychain items can outlive an uninstall on iOS, while AsyncStorage is wiped with the app. A marker
 // kept in AsyncStorage tells a fresh install from an update, so a reinstalled app never wakes up
 // signed in as the previous user.
-const INSTALL_MARKER = 'atossa_install_marker';
+const INSTALL_MARKER = 'zeeba_install_marker';
 
 async function dropTokensFromPreviousInstall(): Promise<void> {
   if (Platform.OS === 'web') return;

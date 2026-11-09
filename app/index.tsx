@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../hooks/useAuth';
-import { LoadingScreen } from '../components/atossa/kit';
+import { LoadingScreen } from '../components/zeeba/kit';
 import { routeAfterSignIn } from '../lib/authRouting';
 
 export default function Index() {
@@ -13,5 +13,5 @@ export default function Index() {
     router.replace((session ? routeAfterSignIn(profile) : '/(auth)/welcome') as any);
   }, [isInitialized, session, profile]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  return <LoadingScreen message="Opening Atossa…" />;
+  return <LoadingScreen message="Opening Zeeba Health…" />;
 }

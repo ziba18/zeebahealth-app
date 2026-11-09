@@ -1,87 +1,63 @@
+// Welcome: Apple's "Welcome to …" pattern. Wren + the promise, three feature rows (Record · Prove ·
+// Reach), then sign-up anchored low: Sign in with Apple first (HIG), Google, email; then sign in.
 import React, { useEffect } from 'react';
 import { ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colors, fonts, layout, space } from '../../constants/atossaUI';
-import { Button, Card, Quote, Txt } from '../../components/atossa/kit';
+import { colors, font, layout, radii, space, useColors } from '../../constants/zeebaUI';
+import { Button, Txt } from '../../components/zeeba/kit';
 import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
+import { Wren } from '../../components/zeeba/Wren';
+import { Icon, type IconName } from '../../components/ui/Icon';
 import { track } from '../../lib/analytics';
 
-const WAVE = [0.3, 0.6, 0.9, 0.5, 1, 0.7, 0.4, 0.8, 0.55, 0.9, 0.35, 0.6, 0.25];
-const STEPS = [
-  { word: 'Say it', line: 'Speak or type' },
-  { word: 'See it', line: 'Notes line up by date' },
-  { word: 'Show it', line: 'A summary for your doctor' },
+const FEATURES: { icon: IconName; title: string; line: string }[] = [
+  { icon: 'mic', title: 'Record it', line: 'Say or type what happened, in your words. Every note is dated.' },
+  { icon: 'bar-chart', title: 'Prove it', line: 'See how often and how bad, as clear counts and charts.' },
+  { icon: 'file-text', title: 'Take it to your doctor', line: 'One page of evidence, ready for your appointment.' },
 ];
 
-/**
- * One calm screen: Inter wordmark, a single serif hero line (the one-serif-line-per-hero rule
- * from Today), one plain sentence, then the actions anchored low. No imagery.
- */
 export default function WelcomeScreen() {
   const router = useRouter();
-  // Short phones (iPhone SE class): keep the buttons on the first screen, drop the step strip.
+  const c = useColors();
   const win = useWindowDimensions();
-  const short = win.height < 700;
-  const narrow = win.width < 300; // 200% text on a small phone: three columns would break words
+  const short = win.height < 720;
   useEffect(() => track('Welcome Viewed'), []);
 
   return (
     <SafeAreaView role="main" edges={['top', 'bottom']} style={styles.screen}>
+      <LinearGradient
+        colors={[c.glow, 'rgba(0,0,0,0)']}
+        start={{ x: 0.5, y: 0 }}
+        end={{ x: 0.5, y: 0.45 }}
+        style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]}
+      />
       <ScrollView contentContainerStyle={styles.column} showsVerticalScrollIndicator={false}>
-        <View style={styles.band}>
-          <LinearGradient
-            colors={[colors.plumTint, colors.canvas]}
-            start={{ x: 0.5, y: 0 }}
-            end={{ x: 0.5, y: 1 }}
-            style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]}
-          />
-          <Txt variant="headline" color={colors.plum} accessibilityRole="header" accessibilityLabel="Atossa" style={styles.wordmark}>Atossa</Txt>
-          {short ? null : <View aria-hidden style={styles.wave}>
-            {WAVE.map((h, i) => (
-              <View key={i} style={{ width: 3, height: Math.round(6 + h * 22), borderRadius: 2, backgroundColor: `${colors.plum}${i % 3 === 0 ? '80' : '4D'}` }} />
-            ))}
-          </View>}
-        </View>
-
         <View style={styles.hero}>
-          <Txt variant="hero" style={short || win.width < 380 ? undefined : styles.heroLine}>Your body, in your words.</Txt>
-          <Txt variant="body" color={colors.ink2}>
-            Say it the way you’d tell a friend. Atossa tidies it into a clear summary for your doctor.
-          </Txt>
-          <Card style={styles.example}>
-            <Txt variant="caption" color={colors.ink2}>What you say</Txt>
-            <Quote>Sharp low belly pain since Tuesday, worse in the evening, missed work.</Quote>
-            <Txt variant="caption" color={colors.ink2}>What your doctor sees</Txt>
-            <View style={styles.tags}>
-              {['Lower belly', '7/10 at worst', '3 days'].map((t) => (
-                <View key={t} style={styles.tag}>
-                  <Txt variant="caption" color={colors.plum} style={styles.tagText}>{t}</Txt>
-                </View>
-              ))}
-            </View>
-          </Card>
+          <Wren mood="happy" size={short ? 84 : 112} />
+          <Txt style={styles.kicker} accessibilityRole="header" accessibilityLabel="Zeeba Health">Zeeba Health</Txt>
+          <Txt variant="largeTitle" style={styles.center}>Your symptoms,{'\n'}on the record.</Txt>
         </View>
 
-        {short || narrow ? null : <View style={styles.steps} accessibilityLabel="How it works. One, say it. Two, see it. Three, show it.">
-          {STEPS.map((st, i) => (
-            <View key={st.word} style={styles.step}>
-              <View style={styles.stepNum}><Txt variant="caption" color={colors.plum} style={styles.tagText}>{i + 1}</Txt></View>
-              <Txt variant="headline">{st.word}</Txt>
-              <Txt variant="caption" color={colors.ink2} style={{ textAlign: 'center' }}>{st.line}</Txt>
+        <View style={styles.features}>
+          {FEATURES.map((f) => (
+            <View key={f.title} style={styles.feature} accessible accessibilityLabel={`${f.title}. ${f.line}`}>
+              <View style={styles.featureIcon}><Icon name={f.icon} size={22} color={colors.accent} /></View>
+              <View style={{ flex: 1, minWidth: 0 }}>
+                <Txt variant="headline">{f.title}</Txt>
+                <Txt variant="secondary">{f.line}</Txt>
+              </View>
             </View>
           ))}
-        </View>}
-
-        {short ? null : <Txt variant="caption" color={colors.ink2} style={{ textAlign: 'center', marginBottom: space.sm }}>
-          Atossa never diagnoses. It keeps your notes in your words.
-        </Txt>}
+        </View>
 
         <View style={styles.actions}>
-          <Button label="Create an account" onPress={() => router.push('/(auth)/register')} />
+          <SocialAuthButtons mode="signup" onEmail={() => router.push('/(auth)/register')} emailLabel="Sign up with email" />
           <Button label="I already have an account" variant="text" onPress={() => router.push('/(auth)/login')} />
-          <SocialAuthButtons mode="signup" />
+          <Txt variant="caption" style={styles.center}>
+            Evidence, never a diagnosis. Your notes stay private to your account.
+          </Txt>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -92,22 +68,13 @@ const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.canvas },
   column: {
     flexGrow: 1, width: '100%', maxWidth: layout.maxContentWidth, alignSelf: 'center',
-    paddingHorizontal: layout.gutter, paddingBottom: space.xl,
+    paddingHorizontal: layout.gutter + space.xs, paddingTop: space.xl, paddingBottom: space.lg, gap: space.xl,
   },
-  // Full-bleed band: the column's gutter is cancelled so the wash runs to the screen edges.
-  band: { marginHorizontal: -layout.gutter, paddingHorizontal: layout.gutter, paddingTop: space.md, paddingBottom: space.sm, gap: space.xs },
-  wordmark: { fontFamily: fonts.serif, fontSize: 28, lineHeight: 34, fontWeight: '400' },
-  heroLine: { fontSize: 36, lineHeight: 42 },
-  wave: { flexDirection: 'row', alignItems: 'center', gap: 4, height: 30 },
-  steps: { flexDirection: 'row', gap: space.sm, marginBottom: space.md },
-  step: { flex: 1, alignItems: 'center', gap: 4 },
-  stepNum: { width: 28, height: 28, borderRadius: 14, backgroundColor: colors.plumTint, alignItems: 'center', justifyContent: 'center' },
-  // Top-weighted: the promise sits in the upper third, the spare room falls between the card and the
-  // anchored actions (not above the headline).
-  hero: { flexGrow: 1, justifyContent: 'flex-start', gap: space.sm, paddingTop: space.sm, paddingBottom: space.lg },
-  example: { gap: space.xs, marginTop: space.sm },
-  tags: { flexDirection: 'row', flexWrap: 'wrap', gap: space.xs },
-  tag: { backgroundColor: colors.plumTint, borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4 },
-  tagText: { fontWeight: '600' },
-  actions: { gap: space.xs },
+  hero: { alignItems: 'center', gap: space.xs },
+  kicker: { ...font.semibold, fontSize: 15, letterSpacing: 0.2, color: colors.accent, marginTop: space.xs },
+  center: { textAlign: 'center' },
+  features: { gap: space.lg, paddingHorizontal: space.xxs },
+  feature: { flexDirection: 'row', alignItems: 'flex-start', gap: space.md },
+  featureIcon: { width: 44, height: 44, borderRadius: radii.row, backgroundColor: colors.accentTint, alignItems: 'center', justifyContent: 'center' },
+  actions: { marginTop: 'auto', gap: space.xs },
 });

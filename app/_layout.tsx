@@ -8,21 +8,27 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Platform, View, useWindowDimensions } from 'react-native';
 import '../hooks/useAuth';
 import { cancelPredictedCycleReminders } from '../lib/notifications';
-import { UI } from '../constants/atossaUI';
+import { UI, colors, useScheme, webThemeCss } from '../constants/zeebaUI';
 import { IS_PREVIEW } from '../lib/preview/flag';
-import { ErrorScreen, ToastHost } from '../components/atossa/kit';
-import { PrivacyCover } from '../components/atossa/PrivacyCover';
+import { ErrorScreen, ToastHost } from '../components/zeeba/kit';
+import { PrivacyCover } from '../components/zeeba/PrivacyCover';
 import { useFonts } from 'expo-font';
-// Per-weight imports so only the fonts we use are bundled. Inter 400/500/600 for all UI;
-// Instrument Serif ITALIC only (Sam's words, Today hero, summary title) — never a weight.
-import { Inter_400Regular } from '@expo-google-fonts/inter/400Regular';
-import { Inter_500Medium } from '@expo-google-fonts/inter/500Medium';
-import { Inter_600SemiBold } from '@expo-google-fonts/inter/600SemiBold';
-import { InstrumentSerif_400Regular_Italic } from '@expo-google-fonts/instrument-serif/400Regular_Italic';
+// iOS uses Apple's own faces (SF Pro, SF Rounded, New York) — nothing to load. Newsreader is only the
+// web preview's stand-in for New York, which desktop Chrome can't reach.
+import { Newsreader_400Regular } from '@expo-google-fonts/newsreader/400Regular';
+import { Newsreader_400Regular_Italic } from '@expo-google-fonts/newsreader/400Regular_Italic';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useSyncExternalStore } from 'react';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
+
+// Web: the colour tokens are CSS variables; define them once for light and dark.
+if (Platform.OS === 'web' && typeof document !== 'undefined' && !document.getElementById('zeeba-theme')) {
+  const style = document.createElement('style');
+  style.id = 'zeeba-theme';
+  style.textContent = `${webThemeCss()}html,body{background:var(--z-canvas)}`;
+  document.head.appendChild(style);
+}
 
 // Older builds scheduled "period coming" / "ovulation" reminders from a
 // cycle prediction. The app no longer predicts anything, so clear any that
@@ -56,12 +62,8 @@ function AppShell() {
     return () => sub.remove();
   }, [router]);
 
-  const [fontsLoaded] = useFonts({
-    Inter_400Regular,
-    Inter_500Medium,
-    Inter_600SemiBold,
-    InstrumentSerif_400Regular_Italic,
-  });
+  const scheme = useScheme();
+  const [fontsLoaded] = useFonts(Platform.OS === 'web' ? { Newsreader_400Regular, Newsreader_400Regular_Italic } : {});
 
   // Hide the splash as soon as the fonts are ready. The auth session continues
   // resolving in the background — `app/index.tsx` shows a loading screen until
@@ -77,11 +79,11 @@ function AppShell() {
 
   return (
     <>
-      <StatusBar style="dark" />
+      <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
       {isTablet ? (
         <View style={{ flex: 1, alignItems: 'center', backgroundColor: UI.colors.background }}>
           <View style={{ flex: 1, width: UI.maxContentWidth }}>
-            <Stack screenOptions={{ headerShown: false }}>
+            <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.canvas } }}>
               <Stack.Screen name="index" />
               <Stack.Screen name="(auth)" />
               <Stack.Screen name="(tabs)" />
@@ -91,7 +93,7 @@ function AppShell() {
           </View>
         </View>
       ) : (
-        <Stack screenOptions={{ headerShown: false }}>
+        <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.canvas } }}>
           <Stack.Screen name="index" />
           <Stack.Screen name="(auth)" />
           <Stack.Screen name="(tabs)" />

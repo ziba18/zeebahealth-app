@@ -1,5 +1,5 @@
 import { Stack } from 'expo-router';
-import { colors } from '../../../constants/atossaUI';
+import { colors } from '../../../constants/zeebaUI';
 
 /**
  * Timeline's stack. It always comes back to the list:

@@ -1,6 +1,6 @@
 // node --experimental-strip-types scripts/ai-eval/followups.test.mjs
 import assert from 'node:assert/strict';
-import { questionsFor, MAX_FOLLOW_UPS } from '../../components/atossa/capture/infer.ts';
+import { questionsFor, MAX_FOLLOW_UPS } from '../../components/zeeba/capture/infer.ts';
 const none = { strength: false, where: false, when: false, impact: false };
 assert.equal(MAX_FOLLOW_UPS, 3);
 assert.deepEqual(questionsFor(none), ['strength', 'where', 'when']);

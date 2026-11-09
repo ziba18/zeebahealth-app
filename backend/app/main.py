@@ -10,7 +10,7 @@ from app.routers import auth, profiles, connections, chat, records, legal, baske
 
 MAX_BODY_BYTES = 256 * 1024
 
-app = FastAPI(title="Atossa API", version="1.0.0")
+app = FastAPI(title="Zeeba Health API", version="1.0.0")
 
 
 @app.exception_handler(RequestValidationError)

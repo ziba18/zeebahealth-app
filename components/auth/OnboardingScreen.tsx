@@ -1,14 +1,15 @@
 import React from 'react';
 import { ScrollView, StyleSheet, View, type ScrollViewInstance } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { colors, layout, space } from '../../constants/atossaUI';
-import { BackChevron, Txt } from '../atossa/kit';
+import { colors, layout, space } from '../../constants/zeebaUI';
+import { Wren } from '../zeeba/Wren';
+import { BackChevron, Txt } from '../zeeba/kit';
 
 export const ONBOARDING_STEPS = 4;
 
 /**
  * One onboarding question per screen: optional BackChevron, a quiet "Step 2 of 4" caption
- * above four quiet segments (done = plum, rest = sunken; the caption carries the meaning), the question as the large title, helper text in ink2, then the controls.
+ * above a thin burgundy progress bar ( the caption carries the meaning), the question as the large title, helper text in ink2, then the controls.
  * Mirrors ScreenLarge's column (gutter 20, max 600) — ScreenLarge has no slot above the title.
  */
 export function OnboardingScreen({
@@ -33,12 +34,11 @@ export function OnboardingScreen({
       >
         <View style={styles.head}>
           {back ? <BackChevron label={back.label} onPress={back.onPress} /> : <View style={styles.noBack} />}
-          <View style={styles.segments} aria-hidden>
-            {Array.from({ length: ONBOARDING_STEPS }, (_, i) => (
-              <View key={i} style={[styles.segment, i < step && styles.segmentDone]} />
-            ))}
+          <View style={styles.track} aria-hidden>
+            <View style={[styles.fill, { width: `${(step / ONBOARDING_STEPS) * 100}%` }]} />
           </View>
           <Txt variant="caption" style={styles.step}>{`Step ${step} of ${ONBOARDING_STEPS}`}</Txt>
+          {step === ONBOARDING_STEPS ? <View style={styles.wren}><Wren mood="happy" size={96} decorative /></View> : null}
           <Txt variant="largeTitle" accessibilityRole="header">{title}</Txt>
           {helper ? <Txt variant="body" color={colors.ink2} style={{ marginTop: space.xs }}>{helper}</Txt> : null}
         </View>
@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
   head: { paddingTop: space.sm, marginBottom: space.xxl },
   noBack: { height: 44 },
   step: { marginTop: space.xs, marginBottom: space.xs },
-  segments: { flexDirection: 'row', gap: 6, marginTop: space.xs },
-  segment: { flex: 1, height: 4, borderRadius: 2, backgroundColor: colors.sunken },
-  segmentDone: { backgroundColor: colors.plum },
+  track: { height: 3, borderRadius: 2, backgroundColor: colors.sunken, marginTop: space.xs, overflow: 'hidden' },
+  fill: { height: 3, borderRadius: 2, backgroundColor: colors.accent },
+  wren: { alignItems: 'center', marginBottom: space.md },
 });

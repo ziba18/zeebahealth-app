@@ -1,5 +1,5 @@
 """
-Generates a 1024x500 Google Play feature graphic for Atossa.
+Generates a 1024x500 Google Play feature graphic for Zeeba Health.
 Composes the brand mark on a warm-rose gradient with wordmark + tagline.
 """
 
@@ -8,7 +8,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "assets" / "play-store" / "feature-graphic.png"
-LOGO = ROOT / "assets" / "Atossa-logo.png"
+LOGO = ROOT / "assets" / "Zeeba-logo.png"
 
 W, H = 1024, 500
 
@@ -70,7 +70,7 @@ def compose():
 
     draw = ImageDraw.Draw(bg)
 
-    # Tagline + sub on right (logo already shows "ATOSSA" so skip wordmark)
+    # Tagline + sub on right (logo already shows "ZEEBA HEALTH" so skip wordmark)
     text_x = logo_x + logo_w + 70
     tagline_font = load_font(58, "bold")
     sub_font = load_font(28, "regular")

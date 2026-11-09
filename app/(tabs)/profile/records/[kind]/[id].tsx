@@ -1,8 +1,8 @@
 import React from 'react';
 import { Redirect, useLocalSearchParams, useRouter } from 'expo-router';
-import { RecordDetail } from '../../../../../components/atossa/records/RecordDetail';
-import { safeBackLabel } from '../../../../../components/atossa/timeline/navigation';
-import { KIND_INFO, firstParam, toDataKind } from '../../../../../components/atossa/records/recordKinds';
+import { RecordDetail } from '../../../../../components/zeeba/records/RecordDetail';
+import { safeBackLabel } from '../../../../../components/zeeba/timeline/navigation';
+import { KIND_INFO, firstParam, toDataKind } from '../../../../../components/zeeba/records/recordKinds';
 
 /** /(tabs)/profile/records/[kind]/[id] (id or `new`). Back label = `from`, else the list name. */
 export default function ProfileRecordScreen() {

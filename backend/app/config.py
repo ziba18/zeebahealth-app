@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     # Comma-separated allowed CORS origins; "*" keeps the previous behaviour.
     cors_origins: str = "*"
     # Expected audiences for verifying social sign-in identity tokens.
-    apple_bundle_id: str = "com.attosa.app"
+    apple_bundle_id: str = "com.zeebahealth.app"
     # TESTING ONLY, off by default: also accept Apple tokens issued to Expo Go ("host.exp.Exponent"),
     # so Sign in with Apple can be tried in Expo Go. Expo Go tokens carry a different Apple `sub`,
     # so they create separate test accounts. Turn off again before launch.

@@ -68,7 +68,7 @@ export interface SymptomData {
   stoppedWords: string;
   /**
    * Holistic fields (PRODUCT §4), all optional and patient-entered or pre-filled only from her own
-   * words (components/atossa/capture/holistic.ts on the AI branches). Absent = not recorded.
+   * words (components/zeeba/capture/holistic.ts on the AI branches). Absent = not recorded.
    */
   /** Pads/tampons per day as the chip bands ('1-2' | '3-5' | '6+'), flooding, clots — as reported. */
   products?: '1-2' | '3-5' | '6+';

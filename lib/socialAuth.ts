@@ -30,7 +30,7 @@ try {
   GoogleSignin = {
     hasPlayServices: async () => true,
     signIn: async () => {
-      throw new Error('Google Sign-In requires a dev or release build of Atossa.');
+      throw new Error('Google Sign-In requires a dev or release build of Zeeba Health.');
     },
   };
 }

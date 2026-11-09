@@ -64,13 +64,13 @@ Verified: tsc clean, expo-doctor 20/20, iOS export (4.2 MB Hermes bundle).
 
 ## 2026-10-20 — agent workspace moved to a private repo; owner decisions
 
-- **Why:** `ziba18/atossa` is **public**, so agent reports, security findings, contacts and owner decisions on
+- **Why:** `ziba18/zeebahealth-app` is **public**, so agent reports, security findings, contacts and owner decisions on
   `claude/agents-hq` were world-readable. The owner doesn't want this repo private: private Actions minutes
   (2,000/month) can't cover the 10-minute keep-warm job, and Render's link to the repo would need re-checking.
 - **Move:** created **private** `ziba18/atossa-hq` and copied the `agents/` folder (snapshot of `bf34868`, 42 files)
   to `main` + `claude/agents-hq` (`4fd5c4f`, rules update `761b520`). Local clone: `~/projects/atossa-hq`. All 7
   routines now have two sources: cloud checkouts are `/home/user/atossa-hq` (office, push here) and
-  `/home/user/atossa` (app code; `claude/<agent>-*` code branches still go here). Cloud cwd is `/home/user`.
+  `/home/user/zeebahealth-app` (app code; `claude/<agent>-*` code branches still go here). Cloud cwd is `/home/user`.
   RULES.md now covers both repos: nothing secret anywhere; nothing exploit-level or personal in the public one.
 - **Gotchas:** (1) a create call with `mcp_connections: []` still attaches **all** connectors, so always follow it
   with `clear_mcp_connections: true`. (2) The cloud auto-mode classifier blocked a bare "probe: push test" push
@@ -80,7 +80,7 @@ Verified: tsc clean, expo-doctor 20/20, iOS export (4.2 MB Hermes bundle).
   card shadows approved; **Today = capture-first** with up to 3 guided follow-up questions (agent decision at the
   owner's request); **KI EndoLIST access granted** (PhysioNet account + DUA only). The DUA allows research use
   only, no sharing, data stays local. A permission request to the corresponding author is drafted in Drive
-  ("Atossa Agents" folder), not sent.
+  ("Zeeba Health Agents" folder), not sent.
 
 ## 2026-10-19 — 7-agent cloud team set up
 
@@ -137,16 +137,16 @@ Verified: tsc clean, expo-doctor 20/20, iOS export (4.2 MB Hermes bundle).
 - **Basket Buddy sign-in endpoints (uncommitted):** `POST /basket-buddy/auth/{apple,google}`
   (`routers/basket_buddy.py`, `services/basket_buddy_auth.py`, `basket_*` settings in `config.py`).
   They verify the token with `social_auth.py` and return a session for Basket Buddy's own Supabase
-  project. Nothing is written to Atossa's DB. Hosted here rather than in a second Render service
-  because the free plan's 750 h/month is already used by Atossa's keep-warm. Needs
+  project. Nothing is written to Zeeba Health's DB. Hosted here rather than in a second Render service
+  because the free plan's 750 h/month is already used by Zeeba Health's keep-warm. Needs
   `BASKET_SUPABASE_SECRET_KEY` + `BASKET_GOOGLE_WEB_CLIENT_ID` on Render. Checked with a mock-Supabase
   script; not live yet. Details: basket_buddy repo `WORKLOG.md`.
 - **Basket Buddy Google sign-in "Invalid audience" (fixed same day):** `/basket-buddy/auth/google` now accepts
   a list of audiences (Basket Buddy's Web + iOS client IDs, `basket_google_known_client_ids` in `config.py`, plus
-  `BASKET_GOOGLE_WEB_CLIENT_ID`). `verify_google_id_token` takes a str or list; with a str (Atossa's `/auth/google`)
+  `BASKET_GOOGLE_WEB_CLIENT_ID`). `verify_google_id_token` takes a str or list; with a str (Zeeba Health's `/auth/google`)
   the behaviour is unchanged. Tested with locally signed tokens; the user confirmed Apple and Google sign-in on
   Basket Buddy TestFlight build 12.
-- **Daily cloud health check** — routine "Atossa daily health check (5am)",
+- **Daily cloud health check** — routine "Zeeba Health daily health check (5am)",
   `trig_01SdCbNC4eBveA7ZgyXLBPxD`, https://claude.ai/code/routines/trig_01SdCbNC4eBveA7ZgyXLBPxD.
   Runs in Anthropic's cloud (works with the laptop off), cron `0 5 * * *` **UTC** (5am London in
   winter, 6am during BST), model claude-sonnet-5-5, Supabase connector attached. Read-only: checks out
@@ -158,8 +158,8 @@ Verified: tsc clean, expo-doctor 20/20, iOS export (4.2 MB Hermes bundle).
   Edit/pause: https://claude.ai/code/routines (deleting is only possible there).
 - **First test run (2026-10-16 09:43 UTC, run `cse_011tiVgskWT2H4mauG5cxEtM`):** repo, `tsc`, iOS bundle,
   backend import (32 routes) and Supabase `select 1` (ACTIVE_HEALTHY) all PASS. **Render BLOCKED:** the
-  cloud sandbox's egress proxy refuses `atossa-backend.onrender.com` (`CONNECT tunnel failed, response 403`).
-  Fix = add `atossa-backend.onrender.com` (+ `uwqmhhbxthnpgcbgvgqh.supabase.co` for Basket Buddy) to the
+  cloud sandbox's egress proxy refuses `api.zeebahealth.com` (`CONNECT tunnel failed, response 403`).
+  Fix = add `api.zeebahealth.com` (+ `uwqmhhbxthnpgcbgvgqh.supabase.co` for Basket Buddy) to the
   "Default" cloud environment's network allowlist at claude.ai/code (user action). Until then, the
   GitHub keep-warm Action on `main` is still what keeps Render awake.
 
@@ -193,11 +193,11 @@ Verified: tsc clean, expo-doctor 20/20, iOS export (4.2 MB Hermes bundle).
   Expo free-tier queue at end of session. Not yet in TestFlight.
 - **App Store Connect, version 1.1.0 created and filled:** new promo text, description, keywords,
   What's New, review notes, subtitle "Symptom notes for your doctor"; privacy URL →
-  `https://atossa-backend.onrender.com/privacy`; age rating social-media questions = No (13+);
+  `https://api.zeebahealth.com/privacy`; age rating social-media questions = No (13+);
   release = automatic after approval (user's choice). New screenshots from `preview:web` via headless
   Chrome (iPhone 1206×2622, iPad 2064×2752: Today, chat, Timeline list/month, For my doctor); old
   cycle-app shots removed from 1.1.0 (still in the Asset Library).
-- **Reviewer account** `reviewer@atossa.app` did not exist in the current DB (lost in the auth move);
+- **Reviewer account** `reviewer@zeebahealth.com` did not exist in the current DB (lost in the auth move);
   user created it via the web app against the live backend (password = the one in ASC App Review),
   onboarding finished, one sample note saved.
 - **Support site** (`support-site/index.html`, Vercel project `support-site`) rewritten for the new
@@ -211,7 +211,7 @@ Verified: tsc clean, expo-doctor 20/20, iOS export (4.2 MB Hermes bundle).
 
 User asked to apply the stack from a Starter Story video (P4QodeA_lQ0: Cursor + Claude Code,
 Figma, Supabase, Superwall, Mixpanel, Loops, GoDaddy — saved in CLAUDE.md). Agreed scope for this
-release: **Mixpanel only**. Superwall needs paid subscriptions/IAP (Atossa has none; App Store
+release: **Mixpanel only**. Superwall needs paid subscriptions/IAP (Zeeba Health has none; App Store
 listing still on the coworker's account) and is a native module, not in Expo Go; Loops needs
 churned users + email backend; GoDaddy breaks "free to host".
 - `lib/analytics.ts` — `track()`; Mixpanel JS mode (`useNative=false`, AsyncStorage) so it runs in
@@ -224,13 +224,13 @@ churned users + email backend; GoDaddy breaks "free to host".
   Device ID used for Analytics, not linked to identity, not tracking.
 - Token: set `EXPO_PUBLIC_MIXPANEL_TOKEN` in `.env` and in the EAS `production` env.
 Verified: tsc clean, iOS export bundles. Not verified: events arriving in Mixpanel (no token yet).
-- Later the same day: token set in `.env` + EAS production env (project "Atossa", US residency, kept);
+- Later the same day: token set in `.env` + EAS production env (project "Zeeba Health", US residency, kept);
   test event accepted. IP geolocation turned off (`abe7409`). App Privacy label **published** with
   Device ID + Product Interaction (Analytics, not linked, not tracking). Full web click-through
   (local backend) passed: welcome/sign-in/register/forgot links, sign-up → onboarding → Today, all
   tabs + profile pages, sign out/in, wrong password, chat reply, save-as-note, session restore,
   delete account (test account gone). **To do with 1.1.0:** change the App Store Privacy Policy URL
-  from `support-site-gold.vercel.app` to `https://atossa-backend.onrender.com/privacy`.
+  from `support-site-gold.vercel.app` to `https://api.zeebahealth.com/privacy`.
 
 ---
 
@@ -246,7 +246,7 @@ removed on account deletion).
   serif prompt + starter chips (chips only change the hint, "My period" opens LogBleedingSheet);
   thread (her words serif in a white bubble, replies plain ink); "Save as a note for my GP" →
   `openCapture({mode:'type', words})` (new `words` option); static "can't diagnose" caption.
-- `components/atossa/chat/` — `Composer` (+ · input · dictation via useDictation · send),
+- `components/zeeba/chat/` — `Composer` (+ · input · dictation via useDictation · send),
   `ChatDrawer` (new chat, search, grouped history, long-press → destructive ConfirmCard),
   `AttachSheet` (Photo, Take a photo (native only), File, Log bleeding, Make a full note).
 - `stores/chatStore.ts`; preview mode answers with fixed questions, in memory.
@@ -258,7 +258,7 @@ removed on account deletion).
 Verified: tsc clean, iOS export bundles, web preview at phone width (send → reply, drawer, + sheet,
 save-as-note prefill), no console errors.
 - **Lovable pass (same day):** sent the chat spec to the Lovable prototype (commit `210d167`,
-  `src/components/atossa/TodayChat.tsx`). Ported its visual choices: hairline under the header, plum
+  `src/components/zeeba/TodayChat.tsx`). Ported its visual choices: hairline under the header, plum
   ☰, balanced two-line prompt, starters as a 2×2 grid of white tiles, taller composer ("Your words…"),
   roomier thread, "+ Save as a note for my GP" link, drawer "Your chats" with a ⋯ delete button per
   chat (long-press kept) and a plum "Profile and settings" row, flat rows in "Add to your chat".
@@ -301,7 +301,7 @@ Fixes:
 - **Privacy policy + terms**: `backend/app/routers/legal.py` serves `/privacy`
   and `/terms` (HTML, app palette). Linked from sign-up (`LegalLinks`) and a
   Profile "About" group. App Store Connect privacy URL =
-  `https://atossa-backend.onrender.com/privacy`. Written to match the code —
+  `https://api.zeebahealth.com/privacy`. Written to match the code —
   notably friends' apps receive name, cycle/period length and the last 12
   period dates (the UI only shows a phase). Not reviewed by a lawyer.
 Verified: 6 locally signed token cases (verified/unverified/missing flag/
@@ -319,9 +319,9 @@ The Lovable prototype ran out of credits partway through Stage 2a, and the user 
 was built and finish the redesign in this repo with design/review agents. Plan and status:
 `design/PORT_PLAN.md`; component and token reference: `design/KIT.md`; Lovable snapshot:
 `design/lovable-reference/` (excluded from tsc).
-- Foundation: exact palette/type/spacing tokens (`constants/atossaUI.ts`, legacy `UI.*` aliases kept),
+- Foundation: exact palette/type/spacing tokens (`constants/zeebaUI.ts`, legacy `UI.*` aliases kept),
   Inter 400/500/600 + Instrument Serif Italic (Work Sans removed), rebuilt kit
-  (`components/atossa/kit-parts/*`), extended record types (all new fields optional, old data still
+  (`components/zeeba/kit-parts/*`), extended record types (all new fields optional, old data still
   renders; backend `/records` is free-form JSON so no migration), `lib/records/format.ts` (en-GB dates,
   strength, `noteCount`).
 - Tabs are now Today · Timeline · For my doctor (+ Profile via the avatar). Old chat/dashboard/report
@@ -334,7 +334,7 @@ was built and finish the redesign in this repo with design/review agents. Plan a
   Sam, seeded in-memory store, today = 2026-09-24). Never set it in EAS. Added react-dom,
   react-native-web, @expo/metro-runtime, expo-haptics, expo-keep-awake, @expo-google-fonts/inter.
 - Reviews: round 1 UX 7 / visual 7 → round 2 8 / 8 → final pass (see
-  `research_notes/Atossa app design research/local_review*`). Notable bugs found and fixed: closed
+  `research_notes/Zeeba Health design research/local_review*`). Notable bugs found and fixed: closed
   Sheet layer swallowing the next tap; RN-web drops inline `pointerEvents: 'box-none'` (toast layer
   blocked taps for 3 s) — now only via StyleSheet.create; POP_TO_TOP double dispatch.
 - Small decisions: selected SeverityRow = solid plum disc; When (period timing) and How long (free
@@ -409,7 +409,7 @@ tsc clean, expo-doctor 18/18, iOS export builds.
 
 ## 2026-09-25 — TestFlight build 22 crashes on launch (iOS 26.6.1)
 
-User's crash log (`Atossa-2026-09-25-100618.ips`, build 22 = `b572995`):
+User's crash log (`Zeeba Health-2026-09-25-100618.ips`, build 22 = `b572995`):
 SIGSEGV inside Hermes (`stringPrototypeSplit` → `resizeWithinCapacity`) on
 the JS thread, while the TurboModule queue was in
 `ObjCTurboModule::performVoidMethodInvocation` →
@@ -458,7 +458,7 @@ keystroke in the notes box; "I was told: None saved." wording; header
 initial from non-name display names; tab labels overflowing at the
 largest text size.
 
-**2. Old-design screens rebuilt on `components/atossa/kit.tsx`.**
+**2. Old-design screens rebuilt on `components/zeeba/kit.tsx`.**
 Welcome, sign in, sign up, forgot password, onboarding, profile, edit
 profile, settings, Friends, not-found and the loading screen. The kit
 gained `TextField` props (keyboard types, `error`, `secret` with a
@@ -592,17 +592,17 @@ kept for a possible AI feature later, rather than deleted.
 ## 2026-09-24 — Redesign: Chat / Dashboard / For my doctor (ported from Lovable)
 
 **What & why:** the UI direction was designed with the user in a Lovable
-project ("Atossa: Your Health Compass", web prototype, in-memory data),
+project ("Zeeba Health: Your Health Compass", web prototype, in-memory data),
 tested against a real published patient story (Crystal Richardson,
 Weill Cornell), and then ported into this Expo app. The app now has three
 tabs — **Chat**, **Dashboard**, **For my doctor** — with large text/tap
 targets for older, non-technical users, the lighter coral / mist-green /
-blue / ivory palette (`constants/atossaUI.ts`, converted from Lovable's
+blue / ivory palette (`constants/zeebaUI.ts`, converted from Lovable's
 oklch tokens), Instrument Serif + Work Sans. The old Analyse and People
 tabs are hidden (`href: null`), not deleted; so are the old capture,
 period-log and cycle-data screens (unreachable, still in the tree).
 
-**Screens (all under `app/(tabs)/`, shared pieces in `components/atossa/`):**
+**Screens (all under `app/(tabs)/`, shared pieces in `components/zeeba/`):**
 - `chat/index.tsx` — deterministic symptom flow: user describes → "I've
   noted this" card (edit/save) → four fixed questions (where, 0–10, how
   long, did it stop you doing things) → saved as a `symptom` record. No
@@ -667,7 +667,7 @@ alone, lowering the cost would weaken stored passwords). So a *warm*
 backend logs in in ~0.5–1 s; the multi-second-to-50 s delay is Render's
 free tier spinning the service down after ~15 min idle (already noted in
 README). Confirmed the TestFlight build targets Render (`EXPO_PUBLIC_API_URL`
-is `https://atossa-backend.onrender.com` in the EAS `production` env).
+is `https://api.zeebahealth.com` in the EAS `production` env).
 
 **Fix, three layers:**
 - Backend: `GET /warmup` (in `main.py`) — wakes the instance *and* runs
@@ -733,7 +733,7 @@ OpenAI-compatible API, so it can be re-pointed at a self-hosted model
   **Not verified:** chat inside the actual TestFlight app.
 
 **Gotcha — env var on Render:** the Groq key was first saved into a Render
-*Environment Group* (`atossa`) that isn't linked to the service, so the
+*Environment Group* (the old, unused one) that isn't linked to the service, so the
 running service couldn't see it. It has to be a variable on the
 `atossa-backend` service itself (or the group has to be linked — not done,
 since the group's contents are masked and linking could override

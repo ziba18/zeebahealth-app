@@ -3,8 +3,8 @@
 import React from 'react';
 import { ScrollView, View, useWindowDimensions } from 'react-native';
 import { Redirect, useLocalSearchParams } from 'expo-router';
-import { Button, Card, Txt } from '../components/atossa/kit';
-import { colors, space } from '../constants/atossaUI';
+import { Button, Card, Txt } from '../components/zeeba/kit';
+import { colors, space } from '../constants/zeebaUI';
 import { IS_PREVIEW } from '../lib/preview/flag';
 
 const TILES = [
@@ -24,7 +24,7 @@ const WEEKS: Record<string, string> = { 'P-07': 'Week of 12 Oct', 'P-12': 'Week 
 const COLS = ['ID', 'Joined', 'Notes, last 7 days', 'Next appointment', 'Summary', 'Shared with clinic', 'Last active'];
 
 const Tag = () => (
-  <View style={{ alignSelf: 'flex-start', backgroundColor: colors.plumTint, paddingHorizontal: space.sm, paddingVertical: space.xxs, borderRadius: 999 }}>
+  <View style={{ alignSelf: 'flex-start', backgroundColor: colors.accentTint, paddingHorizontal: space.sm, paddingVertical: space.xxs, borderRadius: 999 }}>
     <Txt variant="caption">Mock — pilot feature · example numbers</Txt>
   </View>
 );
@@ -46,7 +46,7 @@ function Consent() {
           {['What is in your notes', 'Your periods or your records', 'Your summary, unless you choose to share it each time'].map((l) => <Txt key={l}>{l}</Txt>)}
         </View>
       </Card>
-      <Txt variant="secondary">You can stop sharing at any time from Profile. Atossa never diagnoses.</Txt>
+      <Txt variant="secondary">You can stop sharing at any time from Profile. Zeeba Health never diagnoses.</Txt>
       <Button label="Agree and share" onPress={() => {}} />
       <Button label="Not now" variant="text" onPress={() => {}} />
     </ScrollView></View>
@@ -64,7 +64,7 @@ export default function ClinicMock() {
     <View role="main" style={{ flex: 1 }}><ScrollView style={{ backgroundColor: colors.canvas }} contentContainerStyle={{ padding: wide ? space.xxl : space.lg, gap: space.lg, maxWidth: 1240, width: '100%', alignSelf: 'center' }}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: space.sm }}>
         <View style={{ gap: space.xs }}>
-          <Txt variant="hero">Atossa · Pilot: Example Clinic</Txt>
+          <Txt variant="hero">Zeeba Health · Pilot: Example Clinic</Txt>
           <Tag />
         </View>
         <Txt variant="secondary">Staff: J. Smith</Txt>

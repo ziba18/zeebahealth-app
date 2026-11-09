@@ -7,10 +7,10 @@ import { Modal, Platform, ScrollView, View, useWindowDimensions } from 'react-na
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useKeepAwake } from 'expo-keep-awake';
-import { colors, layout, space } from '../../../constants/atossaUI';
-import { Button, EmptyState } from '../../../components/atossa/kit';
-import { DocumentView } from '../../../components/atossa/doctor/DocumentView';
-import { useDoctorDoc } from '../../../components/atossa/doctor/useDoctorDoc';
+import { colors, layout, space } from '../../../constants/zeebaUI';
+import { Button, EmptyState } from '../../../components/zeeba/kit';
+import { DocumentView } from '../../../components/zeeba/doctor/DocumentView';
+import { useDoctorDoc } from '../../../components/zeeba/doctor/useDoctorDoc';
 
 /** Web: hand focus back to the page so the next tap after closing isn't swallowed. */
 function releaseWebFocus() {

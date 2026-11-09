@@ -80,7 +80,7 @@ export async function scheduleDailyLogReminder(time: string): Promise<void> {
     await Notifications.scheduleNotificationAsync({
       identifier: DAILY_LOG_REMINDER_ID,
       content: {
-        title: 'Atossa',
+        title: 'Zeeba Health',
         body: "If today's worth noting, I'm here. Two minutes is plenty.",
         data: { type: 'daily_log_reminder' },
       },
