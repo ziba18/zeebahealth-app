@@ -33,7 +33,7 @@ light raspberry `#F9D3DE → #93103A`; dark peach that *glows brighter* as it ge
 |---|---|---|
 | UI text | SF Pro (`system-ui`) | everything the app says |
 | Numbers | SF Rounded (`ui-rounded`) | dashboard metrics, counts |
-| Statements | New York (`ui-serif`) | "Symptoms on 10 of the last 28 days." |
+| Headings & statements | SF Pro bold | "Symptoms on 10 of the last 28 days." (one family for the app's voice, owner 9 Nov) |
 | Her words | New York *italic* | quotes from her notes only |
 
 Web preview stands in Newsreader for New York (desktop Chrome can't reach it). Scale = iOS text styles (Large Title
