@@ -5,3 +5,4 @@ Expo first-party packages: expo-blur (translucent tab bar), expo-haptics, react-
 
 ## Commits
 - 12:25 Tab bar: BlurView (solid on web), hairline, burgundy tint, no pill, light haptic. components/zeeba/MainTabBar.tsx
+- 12:26 Profile/Settings/Records: inset grouped lists (ScreenLarge grouped prop, GroupFooter, GroupSwitchRow); tabBarTranslucent token; Button press .97+haptic. GroupedRows.tsx, layout.tsx, profile/*
