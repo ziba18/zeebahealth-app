@@ -43,7 +43,7 @@ function PageCrop({ doc, width, height, onHeight }: { doc: DoctorDoc; width: num
   );
 }
 
-export function DocumentPreview({ doc, tall }: { doc: DoctorDoc; tall?: boolean }) {
+export function DocumentPreview({ doc, tall, hero }: { doc: DoctorDoc; tall?: boolean; /** Phone hero: the real page as paper. */ hero?: boolean }) {
   const [width, setWidth] = useState(0);
   const [docHeight, setDocHeight] = useState<number>(A4.height);
   const [open, setOpen] = useState(false);
@@ -53,14 +53,15 @@ export function DocumentPreview({ doc, tall }: { doc: DoctorDoc; tall?: boolean 
   // estimate (design/a4-gap.md, run 22). Never lower the factor without re-measuring.
   const pages = Math.max(1, Math.ceil(((docHeight - PAGE_CHROME) / PRINT_PAGE_BODY) * PRINT_VS_SCREEN));
   const inner = Math.max(0, width - 2); // inside the 1 px border
-  const thumbH = Math.min(Math.round(inner * (A4.height / A4.width)), tall ? THUMB_MAX_H * 2 : THUMB_MAX_H);
+  const thumbH = Math.min(Math.round(inner * (A4.height / A4.width)), tall ? THUMB_MAX_H * 2 : hero ? 400 : THUMB_MAX_H);
+  const big = tall || hero;
   const wordsSec = doc.sections.find((x) => x.id === 'words');
   const words = wordsSec && wordsSec.id === 'words' ? wordsSec.quotes[0] : undefined;
   const readerWidth = Math.min(screenW, layout.maxContentWidth) - layout.gutter * 2; // the Sheet's content gutter
 
   return (
     <View>
-      {tall ? (
+      {big ? (
         <>
           <Pressable
             onPress={() => setOpen(true)}
@@ -69,14 +70,15 @@ export function DocumentPreview({ doc, tall }: { doc: DoctorDoc; tall?: boolean 
             accessibilityLabel={`Preview of your summary, ${pages === 1 ? 'one page' : `about ${pages} pages`}`}
             accessibilityHint="Opens the summary at a size you can read"
             style={({ pressed }) => [{
-              borderRadius: radii.input, borderWidth: 1, borderColor: colors.hairline, backgroundColor: colors.surface,
+              // Paper in both appearances: the report is always ink on white.
+              borderRadius: radii.input, borderWidth: 1, borderColor: 'rgba(0,0,0,0.08)', backgroundColor: '#FFFFFF',
               overflow: 'hidden', opacity: pressed ? 0.85 : 1,
-            }, shadows.hero]}
+            }, shadows.paper]}
           >
             {inner > 0 ? <PageCrop doc={doc} width={inner} height={thumbH} onHeight={setDocHeight} /> : <View style={{ height: THUMB_MAX_H }} />}
           </Pressable>
           <Txt variant="secondary" style={{ marginTop: space.sm, textAlign: 'center' }}>
-            {`${doc.entries} ${doc.entries === 1 ? 'note' : 'notes'} · ${doc.rangeLabel} · ${pages === 1 ? 'one page' : `about ${pages} pages`}`}
+            {hero ? `Tap to read · ${pages === 1 ? 'one page' : `about ${pages} pages`} · ${doc.entries} ${doc.entries === 1 ? 'note' : 'notes'}` : `${doc.entries} ${doc.entries === 1 ? 'note' : 'notes'} · ${doc.rangeLabel} · ${pages === 1 ? 'one page' : `about ${pages} pages`}`}
           </Txt>
         </>
       ) : (
@@ -108,17 +110,17 @@ export function DocumentPreview({ doc, tall }: { doc: DoctorDoc; tall?: boolean 
           </Pressable>
         </View>
       )}
-      {words ? (
+      {words && !hero ? (
         <View style={{ marginTop: space.md, gap: space.xxs }}>
           <Txt variant="caption">{`In your words · ${words.dateLabel}`}</Txt>
           <Quote numberOfLines={3}>{words.text}</Quote>
         </View>
       ) : null}
       {tall ? <Button label="See the full page" variant="secondary" onPress={() => setOpen(true)} style={{ marginTop: space.xs }} accessibilityHint="Opens the summary at a size you can read" /> : null}
-      {Platform.OS === 'web' ? (
+      {Platform.OS === 'web' && !hero ? (
         <Txt variant="caption" style={{ marginTop: space.xs, textAlign: 'center' }}>Save PDF opens your browser’s print window. Choose “Save as PDF” there.</Txt>
       ) : null}
-      {doc.sections.length ? (
+      {doc.sections.length && !hero ? (
         <View style={{ marginTop: space.md, gap: space.xs }}>
           <Txt variant="groupLabel">In this summary</Txt>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', columnGap: space.md, rowGap: space.xs }}>

@@ -118,13 +118,13 @@ six old GitHub repos renamed (`zeeba-hq`, `zeeba-research`, `zeeba-data` — arc
 stale local `ios/` deleted. GitHub redirects the old repo URLs.
 Unavoidable: Render's internal `*.onrender.com` hostname is fixed at creation (nothing uses it; apps use
 api.zeebahealth.com — check Basket Buddy before ever removing it) and git history keeps old commit messages.
-Optional tidy-ups: delete the unused Render Environment Group and the old EAS project on expo.dev.
+Render has no environment groups (checked 9 Nov). Old EAS project `attosa` on expo.dev: owner to delete (Settings → Advanced → Start deletion; blocked for Claude as irreversible).
 
 ## 7. Open items, in priority order
 
 1. **Device check in Expo Go** (both appearances): native Apple button, blur, haptics, New York/SF Rounded rendering.
-2. **For my doctor** has the new colours/type but not the full redesign (bright paper preview on top, "What I was told
-   before" card from her history). Concepts are in the directions board.
+2. ~~For my doctor redesign~~ — done 9 Nov: appointment row → the real page as paper (both modes, tap to read) →
+   Prepare (what to raise, time span, visit type, sections) → Share PDF. Next idea: a "What I was told before" card.
 3. ~~Ship the rename to the server~~ — done 9 Nov (`583b4e7`). Remaining old-name items: §6b.
 4. GitHub repo stays **public** (owner, 9 Nov); description updated to Zeeba Health.
 8. App Store Connect: record created (Apple ID 6832575398) — remaining steps in `store/APP_STORE.md`. Not submitted.

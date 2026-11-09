@@ -6,7 +6,7 @@ import { Platform, Pressable, View, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { colors, heights, radii, space } from '../../../constants/zeebaUI';
 import {
-  Button, Card, ChipGroup, EmptyState, HeaderAvatar, InlineError, SafetyLine, ScreenLarge, SkeletonCards, Txt, showToast,
+  Button, Card, ChipGroup, EmptyState, HeaderAvatar, InlineError, SafetyLine, ScreenLarge, SegmentedControl, SkeletonCards, Txt, showToast,
 } from '../../../components/zeeba/kit';
 import { Icon, type IconName } from '../../../components/ui/Icon';
 import { openCapture } from '../../../lib/captureStore';
@@ -190,12 +190,6 @@ export default function DoctorScreen() {
 
   return (
     <ScreenLarge wide={desk} title="For my doctor" right={<HeaderAvatar />} footer={footer}>
-      {short ? null : (
-        <Txt variant="body" color={colors.ink2}>
-          Your notes, in your words, ready to share.
-        </Txt>
-      )}
-
       {upcoming ? (
         <Card style={{ marginTop: short ? space.md : space.xl, flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
           {/* Under ~240 pt wide the icon disc goes: the words beside it were breaking mid-word. */}
@@ -284,104 +278,84 @@ export default function DoctorScreen() {
         </View>
       ) : (
         <>
+      {/* 1 · The report is the hero: the real page, on paper, in both appearances (Visible/Clue pattern). */}
       {nothingYet || doc.empty ? (
-        <Step title="Your summary">
-          {nothingYet ? (
-            <Card>
+        <View style={{ marginTop: space.lg }}>
+          <Card>
+            {nothingYet ? (
               <EmptyState
                 message={olderData
-                  ? 'Nothing logged in this time. Choose a longer range above, or add a note.'
-                  : 'Nothing to share yet. Notes you add will appear here, in your words.'}
+                  ? 'Nothing logged in this time span. Choose a longer one below, or add a note.'
+                  : 'Your report fills in as you add notes.'}
                 action={{ label: 'Add a note', onPress: () => openCapture() }}
                 style={{ paddingVertical: space.xl }} />
-            </Card>
-          ) : (
-            <Card>
-              <EmptyState message="Every section is switched off. Turn one on below to include it." style={{ paddingVertical: space.xl }} />
-            </Card>
-          )}
-        </Step>
-      ) : null}
-
-      {agendaUp ? (
-        <View style={{ marginTop: short ? space.md : space.xl }}>
-          <AgendaField value={agenda} onChange={setAgenda} onBlur={saveAgenda} title={agendaTitle} compact={short} />
-          <InlineError message={noteError} style={{ marginTop: space.xs }} />
+            ) : (
+              <EmptyState message="Every section is off. Turn one on under Prepare." style={{ paddingVertical: space.xl }} />
+            )}
+          </Card>
         </View>
-      ) : null}
-
-      {!nothingYet && !doc.empty ? (
-        <>
-          <PageOneCards doc={doc} showAgenda={!agendaUp} />
-          <Step title="Your summary page">
-            <DocumentPreview doc={doc} tall={desk} />
-          </Step>
-        </>
-      ) : null}
-
-      {nothingYet && !olderData ? null : (
-        <Pressable
-          onPress={() => setCustomise((v) => !v)}
-          accessibilityRole="button"
-          accessibilityState={{ expanded: customise }}
-          accessibilityLabel="Customise this summary"
-          style={{
-            marginTop: space.xl, flexDirection: 'row', alignItems: 'center', gap: space.sm,
-            minHeight: heights.secondary, paddingVertical: space.sm,
-          }}
-        >
-          <Icon name="settings" size={24} color={colors.accent} />
-          <View style={{ flex: 1 }}>
-            <Txt variant="headline">Customise this summary</Txt>
-            <Txt variant="secondary">{joinFacts(visitType ?? 'Any visit', doc.rangeLabel)}</Txt>
-          </View>
-          <Icon name={customise ? 'chevron-up' : 'chevron-down'} size={24} color={colors.ink2} />
-        </Pressable>
-      )}
-      {customise ? (
-        <View>
-      {nothingYet ? null : (
-        <Step title="What’s this appointment for?">
-          <ChipGroup
-            mode="single"
-            options={[...VISIT_TYPES]}
-            value={visitType}
-            onChange={(v) => setVisitType(v as VisitType | null)}
-            allowDeselect
-            accessibilityLabel="What’s this appointment for?"
-          />
-        </Step>
+      ) : (
+        <View style={{ marginTop: space.lg, gap: space.xs }}>
+          <DocumentPreview doc={doc} hero />
+        </View>
       )}
 
+      {/* 2 · Prepare (Bearable: people who prepare do better than those who just export). */}
       {nothingYet && !olderData ? null : (
-        <Step title="How far back?">
-          <ChipGroup
-            mode="single"
+        <View style={{ marginTop: space.xl }}>
+          <Txt variant="section" accessibilityRole="header" style={{ marginBottom: space.sm }}>Prepare</Txt>
+          {nothingYet ? null : (
+            <View style={{ marginBottom: space.lg }}>
+              <AgendaField value={agenda} onChange={setAgenda} onBlur={saveAgenda} title={agendaTitle} compact />
+              <InlineError message={noteError} style={{ marginTop: space.xs }} />
+            </View>
+          )}
+          <Txt variant="groupLabel" style={{ marginBottom: space.xs, marginLeft: space.xxs }}>Time span</Txt>
+          <SegmentedControl<RangeChoice>
+            accessibilityLabel="How far back"
             options={rangeOptions}
             value={range}
-            onChange={(v) => { if (v) setRange(v as RangeChoice); }}
-            accessibilityLabel="How far back?"
+            onChange={(v: RangeChoice) => setRange(v)}
           />
-          {rangeNote ? <Txt variant="secondary">{rangeNote}</Txt> : null}
-          <Txt variant="secondary">{joinFacts(doc.rangeLabel, notesLabel(doc.entries))}</Txt>
-        </Step>
-      )}
-
-      {nothingYet || agendaUp ? null : (
-        <View style={{ marginTop: space.xxl }}>
-          <AgendaField value={agenda} onChange={setAgenda} onBlur={saveAgenda} title={agendaTitle} />
-          <InlineError message={noteError} style={{ marginTop: space.xs }} />
+          {rangeNote ? <Txt variant="caption" style={{ marginTop: space.xs, marginLeft: space.xxs }}>{rangeNote}</Txt> : null}
+          {nothingYet ? null : (
+            <>
+              <Txt variant="groupLabel" style={{ marginTop: space.lg, marginBottom: space.xs, marginLeft: space.xxs }}>Visit type</Txt>
+              <ChipGroup
+                mode="single"
+                options={[...VISIT_TYPES]}
+                value={visitType}
+                onChange={(v) => setVisitType(v as VisitType | null)}
+                allowDeselect
+                accessibilityLabel="What’s this appointment for?"
+              />
+            </>
+          )}
+          {doc.available.length ? (
+            <>
+              <Pressable
+                onPress={() => setCustomise((v) => !v)}
+                accessibilityRole="button"
+                accessibilityState={{ expanded: customise }}
+                accessibilityLabel="Sections in the report"
+                style={({ pressed }) => ({
+                  marginTop: space.lg, flexDirection: 'row', alignItems: 'center', gap: space.sm, minHeight: 48,
+                  paddingHorizontal: space.md, borderRadius: radii.row, backgroundColor: pressed ? colors.sunken : colors.surface,
+                })}
+              >
+                <Txt variant="body" style={{ flex: 1 }}>Sections</Txt>
+                <Txt variant="secondary">{`${doc.available.filter((k) => include[k.id] !== false).length} of ${doc.available.length}`}</Txt>
+                <Icon name={customise ? 'chevron-up' : 'chevron-down'} size={18} color={colors.ink3} />
+              </Pressable>
+              {customise ? (
+                <View style={{ marginTop: space.xs }}>
+                  <SectionToggles sections={doc.available} include={include} onChange={setInclude} />
+                </View>
+              ) : null}
+            </>
+          ) : null}
         </View>
       )}
-
-      {doc.available.length ? (
-        <Step title="Sections">
-          <SectionToggles sections={doc.available} include={include} onChange={setInclude} />
-        </Step>
-      ) : null}
-
-        </View>
-      ) : null}
         </>
       )}
 
