@@ -137,11 +137,11 @@ export function Wren({ mood = 'idle', size = 120, animated = true, style }: Prop
           <Ellipse cx="70" cy="170" rx="44" ry="4.5" fill={colors.ink} opacity={0.08} />
 
           {/* arms */}
-          <G rotation={armsUp ? -34 : armsHug ? -22 : 0} origin="30, 112">
+          <G transform={`rotate(${armsUp ? -34 : armsHug ? -22 : 0} 30 112)`}>
             <Path d="M24 104 C12 106 6 118 10 127 C13 133 21 132 25 126 C28 121 29 113 30 108Z" fill={W.body2} />
             <Path d="M11 124 C14 129 19 129 22 126" fill="none" stroke={W.rib} strokeWidth={3} strokeLinecap="round" />
           </G>
-          <G rotation={armsUp ? 34 : armsHug ? 22 : 0} origin="110, 112">
+          <G transform={`rotate(${armsUp ? 34 : armsHug ? 22 : 0} 110 112)`}>
             <Path d="M116 104 C128 106 134 118 130 127 C127 133 119 132 115 126 C112 121 111 113 110 108Z" fill={W.body2} />
             <Path d="M129 124 C126 129 121 129 118 126" fill="none" stroke={W.rib} strokeWidth={3} strokeLinecap="round" />
           </G>

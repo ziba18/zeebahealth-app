@@ -39,12 +39,12 @@ export default function WelcomeScreen() {
           />
           <View style={styles.brandRow}>
             <Txt variant="headline" color={colors.burgundy} accessibilityRole="header" accessibilityLabel="Zeeba Health" style={styles.wordmark}>Zeeba Health</Txt>
-            <Wren mood="happy" size={short ? 56 : 76} />
+            <Wren mood="happy" size={short ? 64 : 96} />
           </View>
         </View>
 
         <View style={styles.hero}>
-          <Txt variant="hero" style={short || win.width < 380 ? undefined : styles.heroLine}>Your symptoms, on the record.</Txt>
+          <Txt variant="title" accessibilityRole="header" style={[styles.heroUpright, short || win.width < 380 ? undefined : styles.heroLine]}>Your symptoms, on the record.</Txt>
           <Txt variant="body" color={colors.ink2}>
             Log what your body is doing, in your own words. Zeeba Health turns it into dated evidence your doctor can read in a minute.
           </Txt>
@@ -97,6 +97,8 @@ const styles = StyleSheet.create({
   brandRow: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between' },
   wordmark: { fontFamily: fonts.semibold, fontSize: 22, lineHeight: 28, letterSpacing: -0.2, paddingBottom: space.xs },
   heroLine: { fontSize: 36, lineHeight: 42 },
+  // Upright Inter = the app's own authoritative voice; serif stays reserved for her words (BRAND.md).
+  heroUpright: { fontSize: 30, lineHeight: 36, letterSpacing: -0.4 },
   steps: { flexDirection: 'row', gap: space.sm, marginBottom: space.md },
   step: { flex: 1, alignItems: 'center', gap: 4 },
   stepNum: { width: 28, height: 28, borderRadius: 14, backgroundColor: colors.burgundyTint, alignItems: 'center', justifyContent: 'center' },
