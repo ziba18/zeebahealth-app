@@ -7,7 +7,7 @@ import { Animated, Easing, Pressable, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useReduceMotion } from '../kit-parts/Sheet';
 import { Card, EmptyState, FadeIn, PressableCard, Quote, SegmentedControl, Txt } from '../kit';
-import { colors, severityColor, severityRamp, space } from '../../../constants/zeebaUI';
+import { colors, fonts, severityColor, severityRamp, space } from '../../../constants/zeebaUI';
 import { untaggedLine } from '../../../lib/records/counts';
 import { openCapture } from '../../../lib/captureStore';
 import { todayKey } from '../../../lib/records/dates';
@@ -270,10 +270,10 @@ const styles = StyleSheet.create({
   ringRow: { flexDirection: 'row', alignItems: 'center', gap: space.md, marginTop: space.sm },
   bleedChart: { flexDirection: 'row', alignItems: 'flex-end', gap: 4, height: 44, marginTop: space.sm },
   tiles: { flexDirection: 'row', gap: space.sm },
-  tile: { flex: 1, alignItems: 'flex-start', minWidth: 0, paddingHorizontal: space.sm, paddingVertical: space.md },
+  tile: { flex: 1, alignItems: 'flex-start', minWidth: 0, minHeight: 104, paddingHorizontal: space.sm, paddingVertical: space.md },
   tileWide: { paddingHorizontal: space.md, paddingVertical: space.sm },
   tileRow: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
-  tileNum: { fontSize: 32, lineHeight: 38 },
+  tileNum: { fontSize: 34, lineHeight: 41, fontFamily: fonts.semibold, fontVariant: ['tabular-nums'] },
   numRow: { flexDirection: 'row', alignItems: 'baseline', gap: space.xs, marginTop: space.xxs },
   chart: { flexDirection: 'row', alignItems: 'flex-end', gap: 4, height: BAR_AREA, marginTop: space.sm },
   axis: { flexDirection: 'row', justifyContent: 'space-between', marginTop: space.xxs, paddingRight: 10 },
