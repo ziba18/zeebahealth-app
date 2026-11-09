@@ -1,5 +1,6 @@
 import React from 'react';
-import { Pressable, ScrollView, StyleSheet, View, useWindowDimensions, type LayoutChangeEvent, type StyleProp, type ViewStyle, type ScrollViewInstance } from 'react-native';
+import { Animated, Platform, Pressable, ScrollView, StyleSheet, View, useWindowDimensions, type LayoutChangeEvent, type StyleProp, type ViewStyle, type ScrollViewInstance } from 'react-native';
+import { BlurView } from 'expo-blur';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useSegments } from 'expo-router';
 import { colors, fonts, heights, layout, radii, shadows, space } from '../../../constants/zeebaUI';
@@ -36,6 +37,8 @@ export function ScreenLarge({
   /** iOS inset-grouped screens (Profile, Settings): sunken background behind white groups. */
   grouped?: boolean;
 }) {
+  const scrollY = React.useRef(new Animated.Value(0)).current;
+  const barOpacity = scrollY.interpolate({ inputRange: [36, 68], outputRange: [0, 1], extrapolate: 'clamp' });
   const head = (
     <View style={styles.head}>
       {back ? <BackChevron label={back.label} onPress={back.onPress} /> : null}
@@ -54,8 +57,10 @@ export function ScreenLarge({
   return (
     <SafeAreaView edges={["top"]} role="main" style={[styles.screen, grouped && { backgroundColor: colors.sunken }]}>
       {scroll ? (
-        <ScrollView
-          ref={scrollRef as React.RefObject<ScrollViewInstance>}
+        <Animated.ScrollView
+          ref={scrollRef as any}
+          scrollEventThrottle={16}
+          onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: Platform.OS !== 'web' })}
           contentContainerStyle={[styles.column, wide && { maxWidth: 1040 }, styles.scrollContent, contentStyle]}
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="interactive"
@@ -64,13 +69,19 @@ export function ScreenLarge({
         >
           {head}
           {children}
-        </ScrollView>
+        </Animated.ScrollView>
       ) : (
         <View style={[styles.column, { flex: 1 }, contentStyle]}>
           {head}
           {children}
         </View>
       )}
+      {scroll ? (
+        <Animated.View style={[styles.navBar, { opacity: barOpacity }]} aria-hidden>
+          {Platform.OS === 'web' ? null : <BlurView intensity={60} tint="systemChromeMaterialLight" style={StyleSheet.absoluteFill} />}
+          <Txt variant="headline" numberOfLines={1} style={styles.navTitle}>{title}</Txt>
+        </Animated.View>
+      ) : null}
       {footer ? <View style={[styles.column, wide && { maxWidth: 1040 }, styles.footer]}>{footer}</View> : null}
     </SafeAreaView>
   );
@@ -446,6 +457,12 @@ const styles = StyleSheet.create({
   column: { width: '100%', maxWidth: layout.maxContentWidth, alignSelf: 'center', paddingHorizontal: layout.gutter },
   // Ends clear of the toast zone, so a toast never sits over the last action (UX #30).
   scrollContent: { paddingBottom: heights.toastClearance },
+  navBar: {
+    position: 'absolute', top: 0, left: 0, right: 0, height: 44, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: colors.tabBarTranslucent, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.borderStrong,
+    pointerEvents: 'none',
+  },
+  navTitle: { maxWidth: '60%', textAlign: 'center' },
   head: { paddingTop: space.sm, marginBottom: space.xl },
   titleRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space.xs, minHeight: 44 },
   right: { marginLeft: 'auto', flexDirection: 'row', alignItems: 'center', gap: space.xs, flexShrink: 0 },
