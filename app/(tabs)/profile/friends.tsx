@@ -1,9 +1,10 @@
 import React, { useCallback, useState } from 'react';
+import { GroupHeading } from '../../../components/zeeba/records/GroupedRows';
 import { View } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 import { colors, space } from '../../../constants/zeebaUI';
 import {
-  Button, Card, ConfirmCard, InlineError, ScreenLarge, SectionTitle, TextField, Txt,
+  Button, Card, ConfirmCard, InlineError, ScreenLarge, TextField, Txt,
 } from '../../../components/zeeba/kit';
 import { useAuthStore } from '../../../stores/authStore';
 import { api } from '../../../lib/api';
@@ -106,6 +107,7 @@ export default function FriendsScreen() {
 
   return (
     <ScreenLarge
+      grouped
       title="Friends"
       back={{ label: 'Profile' }}
       subtitle="Invite people you know. They only see your cycle phase — never your symptoms, notes or other records."
@@ -132,7 +134,7 @@ export default function FriendsScreen() {
 
       {pending.length > 0 ? (
         <View style={{ marginTop: space.xxl }}>
-          <SectionTitle title="Invites for you" />
+          <GroupHeading title="Invites for you" />
           <View style={{ gap: space.sm }}>
             {pending.map((p) => (
               <Card key={p.id} style={{ gap: space.sm }}>
@@ -149,7 +151,7 @@ export default function FriendsScreen() {
 
       {friends.length > 0 ? (
         <View style={{ marginTop: space.xxl }}>
-          <SectionTitle title="Your friends" />
+          <GroupHeading title="Your friends" />
           <View style={{ gap: space.sm }}>
             {friends.map((f) => {
               const math = phaseOf(f);
