@@ -124,10 +124,10 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
       {toggle}
       {/* Midnight's statement: the one sentence a doctor needs, set in New York, the key numbers in the accent. */}
       <FadeIn index={0}>
-        <View style={{ gap: space.xxs }} accessible accessibilityRole="header" accessibilityLabel={`Symptoms on ${m.noteDays} of the last ${m.totalDays} days.${m.strongDays ? ` ${m.strongDays} of them at ${STRONG_FROM} or more out of 10.` : ''}`}>
+        <View style={{ gap: space.xxs }} accessible accessibilityRole="header" accessibilityLabel={`Symptoms on ${m.noteDays} of the last ${m.totalDays} days.${m.strongDays ? ` ${m.strongDays} of those days at ${STRONG_FROM} out of 10 or worse.` : ''}`}>
           <Txt variant="statement">
             Symptoms on <Txt variant="statement" style={styles.em}>{m.noteDays} of the last {m.totalDays} days.</Txt>
-            {m.strongDays ? <Txt variant="statement">{` ${m.strongDays} at ${STRONG_FROM}+ out of 10.`}</Txt> : null}
+            {m.strongDays ? <Txt variant="statement">{` ${m.strongDays} of those days at ${STRONG_FROM}/10 or worse.`}</Txt> : null}
           </Txt>
           <Txt variant="caption">{rangeText} · {plural(m.notes, 'note')}</Txt>
         </View>
