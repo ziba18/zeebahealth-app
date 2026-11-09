@@ -13,3 +13,4 @@ Expo first-party packages: expo-blur (translucent tab bar), expo-haptics, react-
 - 12:30 ScreenLarge: small title fades in on translucent bar when large title scrolls away (Animated, blur on native). layout.tsx
 - 12:31 KIT.md updated; grouped separators true hairline; rendered profile/settings/friends/timeline OK (headless Chrome is 500 wide min)
 - 12:31 Sheets already iOS-style (28 radius, scrim, drag-dismiss); grabber now 36x5. Sheet.tsx
+- 12:32 Title bar: tabBar (0.94) on web; native keeps blur over 0.72 bone. Rough-day row already selects burgundy disc + haptic + enabled burgundy Save, no change. layout.tsx
