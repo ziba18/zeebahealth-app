@@ -89,6 +89,20 @@ export function GroupRow({
   );
 }
 
+/** White rounded group of form fields, a hairline between each (iOS Settings style). */
+export function FieldGroup({ children, style }: { children: React.ReactNode; style?: StyleProp<ViewStyle> }) {
+  const items = React.Children.toArray(children).filter(Boolean);
+  return (
+    <View style={[styles.group, style]}>
+      {items.map((child, i) => (
+        <View key={i} style={[{ padding: space.md }, i > 0 && { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.hairline }]}>
+          {child}
+        </View>
+      ))}
+    </View>
+  );
+}
+
 /** Footer note under a group (13 pt, ink2 — ink3 fails AA on the sunken background). */
 export function GroupFooter({ children, style }: { children: string; style?: StyleProp<ViewStyle> }) {
   return <Txt variant="caption" color={colors.ink2} style={[{ marginTop: space.xs, paddingHorizontal: space.md }, style]}>{children}</Txt>;

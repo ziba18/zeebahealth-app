@@ -6,6 +6,8 @@ import { useRouter, useSegments } from 'expo-router';
 import { colors, fonts, heights, layout, radii, shadows, space } from '../../../constants/zeebaUI';
 import { useAuthStore } from '../../../stores/authStore';
 import { isHumanName } from '../../../lib/humanName';
+import { AnimatedPressable, usePressSpring } from './pressSpring';
+import { haptics } from '../../../lib/haptics';
 import { Icon, type IconName } from '../../ui/Icon';
 import { AddFieldChip, Button, type ButtonVariant } from './controls';
 import { Quote, Txt } from './Txt';
@@ -246,16 +248,19 @@ export function HeroNumber({
 
 /** Icon-in-a-plum-tint-circle + label tile, built to sit two across (flexBasis 48%); a one-tap shortcut. */
 export function QuickTile({ label, icon, onPress }: { label: string; icon: IconName; onPress: () => void }) {
+  const spring = usePressSpring();
   return (
-    <Pressable
-      onPress={onPress}
+    <AnimatedPressable
+      onPress={() => { haptics.selection(); onPress(); }}
+      onPressIn={spring.onPressIn}
+      onPressOut={spring.onPressOut}
       accessibilityRole="button"
       accessibilityLabel={label}
-      style={({ pressed }) => [styles.qtile, pressed && { backgroundColor: colors.canvas }]}
+      style={[styles.qtile, spring.pressed && { backgroundColor: colors.canvas }, { transform: [{ scale: spring.scale }] }]}
     >
       <View aria-hidden style={styles.qicon}><Icon name={icon} size={20} color={colors.ink} /></View>
       <Txt variant="secondary" style={{ flex: 1, color: colors.ink }} maxFontSizeMultiplier={1.4}>{label}</Txt>
-    </Pressable>
+    </AnimatedPressable>
   );
 }
 

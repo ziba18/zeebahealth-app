@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View, useWindowDimensions, type StyleProp, type ViewStyle, type ScrollViewInstance } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, fonts, heights, layout, radii, shadows, space } from '../../../constants/zeebaUI';
+import { AnimatedPressable, usePressSpring } from './pressSpring';
 import { haptics } from '../../../lib/haptics';
 import { formatRelativeDay } from '../../../lib/records/format';
 import { Icon, type IconName } from '../../ui/Icon';
@@ -124,8 +125,11 @@ export function Chip({
   accessibilityRole?: 'button' | 'radio' | 'checkbox';
   style?: StyleProp<ViewStyle>;
 }) {
+  const spring = usePressSpring();
   return (
-    <Pressable
+    <AnimatedPressable
+      onPressIn={spring.onPressIn}
+      onPressOut={spring.onPressOut}
       onPress={() => { haptics.selection(); onPress(); }}
       disabled={disabled}
       accessibilityRole={accessibilityRole}
@@ -134,11 +138,12 @@ export function Chip({
       // RN-web doesn't derive aria-* from accessibilityState for these roles (review 1, UX #20).
       {...(accessibilityRole === 'button' ? { 'aria-pressed': selected } : { 'aria-checked': selected })}
       aria-disabled={disabled || undefined}
-      style={({ pressed }) => [
+      style={[
         styles.chip,
         ghost && !selected && styles.chipGhost,
         selected && styles.chipSelected,
-        pressed && !selected && { backgroundColor: colors.sunken },
+        spring.pressed && !selected && { backgroundColor: colors.sunken },
+        { transform: [{ scale: spring.scale }] },
         disabled && { opacity: 0.5 },
         style,
       ]}
@@ -149,7 +154,7 @@ export function Chip({
       >
         {label}
       </Txt>
-    </Pressable>
+    </AnimatedPressable>
   );
 }
 
