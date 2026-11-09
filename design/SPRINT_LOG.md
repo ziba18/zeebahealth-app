@@ -23,3 +23,4 @@ Expo first-party packages: expo-blur (translucent tab bar), expo-haptics, react-
 - 12:36 pressSpring (Chip, QuickTile spring 0.97 + haptic), FieldGroup hairline fields in login/register/onboarding name; rendered register + onboarding/name OK
 - 12:37 Toast render attempts (temp route + temp timer) captured nothing in headless virtual time; temp code removed. Month view not rendered.
 - 12:39 edit-profile FieldGroup (rendered OK); Wren decorative prop (aria-hidden) applied in toast, empty states, onboarding, Today hero. Dynamic Type: GroupRow/GroupSwitchRow use minHeight + flex:1 minWidth:0 text so they wrap, not clip (reasoned, not rendered)
+- 12:40 Rough-day save: comfort Wren >=8 else proud; web title bar solid canvas/sunken; RecordDetail fields in FieldGroup on grouped bg (FieldGroup flattens fragments)
