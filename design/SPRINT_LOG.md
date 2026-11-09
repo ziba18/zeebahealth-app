@@ -24,3 +24,4 @@ Expo first-party packages: expo-blur (translucent tab bar), expo-haptics, react-
 - 12:37 Toast render attempts (temp route + temp timer) captured nothing in headless virtual time; temp code removed. Month view not rendered.
 - 12:39 edit-profile FieldGroup (rendered OK); Wren decorative prop (aria-hidden) applied in toast, empty states, onboarding, Today hero. Dynamic Type: GroupRow/GroupSwitchRow use minHeight + flex:1 minWidth:0 text so they wrap, not clip (reasoned, not rendered)
 - 12:40 Rough-day save: comfort Wren >=8 else proud; web title bar solid canvas/sunken; RecordDetail fields in FieldGroup on grouped bg (FieldGroup flattens fragments)
+- 12:40 Patterns stat tiles: minHeight 104, number 34/41 Inter 600 tabular; chart colours already tokens (no hex found in timeline/ or HeatStrip). Not rendered (mode is in-memory state)
