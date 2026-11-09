@@ -1,57 +1,64 @@
-# Zeeba Health — Brand (v1, 2026-11-09)
+# Zeeba Health — Brand & Design System
 
-Replaces the colour section of the "Warm Paper, Deep Ink" kit. `design/KIT.md` still governs components and spacing.
-Source of truth for values: `constants/zeebaUI.ts`.
+**Version 2 · 9 Nov 2026 · owner-approved.** Supersedes "Warm Paper, Deep Ink" (Sept) and "Burgundy & Bone"
+(rejected 9 Nov, rated 0/100). Source of truth for values: `constants/zeebaUI.ts`. Engineering handover: `design/HANDOVER.md`.
 
-## Positioning in one line
-**Your symptoms, on the record.** Zeeba Health turns what a woman's body is doing into dated, readable evidence for her
-doctor. It counters "it's just stress" with counts, charts and her own words. Evidence, never a verdict.
+## 1. Positioning
+**"Your symptoms, on the record."** Zeeba Health turns any dismissed women's-health symptom into dated, readable
+evidence and gets it in front of a doctor. Three pillars, in every surface: **Record · Prove · Reach**.
+Evidence, never a verdict: the app never names a condition, gives a probability, suggests a cause or advises treatment.
 
-## Personality
-| We are | We are not |
-|---|---|
-| Authoritative, precise, calm | Clinical-cold, alarmist |
-| Warm, on her side | Cute, babyish, "period-app pink" |
-| Plain-spoken (UK English) | Jargon, medical labels, diagnoses |
+Voice: authoritative, plain, warm, UK English. Never cute, never alarmist, never "period-app pink".
 
-## Palette — "Burgundy & Bone"
-All text pairs pass WCAG AA (ratios on canvas / white).
+## 2. Direction: Native by day, Midnight by night
+One system, two appearances, chosen automatically by the iPhone's Light/Dark setting.
 
-| Token | Hex | Role |
+| | Light — **Native** | Dark — **Midnight** |
 |---|---|---|
-| `burgundy` | `#7A1F3A` | Brand + every action (buttons, links, selected tab). White on it 10:1 |
-| `burgundyPressed` | `#5C1529` | Pressed state |
-| `burgundyTint` | `#F6E6EA` | Selected chips, segments, soft washes |
-| `blush` | `#F2C9CF` | Wren and illustration only, never text |
-| `canvas` (bone) | `#FBF7F4` | App background |
-| `surface` | `#FFFFFF` | Cards, sheets, PDF |
-| `sunken` | `#F3ECE8` | Grouped-list background, input wells |
-| `ink` | `#22161A` | Text, 16.5:1 |
-| `ink2` / `ink3` | `#5C4A4F` / `#6A585D` | Secondary 7.7:1 / labels 6.2:1 |
-| `clay` | `#B04A2E` | Bleeding only (orange-red, so it never reads as the brand) |
-| `saved` / `error` | `#2E6A4F` / `#A12A2A` | System states only |
+| Reference apps | Apple Health, Bevel | Oura, Visible |
+| Canvas / surface | `#F2F2F7` / `#FFFFFF` | `#0A0C16` / `#141829` (tiles `#1C2136`) |
+| Ink / secondary | `#000000` / `#6C6C72` | `#F4F1EC` / `#A3A8BE` |
+| **Accent** (actions, selected tab, links, charts) | **Raspberry `#C81E55`** | **Peach `#FF9468`** |
+| Text on accent | `#FFFFFF` (5.6:1) | `#1A0E0A` (8.7:1) |
+| Period / bleeding only | Orange `#E8562A` | Mint `#8FE3C8` |
+| Cards | Flat, no outline (iOS) | 1px `rgba(255,255,255,.08)` edge |
 
-Severity ramp (0–10, always shown with the digit): `#F4DEE4 #E0AEBB #A9566F #8E3050 #5A1229`.
+All text pairs pass WCAG AA in both appearances (checked 9 Nov). Pain scale 0–10 (always shown with the digit):
+light raspberry `#F9D3DE → #93103A`; dark peach that *glows brighter* as it gets worse `#2A3050 → #FFC9AE`.
 
-## Type
-Inter for everything the app says (upright, 400/500/600). Instrument Serif Italic **only** for her own words (quotes),
-so her voice is visibly different from the app's. The wordmark is Inter 600, burgundy, tight tracking: upright = authoritative.
+**The doctor document and PDF are always black on white paper**, in both appearances (`DOC_COLORS`, `severityColorLight`).
 
-## Wren
-A knitted hot-water bottle in brand burgundy with a bone ribbed collar and a stitched heart. Comfort and company.
-`components/zeeba/Wren.tsx`, moods: idle, happy, listening, comfort, proud, sleepy. Breathes gently; still when Reduce Motion is on.
-Rules: Wren appears on welcome, the capture hero, empty states and "saved" moments, at most once per screen.
-**Wren never appears on the doctor PDF or the For my doctor page** (that page must look clinical-grade), never speaks
-medical content, never names a condition and never gives advice.
+## 3. Type — Apple's own faces (nothing downloaded on iOS)
+| Role | Face | Use |
+|---|---|---|
+| UI text | SF Pro (`system-ui`) | everything the app says |
+| Numbers | SF Rounded (`ui-rounded`) | dashboard metrics, counts |
+| Statements | New York (`ui-serif`) | "Symptoms on 10 of the last 28 days." |
+| Her words | New York *italic* | quotes from her notes only |
 
-## iPhone feel
-Expo first-party only (MIT): expo-blur tab bar, expo-haptics on tab change and primary actions, inset grouped lists
-(Settings-app style), large titles, sheets with a grabber. Everything also renders in the web preview (solid fallbacks).
+Web preview stands in Newsreader for New York (desktop Chrome can't reach it). Scale = iOS text styles (Large Title
+34 bold, Title 22, Headline 17 semibold, Body 17, Subheadline 15, Footnote 13), plus `statement` 28, `metric` 34.
 
-## Welcome copy (owner to choose; A is in the build)
-- **A — "Your symptoms, on the record."** Log what your body is doing, in your own words. Zeeba Health turns it into dated
-  evidence your doctor can read in a minute. Steps: Record · Prove · Reach. Footer: "Evidence, not a diagnosis."
-- **B — "Be heard. Bring the proof."** Every symptom, dated and in your words, turned into a clear report for your next appointment.
-- **C — "Don't just say it. Show it."** Turn weeks of symptoms into one page of dates, numbers and your own words.
-- Avoid: "It's not in your head" (implies a verdict on the cause, breaks the no-diagnosis rule), "your doctor can't
-  ignore" (promises an outcome we can't control).
+## 4. Wren — the mascot (the owner's favourite; never re-tinted)
+A knitted hot-water bottle: burgundy knit `#7A1F3A`, bone ribbed collar, stitched heart. Same colours in both modes.
+`components/zeeba/Wren.tsx` — moods idle, happy, listening, comfort, proud, sleepy; breathes; still under Reduce Motion;
+`decorative` prop hides it from VoiceOver when text says the same thing.
+
+Rules: at most once per screen. Appears on Welcome, the Today hero, onboarding "You're set", empty states, the save toast
+(proud; comfort after a 8+/10 day). **Never on For my doctor or the PDF. Never speaks medical content.**
+
+## 5. iPhone feel
+Floating **glass tab bar** (blur + translucent fill + hairline edge, selected tab on a soft accent lozenge, iOS 26 style) ·
+Settings-style inset grouped lists · large titles that collapse into a small centred title · Apple "tinted" secondary
+buttons · press-in springs + haptics · sheets with grabber. Expo first-party only (expo-blur, expo-haptics; MIT).
+
+## 6. Sign-in (Apple HIG)
+Sign in with Apple **first**, never smaller than other options; black on light, white on dark. Then Google (white, full-colour
+G, its branding rules), then email. On Sign in, social buttons sit **above** the email form (no scrolling to reach them).
+
+## 7. Copy patterns
+- Hero: "How's your body today?" · First run: "Your first note takes a minute."
+- Evidence statement: "Symptoms on **N of the last D days.** M of those days at 7/10 or worse."
+- Comfort toast: "Saved. That sounded like a hard day." (no advice, no cause)
+- Footer: "Evidence, never a diagnosis." Safety line on Today: GP, NHS 111 or 999.
+- Avoid: "It's not in your head" (judges cause), "your doctor can't ignore" (promises an outcome).

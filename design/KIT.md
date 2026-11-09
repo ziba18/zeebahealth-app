@@ -10,7 +10,7 @@ No raw hex, font names or magic numbers in screens.
 ## Hard rules
 - **Serif** (`Txt variant="hero" | "quote"`, `Quote`) ONLY for: Sam's own typed/spoken words,
   the Today hero prompt, the summary title. Never for chip labels, system text, quick logs.
-- **Burgundy (formerly plum) = action only** (buttons, mic, links, selection, selected tab). **Clay = bleeding only**
+- **Accent (raspberry light / peach dark; formerly plum, burgundy) = action only** (buttons, mic, links, selection, selected tab). **Clay = bleeding only**
   (calendar fill, 4 px card edge `edge="clay"`, droplet icon). **saved/error = system status only**,
   never describing a body. Severity = the single-hue ramp, **always with the digit**.
 - **No `Alert.alert`** — use `ConfirmCard` in-page. **No 700 weight** (Inter 400/500/600 only; never
@@ -22,16 +22,16 @@ No raw hex, font names or magic numbers in screens.
   threshold labels ("heavy" as a judgement, "irregular"), causation ("linked to"), streaks, praise,
   guilt, emoji. The safety line is static, never content-triggered.
 - Icons: `Icon` sizes 20/24/32 only; stroke is absolute 1.75 by default — don't pass `strokeWidth`.
-- **Selection** = plumTint + 2 px plum ring (chips, segments) — **except the SeverityRow**, whose
-  selected disc is SOLID plum with a white 600 digit (lead decision, review 1 V1: it is the primary input).
+- **Selection** = accentTint + 2 px accent ring (chips, segments) — **except the SeverityRow**, whose
+  selected disc is SOLID accent with an onAccent 600 digit (lead decision, review 1 V1: it is the primary input).
 - **Text hierarchy** (review 1 V4/V5/V10): in-card row label = `caption`; its value = `body` ink
   (grey label, ink content); every form/question field label = `FieldLabel` (17/600 ink, " · Optional"
   inline, hint under); group header over cards (week headers) = `Txt variant="groupLabel"` (15/600 ink2,
   32 above, 8 below); dates/meta on cards = `caption` (GlyphLine) and facts = `secondary`.
-- **One "add" treatment** (V16): header "+" = `AddButton` (plain plum plus glyph, 44 hit, unfilled).
-  Never the filled plum disc. Hide it while an EmptyState shows its own primary. Empty fields in a
+- **One "add" treatment** (V16): header "+" = `AddButton` (plain accent plus glyph, 44 hit, unfilled).
+  Never the filled accent disc. Hide it while an EmptyState shows its own primary. Empty fields in a
   card = `AddFieldChip`.
-- Sheet X is ink (as iOS); every other interactive glyph (BackChevron, month chevrons) is plum.
+- Sheet X is ink (as iOS); every other interactive glyph (BackChevron, month chevrons) is accent.
 - Sam's words on screen go through `Quote` (curls apostrophes for display). Serif system copy uses
   `’` and `…`, never `'` / `...` (or wrap it in `curly()`).
 - Haptics: Chip/ChipGroup/SegmentedControl/SeverityRow/DayChooser already fire `selection`.
@@ -47,7 +47,7 @@ No raw hex, font names or magic numbers in screens.
 ## Tokens (`constants/atossaUI.ts`)
 | Export | Values |
 |---|---|
-| `colors` | Palette is **Burgundy & Bone** — see `design/BRAND.md`. Tokens: canvas · surface · sunken (grouped-list bg) · hairline · borderStrong · ink / ink2 / ink3 (ink3 not on sunken: use ink2) · **burgundy** (brand + action) / **burgundyPressed** / **burgundyTint** · clay (bleeding only) · saved · error · scrim · tabBar / tabBarTranslucent. Old `plum*` names are deprecated aliases: use `burgundy*` in new code |
+| `colors` | **Native (light) / Midnight (dark)** — see `design/BRAND.md` and `design/HANDOVER.md` §3. Every token is a Light/Dark pair. Tokens: canvas · surface · raised · sunken · hairline · cardBorder · glassEdge · borderStrong · ink / ink2 / ink3 · **accent** / accentPressed / accentTint / **onAccent** · glow · clay (period only) / clayTint / onClay · saved · error · chartTrack · scrim · tabBar / tabBarTranslucent. For SVG, gradients or string alpha use `useColors()` (plain hex). |
 | `severityRamp`, `severityStep(n)`, `severityColor(n)` | 0–2,3–4,5–6,7–8,9–10 → `{bg, fg}` (fg ink on steps 0–1, white on 2–4) |
 | `type` (`Txt` variants) | largeTitle 34/41 600 −0.17 · hero 30/36 serif · title 24/30 600 · quote 20/28 serif · headline 17/24 600 · body 17/24 · secondary 15/20 ink2 · caption 13/18 500 +0.26 ink3 · numeral 44/48 500 tabular · tab 11/13 500 · **fieldLabel** 17/24 600 ink · **groupLabel** 15/20 600 ink2 |
 | `fonts` | regular/medium/semibold = Inter 400/500/600, serif = `InstrumentSerif_400Regular_Italic` |
@@ -72,7 +72,7 @@ No raw hex, font names or magic numbers in screens.
 | `ScreenLarge` | `title`, `subtitle?`, `right?`, `back?: {label,onPress?}`, `scroll?`, `scrollRef?`, `footer?`, `contentStyle?` | Safe-area top, canvas, large title, gutter 20, max 600. Subtitle sits 8 under title (Today greeting). Content starts 24 below |
 | `HeaderAvatar` | — | 44 initial circle (sunken, ink2 initial, hairline) → `/(tabs)/profile`. Top-right on every tab (Timeline: `AddButton` left of it, gap 8) |
 | `IconButton` | `icon`, `label`, `onPress`, `color?`, `size?`, `filled?` (deprecated) | 44×44, ink glyph |
-| `AddButton` | `label`, `onPress` | The one header "+" (plum glyph, unfilled) |
+| `AddButton` | `label`, `onPress` | The one header "+" (accent glyph, unfilled) |
 | `BackChevron` | `label` (previous screen's title), `onPress?` | "‹ Medicines", plum, 44 hit |
 | `SectionTitle` | `title`, `right?` | title 24/30, 12 below |
 | `Card` | `tone?` (`default`/`sunken`/`selected`/`error`/`hero`), `edge?: 'clay'`, `onLayout?` | White, hairline, r20, p20 |

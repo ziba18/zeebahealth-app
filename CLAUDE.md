@@ -1,5 +1,12 @@
 # Zeeba Health — Claude Code Project Notes
 
+## START HERE (2026-11-09): `design/HANDOVER.md` + `design/BRAND.md`
+Current app work is on branch **`design/native-midnight`**: owner-approved design **Native (light) + Midnight (dark)**,
+Apple system type, Wren mascot, glass tab bar, tabs Today · Evidence · Doctor, new onboarding. The handover doc has the
+branch map, design-system architecture (dynamic Light/Dark colour tokens — read before touching UI), sign-in facts
+(Google can't run in Expo Go; Apple works there only via server env `APPLE_ALLOW_EXPO_GO`, remove before launch) and
+the open-items list. Design must be research-led (owner rejected a self-picked palette 0/100 on 9 Nov).
+
 ## NAME: the app is now **Zeeba Health** (owner, 2026-11-08)
 Atossa was renamed Zeeba Health ("Zeeba" only as a casual short form in copy; never "Atossa" in anything a user sees).
 Repo is now private `ziba18/zeebahealth-app`, folder `~/projects/zeebahealth-app`. Older notes below still say Atossa; read them as Zeeba Health.
