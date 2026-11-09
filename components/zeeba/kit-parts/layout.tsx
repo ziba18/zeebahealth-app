@@ -185,7 +185,7 @@ export function PressableCard({
       accessibilityHint={accessibilityHint}
       accessibilityActions={accessibilityActions}
       onAccessibilityAction={onAccessibilityAction ? (e) => onAccessibilityAction(e.nativeEvent.actionName) : undefined}
-      style={({ pressed }) => [styles.card, styles.pressable, edge && styles.edgePad, pressed && { backgroundColor: colors.sunken }, style]}
+      style={({ pressed }) => [styles.card, styles.pressable, edge && styles.edgePad, pressed && { backgroundColor: colors.sunken, transform: [{ scale: 0.985 }] }, style]}
     >
       {edge ? <View style={styles.clayEdge} /> : null}
       <View style={{ flex: 1, minWidth: 0 }}>{children}</View>
