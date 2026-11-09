@@ -1,10 +1,11 @@
 // iOS-style inset-grouped list for Profile: one white card per section, 56 pt rows, hairline
 // dividers inset past the leading glyph. Used instead of a stack of one-row cards.
 import React from 'react';
-import { Pressable, StyleSheet, View, useWindowDimensions, type StyleProp, type ViewStyle } from 'react-native';
+import { Pressable, Switch, StyleSheet, View, useWindowDimensions, type StyleProp, type ViewStyle } from 'react-native';
 import { colors, heights, radii, space } from '../../../constants/zeebaUI';
 import { Icon, type IconName } from '../../ui/Icon';
 import { Quote, Txt } from '../kit';
+import { haptics } from '../../../lib/haptics';
 
 const ROW_PAD = space.md;
 const GLYPH = 20;
@@ -74,7 +75,7 @@ export function GroupRow({
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel ?? [label, detail, quote, value].filter(Boolean).join('. ')}
-      style={({ pressed }) => [styles.row, tight && { gap: space.xs }, pressed && { backgroundColor: colors.canvas }]}
+      style={({ pressed }) => [styles.row, tight && { gap: space.xs }, pressed && { backgroundColor: colors.sunken }]}
     >
       {icon && !tight ? <Icon name={icon} size={GLYPH} color={colors.ink} /> : null}
       <View style={styles.text}>
@@ -88,17 +89,34 @@ export function GroupRow({
   );
 }
 
+/** Footer note under a group (13 pt, ink2 — ink3 fails AA on the sunken background). */
+export function GroupFooter({ children, style }: { children: string; style?: StyleProp<ViewStyle> }) {
+  return <Txt variant="caption" color={colors.ink2} style={[{ marginTop: space.xs, paddingHorizontal: space.md }, style]}>{children}</Txt>;
+}
+
+/** A row with a native-style switch, for settings groups. */
+export function GroupSwitchRow({ label, detail, value, onChange }: { label: string; detail?: string; value: boolean; onChange: (v: boolean) => void }) {
+  return (
+    <View style={styles.row}>
+      <View style={styles.text}>
+        <Txt variant="body">{label}</Txt>
+        {detail ? <Txt variant="secondary">{detail}</Txt> : null}
+      </View>
+      <Switch value={value} onValueChange={(v) => { haptics.selection(); onChange(v); }} accessibilityLabel={label} trackColor={{ true: colors.burgundy }} />
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   group: {
-    backgroundColor: colors.surface, borderRadius: radii.card, borderWidth: 1, borderColor: colors.hairline,
-    overflow: 'hidden',
+    backgroundColor: colors.surface, borderRadius: radii.input, overflow: 'hidden',
   },
   row: {
-    flexDirection: 'row', alignItems: 'center', gap: space.md, minHeight: Math.max(56, heights.minHit),
+    flexDirection: 'row', alignItems: 'center', gap: space.md, minHeight: Math.max(44, heights.minHit),
     paddingHorizontal: ROW_PAD, paddingVertical: space.sm,
   },
   text: { flex: 1, minWidth: 0, gap: 2 },
-  divider: { height: 1, backgroundColor: colors.hairline },
+  divider: { height: StyleSheet.hairlineWidth * 2, backgroundColor: colors.hairline },
   clayEdge: { position: 'absolute', left: 0, top: 0, bottom: 0, width: 4, backgroundColor: colors.clay, zIndex: 1 },
   afterEdge: { marginLeft: 4 },
   tabular: { fontVariant: ['tabular-nums'] },

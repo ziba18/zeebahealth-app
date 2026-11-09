@@ -19,6 +19,7 @@ import {
 import { useRecordsStore } from '../../../stores/recordsStore';
 import type { Rec, SymptomData } from '../../../types/records';
 import { MicButton } from './MicButton';
+import { Wren } from '../Wren';
 import { nextAppointment } from './AppointmentCard';
 import { type IconName } from '../../ui/Icon';
 import { addDays, diffDays } from '../../../lib/records/dates';
@@ -35,18 +36,6 @@ const PROMPT_BALANCED = 'What’s been going on\nwith your body?';
 /** The guided follow-ups that fill the structured fields, previewed so the hero reads as step one of three. */
 const NEXT_STEPS = ['When', 'How strong', 'Where'] as const;
 
-/** The brand waveform, still and decorative: the same bars as the recording indicator, as a quiet header for the hero. */
-const WAVE = [0.25, 0.4, 0.65, 0.35, 0.8, 1, 0.55, 0.9, 0.45, 0.7, 0.3, 0.55, 0.35, 0.2];
-function WaveMotif() {
-  return (
-    <View aria-hidden style={styles.wave}>
-      {WAVE.map((h, i) => (
-        <View key={i} style={{ width: 3, height: Math.round(6 + h * 22), borderRadius: 2, backgroundColor: `${colors.plum}${i % 3 === 0 ? '80' : '4D'}` }} />
-      ))}
-    </View>
-  );
-}
-
 export function HeroCard() {
   return (
     <Card tone="hero" style={styles.hero}>
@@ -57,7 +46,7 @@ export function HeroCard() {
         end={{ x: 0.5, y: 1 }}
         style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]}
       />
-      <WaveMotif />
+      <View style={styles.wren}><Wren mood="idle" size={120} /></View>
       <Txt variant="hero" style={styles.center} accessibilityRole="header" accessibilityLabel={PROMPT}>
         {PROMPT_BALANCED}
       </Txt>
@@ -81,16 +70,6 @@ export function HeroCard() {
           <Button label="Type instead" variant="text" small onPress={() => openCapture({ mode: 'type' })} style={{ marginTop: space.xxs }} />
         </>
       )}
-      <View style={styles.next} accessible accessibilityLabel="After you speak, Zeeba Health asks only for what’s missing: when, how strong, and where.">
-        <Txt variant="caption" maxFontSizeMultiplier={1.4} style={{ marginRight: space.xs }}>Next:</Txt>
-        {NEXT_STEPS.map((label, i) => (
-          <View key={label} style={styles.nextItem}>
-            <Txt variant="caption" maxFontSizeMultiplier={1.4}>{label}</Txt>
-            {/* Separator trails its label, so a wrapped line never starts with a stray dot. */}
-            {i < NEXT_STEPS.length - 1 ? <View style={styles.nextDot} /> : null}
-          </View>
-        ))}
-      </View>
     </Card>
   );
 }
@@ -325,11 +304,15 @@ const QUICK_ROWS: { label: string; icon: IconName; tag?: string }[] = [
   { label: 'Something new', icon: 'plus', tag: 'Something new' },
 ];
 
+const PRIMARY_ROWS = ['Pain', 'Bleeding', 'Tired', 'Something new'];
+
 /** Icon + label tiles, two across (replace the four outline chips); each opens a note already started on that topic. */
 export function QuickRows({ onPeriod }: { onPeriod: () => void }) {
+  const [more, setMore] = useState(false);
+  const rows = more ? QUICK_ROWS : QUICK_ROWS.filter((r) => PRIMARY_ROWS.includes(r.label));
   return (
     <View style={styles.qgrid}>
-      {QUICK_ROWS.map((r) => (
+      {rows.map((r) => (
         <QuickTile
           key={r.label}
           label={r.label}
@@ -337,13 +320,21 @@ export function QuickRows({ onPeriod }: { onPeriod: () => void }) {
           onPress={() => (r.label === 'Bleeding' ? onPeriod() : openCapture({ mode: 'speak', tag: r.tag }))}
         />
       ))}
+      <Button
+        label={more ? 'Fewer topics' : 'More topics'}
+        variant="text"
+        small
+        onPress={() => setMore((m) => !m)}
+        style={{ flexBasis: '100%' }}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  chip: { paddingVertical: space.xs, paddingHorizontal: space.md, alignItems: 'center', marginBottom: space.sm },
+  chip: { paddingVertical: space.xs, paddingHorizontal: space.md, alignItems: "center" },
   qgrid: { flexDirection: 'row', flexWrap: 'wrap', gap: space.xs },
+  wren: { alignItems: 'center', justifyContent: 'center', height: 120, marginBottom: space.sm },
   hero: { paddingTop: space.xxl, paddingBottom: space.xl + space.xxs, paddingHorizontal: space.xl, alignItems: 'center' },
   center: { textAlign: 'center' },
   ghost: { gap: space.sm, padding: space.md, borderRadius: radii.card, borderWidth: 1, borderStyle: 'dashed', borderColor: colors.hairline },

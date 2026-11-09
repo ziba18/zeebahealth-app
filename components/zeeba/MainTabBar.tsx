@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, Pressable, Keyboard, Platform, StyleSheet } from 'react-native';
 import type { BottomTabBarProps } from 'expo-router/tabs';
+import { BlurView } from 'expo-blur';
+import { haptics } from '../../lib/haptics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, heights, type as typeScale } from '../../constants/zeebaUI';
 import { Icon, type IconName } from '../ui/Icon';
@@ -25,8 +27,8 @@ function profileOrigin(route: AnyRoute | undefined): string {
 }
 
 /**
- * Three tabs: Lucide 24 / 1.75 stroke, 11/13 500 label. Unselected ink3, selected plum on a plumTint pill.
- * Near-opaque white bar with a hairline top. Hidden while the keyboard is up.
+ * Three tabs: Lucide 24 / 1.75 stroke, 11/13 500 label. Unselected ink3, selected burgundy, no pill (iOS).
+ * Translucent blurred bar (solid on web) with a hairline top. Hidden while the keyboard is up.
  */
 export function MainTabBar({ state, descriptors, emitter, navigateToTab }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
@@ -64,12 +66,13 @@ export function MainTabBar({ state, descriptors, emitter, navigateToTab }: Botto
 
   return (
     <View role="navigation" aria-label="Main">
-    <View style={[styles.bar, { paddingBottom: insets.bottom }]} accessibilityRole="tablist">
+    <View style={[styles.bar, Platform.OS === 'web' && styles.barSolid, { paddingBottom: insets.bottom }]} accessibilityRole="tablist">
+      {Platform.OS === 'web' ? null : <BlurView intensity={60} tint="systemChromeMaterialLight" style={StyleSheet.absoluteFill} />}
       {routes.map((route) => {
         const focused = activeName === route.name;
         const isCurrent = active?.name === route.name;
         const tab = TABS[route.name];
-        const tint = focused ? colors.plum : colors.ink3;
+        const tint = focused ? colors.burgundy : colors.ink3;
         return (
           <Pressable
             key={route.key}
@@ -92,13 +95,11 @@ export function MainTabBar({ state, descriptors, emitter, navigateToTab }: Botto
                 event.preventDefault?.();
                 resetToRoot(r);
               }
-              if (!isCurrent) navigateToTab(route.key);
+              if (!isCurrent) { haptics.light(); navigateToTab(route.key); }
             }}
             style={styles.tab}
           >
-            <View style={[styles.pill, focused && styles.pillOn]}>
-              <Icon name={tab.icon} size={24} color={tint} />
-            </View>
+            <Icon name={tab.icon} size={24} color={tint} />
             <Txt maxFontSizeMultiplier={1.6} style={[typeScale.tab, { color: tint }, focused && styles.labelOn]}>{tab.label}</Txt>
           </Pressable>
         );
@@ -110,12 +111,11 @@ export function MainTabBar({ state, descriptors, emitter, navigateToTab }: Botto
 
 const styles = StyleSheet.create({
   bar: {
-    flexDirection: 'row', backgroundColor: colors.tabBar, borderTopWidth: StyleSheet.hairlineWidth * 2,
-    borderTopColor: colors.hairline,
+    flexDirection: 'row', borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.borderStrong,
+    backgroundColor: colors.tabBarTranslucent,
   },
-  // Selected = tinted pill + heavier label, so state never rests on colour alone (WCAG 1.4.1).
-  pill: { width: 56, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center' },
-  pillOn: { backgroundColor: colors.plumTint },
+  barSolid: { backgroundColor: colors.tabBar, borderTopColor: colors.hairline },
+  // Selected = burgundy tint + heavier label, so state never rests on colour alone (WCAG 1.4.1).
   labelOn: { fontWeight: '700' },
   tab: { flex: 1, height: heights.tabBar, alignItems: 'center', justifyContent: 'center', gap: 2, paddingHorizontal: 2 },
 });
