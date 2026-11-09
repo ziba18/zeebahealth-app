@@ -16,6 +16,8 @@ type Props = {
   size?: number;
   /** Gentle breathing loop (off automatically when Reduce Motion is on). */
   animated?: boolean;
+  /** Hidden from screen readers: use when nearby text already says the same thing. */
+  decorative?: boolean;
   style?: ViewStyle;
 };
 
@@ -48,7 +50,7 @@ const LABELS: Record<WrenMood, string> = {
 
 let uid = 0;
 
-export function Wren({ mood = 'idle', size = 120, animated = true, style }: Props) {
+export function Wren({ mood = 'idle', size = 120, animated = true, decorative = false, style }: Props) {
   const [id] = useState(() => `wren${uid++}`);
   const [reduceMotion, setReduceMotion] = useState(false);
   const breath = useRef(new Animated.Value(0)).current;
@@ -87,9 +89,9 @@ export function Wren({ mood = 'idle', size = 120, animated = true, style }: Prop
   return (
     <View
       style={[{ width: size, height: (size * 176) / 140 }, style]}
-      accessible
-      accessibilityRole="image"
-      accessibilityLabel={LABELS[mood]}
+      {...(decorative
+        ? { accessible: false, importantForAccessibility: 'no-hide-descendants' as const, accessibilityElementsHidden: true, 'aria-hidden': true }
+        : { accessible: true, accessibilityRole: 'image' as const, accessibilityLabel: LABELS[mood] })}
     >
       <Animated.View style={{ flex: 1, transform: [{ translateY: lift }, { scaleX }, { scaleY }] }}>
         <Svg width="100%" height="100%" viewBox="-8 -14 156 194">

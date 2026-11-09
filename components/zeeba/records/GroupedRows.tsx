@@ -89,9 +89,16 @@ export function GroupRow({
   );
 }
 
+/** Children with fragments expanded, so a fields component returning <>…</> still gets one hairline per field. */
+function flatten(children: React.ReactNode): React.ReactNode[] {
+  return React.Children.toArray(children).flatMap((c) =>
+    React.isValidElement(c) && c.type === React.Fragment ? flatten((c.props as { children?: React.ReactNode }).children) : [c],
+  );
+}
+
 /** White rounded group of form fields, a hairline between each (iOS Settings style). */
 export function FieldGroup({ children, style }: { children: React.ReactNode; style?: StyleProp<ViewStyle> }) {
-  const items = React.Children.toArray(children).filter(Boolean);
+  const items = flatten(children);
   return (
     <View style={[styles.group, style]}>
       {items.map((child, i) => (

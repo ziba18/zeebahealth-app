@@ -48,7 +48,7 @@ export function HeroCard({ first }: { first?: boolean } = {}) {
         end={{ x: 0.5, y: 1 }}
         style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]}
       />
-      <View style={styles.wren}><Wren mood="idle" size={120} /></View>
+      <View style={styles.wren}><Wren mood="idle" size={120} decorative /></View>
       <Txt variant="hero" style={styles.center} accessibilityRole="header" accessibilityLabel={first ? 'Your first note takes a minute.' : PROMPT}>
         {prompt}
       </Txt>
@@ -122,7 +122,13 @@ export function RoughDayCard() {
       });
       haptics.success();
       setValue(null);
-      showToast(saved.pending ? 'Saved on this phone. It will send when you’re online.' : `Saved. ${notesLabel(noteCount(useRecordsStore.getState().records.symptom))} ready for your doctor.`);
+      const hard = value != null && value >= 8;
+      showToast(
+        saved.pending ? 'Saved on this phone. It will send when you’re online.'
+          : hard ? 'Saved. That sounded like a hard day.'
+          : `Saved. ${notesLabel(noteCount(useRecordsStore.getState().records.symptom))} ready for your doctor.`,
+        saved.pending ? undefined : { mood: hard ? 'comfort' : 'proud' },
+      );
     } catch {
       setError("That didn’t save. Check your connection and try again.");
     } finally {

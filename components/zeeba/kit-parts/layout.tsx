@@ -79,7 +79,7 @@ export function ScreenLarge({
         </View>
       )}
       {scroll ? (
-        <Animated.View style={[styles.navBar, { opacity: barOpacity }]} aria-hidden>
+        <Animated.View style={[styles.navBar, Platform.OS === 'web' && { backgroundColor: grouped ? colors.sunken : colors.canvas }, { opacity: barOpacity }]} aria-hidden>
           {Platform.OS === 'web' ? null : <BlurView intensity={60} tint="systemChromeMaterialLight" style={StyleSheet.absoluteFill} />}
           <Txt variant="headline" numberOfLines={1} style={styles.navTitle}>{title}</Txt>
         </Animated.View>
