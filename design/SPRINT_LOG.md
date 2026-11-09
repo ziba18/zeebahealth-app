@@ -20,3 +20,4 @@ Expo first-party packages: expo-blur (translucent tab bar), expo-haptics, react-
 - 12:33 Month calendar: burgundy today ring/dots/chevrons (clay bleeding, severity tint and 56pt cells already there). MonthCalendar.tsx
 - 12:34 Token rename plum*->burgundy* everywhere, aliases removed; tsc passes
 - 12:35 Today hero says 'Your first note takes a minute.' when no notes. TodayCards, today/index
+- 12:36 pressSpring (Chip, QuickTile spring 0.97 + haptic), FieldGroup hairline fields in login/register/onboarding name; rendered register + onboarding/name OK
