@@ -18,3 +18,4 @@ Expo first-party packages: expo-blur (translucent tab bar), expo-haptics, react-
 - 12:33 Onboarding: continuous burgundy progress bar, happy Wren step 4 only. Rendered OK. OnboardingScreen.tsx
 - 12:33 Comfort Wren + 'Saved. That sounded like a hard day.' toast at strength>=8; showToast opts.mood. toast.tsx, CaptureSheet
 - 12:33 Month calendar: burgundy today ring/dots/chevrons (clay bleeding, severity tint and 56pt cells already there). MonthCalendar.tsx
+- 12:34 Token rename plum*->burgundy* everywhere, aliases removed; tsc passes
