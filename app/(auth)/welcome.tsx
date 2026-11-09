@@ -7,17 +7,17 @@ import { colors, fonts, layout, space } from '../../constants/zeebaUI';
 import { Button, Card, Quote, Txt } from '../../components/zeeba/kit';
 import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
 import { track } from '../../lib/analytics';
+import { Wren } from '../../components/zeeba/Wren';
 
-const WAVE = [0.3, 0.6, 0.9, 0.5, 1, 0.7, 0.4, 0.8, 0.55, 0.9, 0.35, 0.6, 0.25];
 const STEPS = [
-  { word: 'Say it', line: 'Speak or type' },
-  { word: 'See it', line: 'Notes line up by date' },
-  { word: 'Show it', line: 'A summary for your doctor' },
+  { word: 'Record', line: 'In your words, dated' },
+  { word: 'Prove', line: 'Charts and counts over time' },
+  { word: 'Reach', line: 'A report for your doctor' },
 ];
 
 /**
- * One calm screen: Inter wordmark, a single serif hero line (the one-serif-line-per-hero rule
- * from Today), one plain sentence, then the actions anchored low. No imagery.
+ * One calm screen: upright wordmark + Wren, one authoritative hero line, one plain sentence,
+ * the three pillars (Record · Prove · Reach), then the actions anchored low. Copy: design/BRAND.md.
  */
 export default function WelcomeScreen() {
   const router = useRouter();
@@ -32,23 +32,21 @@ export default function WelcomeScreen() {
       <ScrollView contentContainerStyle={styles.column} showsVerticalScrollIndicator={false}>
         <View style={styles.band}>
           <LinearGradient
-            colors={[colors.plumTint, colors.canvas]}
+            colors={[colors.burgundyTint, colors.canvas]}
             start={{ x: 0.5, y: 0 }}
             end={{ x: 0.5, y: 1 }}
             style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]}
           />
-          <Txt variant="headline" color={colors.plum} accessibilityRole="header" accessibilityLabel="Zeeba Health" style={styles.wordmark}>Zeeba Health</Txt>
-          {short ? null : <View aria-hidden style={styles.wave}>
-            {WAVE.map((h, i) => (
-              <View key={i} style={{ width: 3, height: Math.round(6 + h * 22), borderRadius: 2, backgroundColor: `${colors.plum}${i % 3 === 0 ? '80' : '4D'}` }} />
-            ))}
-          </View>}
+          <View style={styles.brandRow}>
+            <Txt variant="headline" color={colors.burgundy} accessibilityRole="header" accessibilityLabel="Zeeba Health" style={styles.wordmark}>Zeeba Health</Txt>
+            <Wren mood="happy" size={short ? 56 : 76} />
+          </View>
         </View>
 
         <View style={styles.hero}>
-          <Txt variant="hero" style={short || win.width < 380 ? undefined : styles.heroLine}>Your body, in your words.</Txt>
+          <Txt variant="hero" style={short || win.width < 380 ? undefined : styles.heroLine}>Your symptoms, on the record.</Txt>
           <Txt variant="body" color={colors.ink2}>
-            Say it the way you’d tell a friend. Zeeba Health tidies it into a clear summary for your doctor.
+            Log what your body is doing, in your own words. Zeeba Health turns it into dated evidence your doctor can read in a minute.
           </Txt>
           <Card style={styles.example}>
             <Txt variant="caption" color={colors.ink2}>What you say</Txt>
@@ -57,17 +55,17 @@ export default function WelcomeScreen() {
             <View style={styles.tags}>
               {['Lower belly', '7/10 at worst', '3 days'].map((t) => (
                 <View key={t} style={styles.tag}>
-                  <Txt variant="caption" color={colors.plum} style={styles.tagText}>{t}</Txt>
+                  <Txt variant="caption" color={colors.burgundy} style={styles.tagText}>{t}</Txt>
                 </View>
               ))}
             </View>
           </Card>
         </View>
 
-        {short || narrow ? null : <View style={styles.steps} accessibilityLabel="How it works. One, say it. Two, see it. Three, show it.">
+        {short || narrow ? null : <View style={styles.steps} accessibilityLabel="How it works. One, record. Two, prove. Three, reach your doctor.">
           {STEPS.map((st, i) => (
             <View key={st.word} style={styles.step}>
-              <View style={styles.stepNum}><Txt variant="caption" color={colors.plum} style={styles.tagText}>{i + 1}</Txt></View>
+              <View style={styles.stepNum}><Txt variant="caption" color={colors.burgundy} style={styles.tagText}>{i + 1}</Txt></View>
               <Txt variant="headline">{st.word}</Txt>
               <Txt variant="caption" color={colors.ink2} style={{ textAlign: 'center' }}>{st.line}</Txt>
             </View>
@@ -75,7 +73,7 @@ export default function WelcomeScreen() {
         </View>}
 
         {short ? null : <Txt variant="caption" color={colors.ink2} style={{ textAlign: 'center', marginBottom: space.sm }}>
-          Zeeba Health never diagnoses. It keeps your notes in your words.
+          Evidence, not a diagnosis. Your words, your dates, your record.
         </Txt>}
 
         <View style={styles.actions}>
@@ -96,18 +94,18 @@ const styles = StyleSheet.create({
   },
   // Full-bleed band: the column's gutter is cancelled so the wash runs to the screen edges.
   band: { marginHorizontal: -layout.gutter, paddingHorizontal: layout.gutter, paddingTop: space.md, paddingBottom: space.sm, gap: space.xs },
-  wordmark: { fontFamily: fonts.serif, fontSize: 28, lineHeight: 34, fontWeight: '400' },
+  brandRow: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between' },
+  wordmark: { fontFamily: fonts.semibold, fontSize: 22, lineHeight: 28, letterSpacing: -0.2, paddingBottom: space.xs },
   heroLine: { fontSize: 36, lineHeight: 42 },
-  wave: { flexDirection: 'row', alignItems: 'center', gap: 4, height: 30 },
   steps: { flexDirection: 'row', gap: space.sm, marginBottom: space.md },
   step: { flex: 1, alignItems: 'center', gap: 4 },
-  stepNum: { width: 28, height: 28, borderRadius: 14, backgroundColor: colors.plumTint, alignItems: 'center', justifyContent: 'center' },
+  stepNum: { width: 28, height: 28, borderRadius: 14, backgroundColor: colors.burgundyTint, alignItems: 'center', justifyContent: 'center' },
   // Top-weighted: the promise sits in the upper third, the spare room falls between the card and the
   // anchored actions (not above the headline).
   hero: { flexGrow: 1, justifyContent: 'flex-start', gap: space.sm, paddingTop: space.sm, paddingBottom: space.lg },
   example: { gap: space.xs, marginTop: space.sm },
   tags: { flexDirection: 'row', flexWrap: 'wrap', gap: space.xs },
-  tag: { backgroundColor: colors.plumTint, borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4 },
+  tag: { backgroundColor: colors.burgundyTint, borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4 },
   tagText: { fontWeight: '600' },
   actions: { gap: space.xs },
 });
