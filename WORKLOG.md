@@ -24,7 +24,7 @@ Owner approved. Merged into `mvp-symptom-capture` and pushed (Render redeploys t
   register/me/refresh OK, refresh-as-access and access-as-refresh 401, 21st login 429, test
   account deleted. Known gap: the limiter trusts the first X-Forwarded-For entry (spoofable) —
   passed back to Safety.
-- Agents told via atossa-hq `OWNER.md`; Design charter now requires **SVG-only icons**.
+- Agents told via zeeba-hq `OWNER.md`; Design charter now requires **SVG-only icons**.
 No EAS build / `eas update`.
 
 ---
@@ -67,9 +67,9 @@ Verified: tsc clean, expo-doctor 20/20, iOS export (4.2 MB Hermes bundle).
 - **Why:** `ziba18/zeebahealth-app` is **public**, so agent reports, security findings, contacts and owner decisions on
   `claude/agents-hq` were world-readable. The owner doesn't want this repo private: private Actions minutes
   (2,000/month) can't cover the 10-minute keep-warm job, and Render's link to the repo would need re-checking.
-- **Move:** created **private** `ziba18/atossa-hq` and copied the `agents/` folder (snapshot of `bf34868`, 42 files)
-  to `main` + `claude/agents-hq` (`4fd5c4f`, rules update `761b520`). Local clone: `~/projects/atossa-hq`. All 7
-  routines now have two sources: cloud checkouts are `/home/user/atossa-hq` (office, push here) and
+- **Move:** created **private** `ziba18/zeeba-hq` and copied the `agents/` folder (snapshot of `bf34868`, 42 files)
+  to `main` + `claude/agents-hq` (`4fd5c4f`, rules update `761b520`). Local clone: `~/projects/_archive-zeeba/zeeba-hq`. All 7
+  routines now have two sources: cloud checkouts are `/home/user/zeeba-hq` (office, push here) and
   `/home/user/zeebahealth-app` (app code; `claude/<agent>-*` code branches still go here). Cloud cwd is `/home/user`.
   RULES.md now covers both repos: nothing secret anywhere; nothing exploit-level or personal in the public one.
 - **Gotchas:** (1) a create call with `mcp_connections: []` still attaches **all** connectors, so always follow it
@@ -735,7 +735,7 @@ OpenAI-compatible API, so it can be re-pointed at a self-hosted model
 **Gotcha — env var on Render:** the Groq key was first saved into a Render
 *Environment Group* (the old, unused one) that isn't linked to the service, so the
 running service couldn't see it. It has to be a variable on the
-`atossa-backend` service itself (or the group has to be linked — not done,
+`zeebahealth-api` service itself (or the group has to be linked — not done,
 since the group's contents are masked and linking could override
 `DATABASE_URL`/`SECRET_KEY`). Fixed; the leftover group is unused and
 safe to delete. `render.yaml` declares `LLM_API_KEY` with `sync: false`.

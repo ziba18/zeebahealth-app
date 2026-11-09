@@ -15,8 +15,7 @@ submit once, polished).
 
 ## To do before submitting (in order)
 1. Owner finishes the Expo Go check of every page (owner rule).
-2. Ship the rename to the server (`zeeba-health` → `mvp-symptom-capture`): the live privacy page still says "Zeeba Health"
-   and the live Apple audience is `the previous bundle ID` (Sign in with Apple in the real app would fail until then).
+2. ~~Ship the rename to the server~~ — done 9 Nov (privacy page and Apple audience are Zeeba Health).
 3. Build + upload: `eas build --platform ios --profile production` (then `eas submit` — not auto-submit).
 4. Screenshots (6.9" 1320×2868 required): take on a real iPhone from the TestFlight build, light mode, sample data.
 5. Age rating questionnaire (expected: no objectionable content; "Medical/Treatment Information: None" — the app shows

@@ -14,7 +14,7 @@ Branch with all current app work: **`design/native-midnight`** (not merged, not 
 | UX pass | Welcome, sign-in, onboarding, glass tab bar, Evidence tab, back links — done 9 Nov |
 | Checks | `npx tsc --noEmit` clean · `npx expo export --platform ios` OK · backend 186 tests pass |
 | Device test | **Not yet on a real iPhone.** All checks were in the web design preview. |
-| Live server | Render `atossa-backend` serves branch `mvp-symptom-capture` (commit `3237fa8`, Apple Expo Go option ON) |
+| Live server | Render `zeebahealth-api` serves branch `mvp-symptom-capture` (commit `3237fa8`, Apple Expo Go option ON) |
 
 ### Branch map
 ```
@@ -91,9 +91,8 @@ maps live in three places — keep them in sync: `MainTabBar.tsx` `TAB_BY_TITLE`
 
 - Server code: `backend/app/services/social_auth.py` (`verify_apple_identity_token` accepts a list),
   `backend/app/config.py` (`apple_allow_expo_go`, default False), `routers/auth.py`.
-- **Before App Store launch: delete `APPLE_ALLOW_EXPO_GO` on Render** (Dashboard → atossa-backend → Environment).
-- Live `apple_bundle_id` default on `mvp-symptom-capture` is still `the previous bundle ID`; the new listing uses
-  `com.zeebahealth.app` (set on the `zeeba-health` branch). Ship the rename branch to the server before launch.
+- **Before App Store launch: delete `APPLE_ALLOW_EXPO_GO` on Render** (Dashboard → zeebahealth-api → Environment).
+- Live `apple_bundle_id` is `com.zeebahealth.app` (rename deployed 9 Nov, `583b4e7`).
 
 ---
 
@@ -110,14 +109,24 @@ maps live in three places — keep them in sync: `MainTabBar.tsx` `TAB_BY_TITLE`
 
 ---
 
+## 6b. Rename completed (9 Nov 2026)
+The app is Zeeba Health everywhere (owner: no trace of the old name). Done and verified:
+server code + live privacy/terms pages (deploy `583b4e7`), Apple audience `com.zeebahealth.app`, repo text + file/folder
+names, all URLs → `api.zeebahealth.com`, Render service renamed `zeebahealth-api` (+ `render.yaml`), GitHub description,
+six old GitHub repos renamed (`zeeba-hq`, `zeeba-research`, `zeeba-data` — archived; `zeeba-womens-health-guide`,
+`zeeba-privacy-legacy`, `zeeba-webapp-legacy`), local archive `~/projects/_archive-zeeba/`, website support link published,
+stale local `ios/` deleted. GitHub redirects the old repo URLs.
+Unavoidable: Render's internal `*.onrender.com` hostname is fixed at creation (nothing uses it; apps use
+api.zeebahealth.com — check Basket Buddy before ever removing it) and git history keeps old commit messages.
+Optional tidy-ups: delete the unused Render Environment Group and the old EAS project on expo.dev.
+
 ## 7. Open items, in priority order
 
 1. **Device check in Expo Go** (both appearances): native Apple button, blur, haptics, New York/SF Rounded rendering.
 2. **For my doctor** has the new colours/type but not the full redesign (bright paper preview on top, "What I was told
    before" card from her history). Concepts are in the directions board.
-3. **Ship the rename to the server** (`zeeba-health` → `mvp-symptom-capture`): live privacy page still says "Zeeba Health";
-   live Apple audience is still the old bundle id.
-4. GitHub repo stays **public** (owner, 9 Nov). Its description still says "Zeeba Health".
+3. ~~Ship the rename to the server~~ — done 9 Nov (`583b4e7`). Remaining old-name items: §6b.
+4. GitHub repo stays **public** (owner, 9 Nov); description updated to Zeeba Health.
 8. App Store Connect: record created (Apple ID 6832575398) — remaining steps in `store/APP_STORE.md`. Not submitted.
 5. App icon: concepts A/B/C (Wren on bone / bone Wren on burgundy / monogram) — owner to choose.
 6. Android dark mode (currently light only).

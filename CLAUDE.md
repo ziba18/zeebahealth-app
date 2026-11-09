@@ -13,7 +13,7 @@ Repo `ziba18/zeebahealth-app` is PUBLIC and stays public (owner, 2026-11-09), fo
 Identifiers (2026-11-08, new App Store listing): bundle id / Android package `com.zeebahealth.app`, Expo slug + URL scheme
 `zeebahealth`, new EAS project `@zamaniziba18/zeebahealth` (id 69e41ccd-094f-4227-a786-3a2ade8834da; the old EAS
 project and App Store app 6762570606 belong to Zeeba Health), on-device keys `zeeba.*` / `zeeba_*`. Backend: Render service
-`atossa-backend` (custom domain api.zeebahealth.com; internal Render name kept until the service is renamed); it also serves Basket Buddy
+`zeebahealth-api` (custom domain api.zeebahealth.com; internal Render name kept until the service is renamed); it also serves Basket Buddy
 sign-in, so never suspend it, and don't rename it in render.yaml (Blueprint would create a new service).
 Folders: `components/zeeba/` (was components/zeeba), `constants/zeebaUI.ts` (was zeebaUI.ts).
 
@@ -35,14 +35,14 @@ any restart must keep a clear share of the limit for the owner. This overrides t
 
 Use this to judge design, copy, the privacy policy and the rename (a new name is being chosen: Zeeba Health ≈ "a tosser" in UK
 English, and the owner proposed HerData). The no-diagnosis rule below still holds: the app proves what she recorded,
-never a condition ("evidence, not verdict"). The agents' copy is `agents/MISSION.md` in ziba18/atossa-hq.
+never a condition ("evidence, not verdict"). The agents' copy is `agents/MISSION.md` in ziba18/zeeba-hq.
 
 ## Fixed purpose (owner, 2026-11-04 — App Store 2.3 means it must not change after relaunch)
 Helps women turn **any dismissed women's health symptom** (pelvic pain, heavy periods, perimenopause, fatigue and more,
 not only PCOS/endo) into clear, dated evidence, and get it in front of a doctor who takes it seriously. Three pillars,
 all in v1 and the store listing: **Record · Prove (charts + PDF) · Reach (share with clinician, find a specialist)**.
 Never a diagnosis tool, a doctor, or a cycle/fertility predictor. Open, being researched: who pays, first market.
-Full text: `agents/OWNER.md` (2026-11-04) in ziba18/atossa-hq.
+Full text: `agents/OWNER.md` (2026-11-04) in ziba18/zeeba-hq.
 
 ## Current work: MVP pivot (branch `mvp-symptom-capture`)
 
@@ -174,7 +174,7 @@ see below). The chat tab now has a real `/chat` backend (see below).
 - `.env` (root) and `backend/.env` are gitignored and already populated
   from a prior session — don't need to be recreated. `backend/.env` also
   has `LLM_API_KEY` (Groq). Never print or commit it.
-- **Deploy:** Render service `atossa-backend`
+- **Deploy:** Render service `zeebahealth-api`
   (`https://api.zeebahealth.com`, id `srv-dap3bj6gekts73fkupn0`)
   auto-deploys the `mvp-symptom-capture` branch; blueprint in
   `render.yaml`. `LLM_API_KEY` must be set as a variable **on the service**
@@ -204,10 +204,10 @@ workers fire every hour 23:00–07:00 UTC (= UK time in winter) and in 2-hour da
 (cron `0 0-8,11,12,15,16,19,20,23 * * *`), each a 45-minute session held open by `agents/bin/clock.sh`
 (a session ends as soon as the model replies without a tool call; before this, runs lasted 1–5 min). Each agent keeps a
 ≥25-task `BACKLOG.md`; the PM runs at :40 in the same hours, adds ≥5 tasks per agent each run, and writes reports at
-06:40/08:40/12:40/16:40/20:40 (5 a day since 2026-10-26). **Owner goal (2026-10-26, Claude Max plan): first paying customers by 2026-11-26** — see OWNER.md. 8th agent Research writer `trig_01Nsj99CZsS93yJFSkG59yqF` works on the dissertation in private repo `ziba18/atossa-research`. All Sonnet 5.5. Usage guard `trig_01VtWrXkGHcRSGaiEv1rU2nj` (07:50/15:50) pauses all 7 if a run hits a
+06:40/08:40/12:40/16:40/20:40 (5 a day since 2026-10-26). **Owner goal (2026-10-26, Claude Max plan): first paying customers by 2026-11-26** — see OWNER.md. 8th agent Research writer `trig_01Nsj99CZsS93yJFSkG59yqF` works on the dissertation in private repo `ziba18/zeeba-research`. All Sonnet 5.5. Usage guard `trig_01VtWrXkGHcRSGaiEv1rU2nj` (07:50/15:50) pauses all 7 if a run hits a
 plan limit. RULE 0 in RULES.md: no payments or free trials, ever.
-Their shared office is the **private repo `ziba18/atossa-hq`**, branch **`claude/agents-hq`**
-(moved there 2026-10-20 because this app repo is public; local clone `~/projects/atossa-hq`): `agents/README.md`, `RULES.md`, `CONTEXT.md`, `OWNER.md` (owner approvals/answers —
+Their shared office is the **private repo `ziba18/zeeba-hq`**, branch **`claude/agents-hq`**
+(moved there 2026-10-20 because this app repo is public; local clone `~/projects/_archive-zeeba/zeeba-hq`): `agents/README.md`, `RULES.md`, `CONTEXT.md`, `OWNER.md` (owner approvals/answers —
 the only way to authorise outward actions), `bin/push.sh`, and one folder per agent with
 `CHARTER.md` (edit to change the job), `STATE.md`, `log/`. Daily reports by the PM:
 `agents/reports/YYYY-MM-DD-{morning,evening}.md` (06:40 and 19:40 UTC) + a Google Doc in Drive folder
