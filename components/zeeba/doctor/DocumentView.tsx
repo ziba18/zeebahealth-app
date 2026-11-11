@@ -12,7 +12,7 @@ import { font, fonts } from '../../../constants/zeebaUI';
 import { joinFacts } from '../../../lib/records/format';
 import {
   APPT_AHEAD, APPT_PAST, DOC_COLORS, PAGE_TYPE, SPOT_DASH, SPOT_STROKE, STRIP_BLEED_KEY, STRIP_KEY, STRIP_SPOT_KEY,
-  FAMILY_HISTORY_LABEL, barText, countText, curly, daysText,
+  FAMILY_HISTORY_LABEL, barText, countText, coverageLine, curly, daysText,
   type DatedItem, type DocQuote, type DocSection, type DoctorDoc, type FreqBar,
 } from '../../../lib/records/summary';
 import { Txt } from '../kit';
@@ -243,9 +243,14 @@ function SectionBody({ section, st, contentWidth, variant }: { section: DocSecti
             </View>
           ))}
           {section.spotting ? <Txt style={st.body}>{section.spotting}</Txt> : null}
+          {section.details.length ? (
+            <Txt style={[st.body, { marginTop: st.s.gap }]}>
+              <Txt style={st.muted}>From my notes: </Txt>{section.details.join('  ·  ')}
+            </Txt>
+          ) : null}
         </>
       );
-    case 'impacts': case 'sex': case 'mood': case 'eating':
+    case 'impacts': case 'sex': case 'mood': case 'eating': case 'bowelBladder':
       return (
         <>
           {section.items.length ? (
@@ -314,6 +319,29 @@ function AgendaBody({ block, st }: { block: NonNullable<DoctorDoc['agendaBlock']
   );
 }
 
+/** "At a glance": the same boxes the PDF prints at the top of page 1. Two per row on phone widths. */
+function GlanceBand({ doc, st, after }: { doc: DoctorDoc; st: St; /** Follows the agenda block (rule above, not below). */ after: boolean }) {
+  const wrap = st.s.labelW === 0;
+  return (
+    <View style={{ flexDirection: 'row', flexWrap: wrap ? 'wrap' : 'nowrap', gap: st.s.gap * 3, paddingVertical: st.s.section * 0.6, [after ? 'borderTopWidth' : 'borderBottomWidth']: 0.75, borderColor: C.borderStrong }}>
+      {doc.glance.map((g) => (
+        <View
+          key={g.id}
+          accessible
+          accessibilityLabel={`${g.label}: ${g.value}${g.unit}. ${g.sub}`}
+          style={{ flex: 1, flexBasis: wrap ? '40%' : 0, borderWidth: 0.75, borderColor: C.borderStrong, borderRadius: 4, padding: st.s.gap * 3 }}
+        >
+          <Txt style={[st.meta, { ...font.semibold, textTransform: 'uppercase', fontSize: st.s.meta[0] * 0.85 }]}>{g.label}</Txt>
+          <Txt style={{ ...font.bold, fontSize: st.s.title[0] * 0.9, lineHeight: st.s.title[1] * 0.95, color: C.ink, fontVariant: ['tabular-nums'] }}>
+            {g.value}<Txt style={[st.meta, { ...font.semibold }]}>{g.unit}</Txt>
+          </Txt>
+          <Txt style={st.meta}>{g.sub}</Txt>
+        </View>
+      ))}
+    </View>
+  );
+}
+
 /** The document itself. `width` is the page width for 'reader' / 'large'; 'page' is always 595. */
 export function DocumentView({ doc, variant = 'page', width }: { doc: DoctorDoc; variant?: DocVariant; width?: number }) {
   const st = useStyles(variant);
@@ -352,7 +380,14 @@ export function DocumentView({ doc, variant = 'page', width }: { doc: DoctorDoc;
       <Txt style={[st.meta, { marginTop: st.s.gap, paddingBottom: st.s.gap * 4, borderBottomWidth: st.s.rule, borderBottomColor: C.ink }]}>
         {keepYear(doc.meta, st)}
       </Txt>
-      {blocks.map((b, i) => block(b.key, b.title, b.body, i === 0))}
+      {blocks.map((b, i) => (
+        <React.Fragment key={b.key}>
+          {/* At a glance sits right after her agenda (agenda first: blueprint §3.7a), else at the top. */}
+          {doc.glance.length && i === (doc.agendaBlock ? 1 : 0) ? <GlanceBand doc={doc} st={st} after={i > 0} /> : null}
+          {block(b.key, b.title, b.body, i === 0)}
+        </React.Fragment>
+      ))}
+      {coverageLine(doc) ? <Txt style={[st.meta, { marginTop: st.s.gap * 3 }]}>{coverageLine(doc)}</Txt> : null}
       <View style={{ flexGrow: 1 }} />
       <View style={{ marginTop: st.s.section, paddingTop: st.s.gap * 2, borderTopWidth: 0.5, borderTopColor: C.borderStrong }}>
         <Txt style={isPage ? { ...st.meta, fontSize: PAGE_TYPE.footer[0], lineHeight: PAGE_TYPE.footer[1] } : st.meta}>{doc.footer}</Txt>

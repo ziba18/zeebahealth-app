@@ -10,6 +10,7 @@ export {
   type ButtonVariant, type ChipOption,
 } from './kit-parts/controls';
 export { SeverityRow, SeverityTag } from './kit-parts/severity';
+export { PainSlider } from './kit-parts/PainSlider';
 export { DayChooser } from './kit-parts/DayChooser';
 export { Sheet, useReduceMotion, type SheetProps } from './kit-parts/Sheet';
 export { FadeIn } from './kit-parts/FadeIn';

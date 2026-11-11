@@ -7,9 +7,10 @@ import React, { useState } from 'react';
 import { Platform, Pressable, ScrollView, View, useWindowDimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, layout, radii, shadows, space } from '../../../constants/zeebaUI';
-import type { DoctorDoc } from '../../../lib/records/summary';
+import { summaryToText, type DoctorDoc } from '../../../lib/records/summary';
+import { shareSummaryText } from './share';
 import { Icon } from '../../ui/Icon';
-import { Button, Quote, Sheet, Txt } from '../kit';
+import { Button, Quote, Sheet, Txt, showToast } from '../kit';
 import { A4, DocumentView } from './DocumentView';
 
 // Printable height per A4 page: 842 pt minus the PDF's 40/34 pt margins and the repeated footer.
@@ -43,7 +44,13 @@ function PageCrop({ doc, width, height, onHeight }: { doc: DoctorDoc; width: num
   );
 }
 
-export function DocumentPreview({ doc, tall, hero }: { doc: DoctorDoc; tall?: boolean; /** Phone hero: the real page as paper. */ hero?: boolean }) {
+export function DocumentPreview({
+  doc, tall, hero, compact, onPrint,
+}: {
+  doc: DoctorDoc; tall?: boolean; /** Phone hero: the real page as paper. */ hero?: boolean;
+  /** Just the "See the full page" card (the dashboard above already shows the content). */ compact?: boolean;
+  /** Print from inside the full-page sheet. */ onPrint?: () => void;
+}) {
   const [width, setWidth] = useState(0);
   const [docHeight, setDocHeight] = useState<number>(A4.height);
   const [open, setOpen] = useState(false);
@@ -103,24 +110,24 @@ export function DocumentPreview({ doc, tall, hero }: { doc: DoctorDoc; tall?: bo
               <Icon name="file-text" size={22} color={colors.accent} />
             </View>
             <View style={{ flex: 1 }}>
-              <Txt variant="headline">See the full page</Txt>
+              <Txt variant="headline">{compact ? 'Preview the page' : 'See the full page'}</Txt>
               <Txt variant="secondary">{`${pages === 1 ? 'One page' : `About ${pages} pages`} · ${doc.entries} ${doc.entries === 1 ? 'note' : 'notes'} · ${doc.rangeLabel}`}</Txt>
             </View>
             <View aria-hidden><Icon name="chevron-right" size={20} color={colors.ink3} /></View>
           </Pressable>
         </View>
       )}
-      {words && !hero ? (
+      {words && !hero && !compact ? (
         <View style={{ marginTop: space.md, gap: space.xxs }}>
           <Txt variant="caption">{`In your words · ${words.dateLabel}`}</Txt>
           <Quote numberOfLines={3}>{words.text}</Quote>
         </View>
       ) : null}
       {tall ? <Button label="See the full page" variant="secondary" onPress={() => setOpen(true)} style={{ marginTop: space.xs }} accessibilityHint="Opens the summary at a size you can read" /> : null}
-      {Platform.OS === 'web' && !hero ? (
+      {Platform.OS === 'web' && !hero && !compact ? (
         <Txt variant="caption" style={{ marginTop: space.xs, textAlign: 'center' }}>Save PDF opens your browser’s print window. Choose “Save as PDF” there.</Txt>
       ) : null}
-      {doc.sections.length && !hero ? (
+      {doc.sections.length && !hero && !compact ? (
         <View style={{ marginTop: space.md, gap: space.xs }}>
           <Txt variant="groupLabel">In this summary</Txt>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', columnGap: space.md, rowGap: space.xs }}>
@@ -145,6 +152,21 @@ export function DocumentPreview({ doc, tall, hero }: { doc: DoctorDoc; tall?: bo
         >
           <View style={{ borderWidth: 1, borderColor: colors.hairline, borderRadius: radii.input, overflow: 'hidden' }}>
             <DocumentView doc={doc} variant="reader" width={readerWidth - 2} />
+          </View>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.xs, marginTop: space.lg, width: readerWidth }}>
+            <Button
+              label="Share as text" icon="message-circle" variant="secondary" style={{ flex: 1, minWidth: 150 }}
+              accessibilityHint="For a practice’s online form or a message to your clinic"
+              onPress={async () => {
+                try {
+                  const how = await shareSummaryText(summaryToText(doc), doc.title);
+                  if (how === 'copied') showToast('Copied. Paste it into a message or form.');
+                } catch (e) {
+                  if ((e as Error)?.name !== 'AbortError') showToast('Couldn’t share the text just now.');
+                }
+              }}
+            />
+            {onPrint ? <Button label="Print" icon="printer" variant="secondary" style={{ flex: 1, minWidth: 120 }} onPress={onPrint} /> : null}
           </View>
         </ScrollView>
       </Sheet>

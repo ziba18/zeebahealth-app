@@ -1,5 +1,5 @@
 // Today's appointment card. With an appointment today or later: "Specialist clinic · Thu 24 Sep
-// · 9 notes ready" + "Preview summary". Without: an invitation to add one, which opens a small
+// · 9 notes ready" + "Open my report". Without: an invitation to add one, which opens a small
 // sheet over Today (who/where + a date that may be in the future). Nothing pre-selected.
 import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
@@ -56,7 +56,7 @@ export function AppointmentCard({ inviteOnly = false }: { inviteOnly?: boolean }
             {`${isToday ? 'Today' : isTomorrow ? 'Tomorrow' : formatDay(next.data.date)} · ${count > 0 ? `${notesLabel(count)} ready` : 'No notes yet'}`}
           </Txt>
           <Button
-            label="Preview summary"
+            label="Open my report"
             variant="text"
             align="start"
             onPress={() => router.push('/(tabs)/doctor' as any)}
@@ -67,8 +67,11 @@ export function AppointmentCard({ inviteOnly = false }: { inviteOnly?: boolean }
   } else {
     card = (
       <Card style={{ gap: space.xxs }}>
-        <Txt variant="body">Got an appointment coming up? Add it and we’ll get your summary ready.</Txt>
-        <Button label="Add appointment" variant="text" align="start" onPress={() => setAdding(true)} />
+        <Txt variant="body">Got an appointment coming up? Add it and your report is ready on the day.</Txt>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', columnGap: space.lg }}>
+          <Button label="Add appointment" variant="text" align="start" onPress={() => setAdding(true)} />
+          {count > 0 ? <Button label="Open my report" variant="text" align="start" onPress={() => router.push('/(tabs)/doctor' as any)} /> : null}
+        </View>
       </Card>
     );
   }

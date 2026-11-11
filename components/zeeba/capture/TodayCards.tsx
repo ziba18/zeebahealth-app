@@ -1,76 +1,29 @@
-// Today's building blocks: hero capture card, starter chips, Rough day quick log, latest note.
-// No stat tiles, rings, streaks or charts — the screen's one number is the note count.
-import React, { useEffect, useState } from 'react';
+// Today's building blocks (Record · Prove · Reach): the check-in card (pain slider, her words, other areas,
+// today's entries), pillar headers, the week's tiles and the latest note.
+import React, { useState } from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import {
-  Button, Card, Chip, FactLine, HeroNumber, InlineError, QuickTile, PressableCard, Quote, SeverityRow, SeverityTag, Txt, showToast, useReduceMotion,
+  Button, Card, FactLine, InlineError, PainSlider, PressableCard, Quote, SeverityTag, Txt, showToast,
 } from '../kit';
-import { colors, font, layout, radii, severityStep, space, useColors } from '../../../constants/zeebaUI';
+import { colors, font, layout, radii, space, useColors } from '../../../constants/zeebaUI';
 import { VOICE_AVAILABLE } from '../../../lib/speechModule';
 import { Icon } from '../../ui/Icon';
 import { openCapture } from '../../../lib/captureStore';
 import { haptics } from '../../../lib/haptics';
 import { todayKey } from '../../../lib/records/dates';
-import { STARTER_CHIPS } from '../../../lib/records/fields';
 import {
-  compareNotesNewestFirst, formatDay, formatTimeOfDay, formatWhere, joinFacts, labelEscape, noteCount, noteStamp, noteWrittenAt, notesLabel,
+  compareNotesNewestFirst, formatDay, formatTimeOfDay, formatWhere, joinFacts, labelEscape, noteStamp, noteWrittenAt, notesLabel,
   typicalOf, worstOf,
 } from '../../../lib/records/format';
 import { useRecordsStore } from '../../../stores/recordsStore';
 import type { Rec, SymptomData } from '../../../types/records';
 import { Wren } from '../Wren';
 import { topicsFor, useFocusStore } from '../../../lib/focus';
-import { Gauge, MiniBars, SectionHeader, Tile, TileRow } from '../dash/Dash';
-import { nextAppointment } from './AppointmentCard';
+import { Gauge, MiniBars, Tile, TileRow } from '../dash/Dash';
 import { type IconName } from '../../ui/Icon';
-import { addDays, diffDays } from '../../../lib/records/dates';
-
-// Warm wash (V6): a faint plum-tint blush at the very top that settles into the warm canvas,
-// then white — the hero is never cooler than the paper around it. Top 40% only.
-const WASH_STOPS = [0, 0.18, 0.4] as const;
-
-const PROMPT = 'What’s been going on with your body?';
-/** Broken evenly at every width: unforced it either rags ("…with / your body?") or leaves "body?" alone on line 2 (V29). */
-const PROMPT_BALANCED = 'What’s been going on\nwith your body?';
-
-/** The guided follow-ups that fill the structured fields, previewed so the hero reads as step one of three. */
-const NEXT_STEPS = ['When', 'How strong', 'Where'] as const;
-
-/**
- * The capture hero: Wren beside one short question, then the actions. Speak is offered only where
- * in-app voice works (installed builds); elsewhere one "Write a note" (the keyboard mic still dictates).
- */
-export function HeroCard({ first }: { first?: boolean } = {}) {
-  const c = useColors();
-  const prompt = first ? 'Start your record' : 'How’s your body today?';
-  const voice = VOICE_AVAILABLE && Platform.OS !== 'web';
-  return (
-    <Card tone="hero" style={styles.hero}>
-      <LinearGradient
-        colors={[c.glow, 'rgba(0,0,0,0)']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 0.7, y: 1 }}
-        style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]}
-      />
-      <View style={styles.heroTop}>
-        <Wren mood="idle" size={64} decorative />
-        <Txt variant="hero" style={styles.heroPrompt} accessibilityRole="header">{prompt}</Txt>
-      </View>
-      <View style={styles.heroBtns}>
-        {voice ? (
-          <>
-            <Button label="Speak" icon="mic" onPress={() => openCapture({ mode: 'speak', startRecording: true })} accessibilityHint="Opens a new note and starts recording" style={{ flex: 1 }} />
-            <Button label="Type" icon="pencil" variant="secondary" onPress={() => openCapture({ mode: 'type' })} style={{ flex: 1 }} />
-          </>
-        ) : (
-          <Button label="Write a note" icon="pencil" onPress={() => openCapture({ mode: 'type' })} style={{ flex: 1 }} />
-        )}
-      </View>
-    </Card>
-  );
-}
+import { addDays } from '../../../lib/records/dates';
 
 const DAY_LETTER = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
@@ -94,7 +47,6 @@ export function WeekDashboard() {
   const toEvidence = () => router.push('/(tabs)/timeline' as any);
   return (
     <View>
-      <SectionHeader title="This week" action="Evidence" onAction={toEvidence} />
       <TileRow>
         <Tile label="Worst pain" value={worst === null ? '–' : String(worst)} unit={worst === null ? undefined : '/10'} onPress={toEvidence}>
           <Gauge value={worst ?? 0} />
@@ -112,47 +64,83 @@ export function WeekDashboard() {
   );
 }
 
-/** Horizontal starter chips that scroll inside the screen (right-edge fade); the page never scrolls sideways. */
-export function StarterChips({ onPeriod }: { onPeriod: () => void }) {
-  const c = useColors();
+/**
+ * The three steps every Today section belongs to (BRAND §1: Record · Prove · Reach). A small accent eyebrow
+ * names the step, the title says what it is, one line says why it matters, so each card's place in her case is
+ * plain.
+ */
+export function PillarHeader({
+  step, pillar, title, why, action, onAction,
+}: { step: number; pillar: 'Record' | 'Prove' | 'Reach'; title: string; why?: string; action?: string; onAction?: () => void }) {
   return (
-    <View style={styles.chipsWrap}>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.chipsRow}
-        accessibilityLabel="Ways to start"
-      >
-        {STARTER_CHIPS.map((label) => (
-          <Chip
-            key={label}
-            label={label}
-            onPress={() => (label === 'My period' ? onPeriod() : openCapture({ mode: 'speak', tag: label }))}
-          />
-        ))}
-      </ScrollView>
-      <LinearGradient
-        colors={[`${c.canvas}00`, `${c.canvas}E6`, c.canvas]}
-        locations={[0, 0.6, 1]}
-        start={{ x: 0, y: 0.5 }}
-        end={{ x: 1, y: 0.5 }}
-        style={[styles.fade, { pointerEvents: 'none' }]}
-      />
+    <View style={styles.pillar}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }} accessible accessibilityLabel={`Step ${step} of 3, ${pillar}`}>
+        <View style={styles.stepDot}><Txt style={styles.stepNum}>{String(step)}</Txt></View>
+        <Txt variant="eyebrow" color={colors.accent}>{pillar}</Txt>
+      </View>
+      <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: space.sm, marginTop: 4 }}>
+        <Txt variant="section" accessibilityRole="header" style={{ flex: 1 }}>{title}</Txt>
+        {action && onAction ? (
+          <Pressable onPress={onAction} hitSlop={10} accessibilityRole="link">
+            {({ pressed }) => <Txt variant="body" color={colors.accent} style={{ opacity: pressed ? 0.5 : 1 }}>{action}</Txt>}
+          </Pressable>
+        ) : null}
+      </View>
+      {why ? <Txt variant="caption" style={{ marginTop: 2 }}>{why}</Txt> : null}
     </View>
   );
 }
 
-export function RoughDayCard() {
+/** Today's entries as small chips ("6/10 · 09:12", "Note · 13:05"): proof that what she just did was kept. */
+function TodayEntries() {
+  const router = useRouter();
+  const symptoms = useRecordsStore((s) => s.records.symptom);
+  const today = todayKey();
+  const list = symptoms.filter((r) => r.data.date === today).sort(compareNotesNewestFirst).reverse();
+  if (!list.length) return null;
+  return (
+    <View style={{ gap: space.xs }}>
+      <Txt variant="groupLabel">{`On your record today · ${notesLabel(list.length)}`}</Txt>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.xs }}>
+        {list.slice(-6).map((r) => {
+          const n = worstOf(r.data) ?? typicalOf(r.data);
+          const time = formatTimeOfDay(noteWrittenAt(r));
+          const quick = r.data.source === 'quick';
+          const label = joinFacts(n != null ? `${n}/10` : quick ? 'Rough day' : 'Note', time);
+          return (
+            <Pressable
+              key={r.id}
+              onPress={() => router.push(`/(tabs)/timeline/entry/${r.id}?from=Today` as any)}
+              accessibilityRole="button"
+              accessibilityLabel={`${quick ? 'Pain' : 'Note'} ${label}. Opens it`}
+              style={({ pressed }) => [styles.entryChip, pressed && { opacity: 0.6 }]}
+            >
+              {n != null ? <SeverityTag value={n} style={{ height: 22, minWidth: 22 }} /> : <Icon name={quick ? 'zap' : 'pencil'} size={14} color={colors.accent} />}
+              <Txt variant="caption" color={colors.ink}>{n != null ? time || 'Today' : label}</Txt>
+            </Pressable>
+          );
+        })}
+      </View>
+    </View>
+  );
+}
+
+/**
+ * RECORD: the one check-in card. Pain on a 0–10 slider (nothing pre-set; Log saves it, dated, in about ten
+ * seconds), then her own words (speak or type), then any other area. Everything she adds here lands in
+ * Evidence and in the report for her doctor.
+ */
+export function CheckInCard({ first, onPeriod }: { first?: boolean; onPeriod: () => void }) {
   const create = useRecordsStore((s) => s.create);
   const c = useColors();
-  const [saving, setSaving] = useState<number | null>(null);
+  const [value, setValue] = useState<number | null>(null);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const voice = VOICE_AVAILABLE && Platform.OS !== 'web';
 
-  // One tap logs it (no separate Save): fast, like Apple Health's State of Mind.
-  const log = async (value: number) => {
-    if (saving !== null) return;
-    haptics.selection();
-    setSaving(value);
+  const log = async () => {
+    if (value == null || saving) return;
+    setSaving(true);
     setError('');
     try {
       const saved = await create('symptom', {
@@ -163,49 +151,68 @@ export function RoughDayCard() {
       const hard = value >= 8;
       showToast(
         saved.pending ? 'Saved on this phone. It will send when you’re online.'
-          : hard ? `Pain ${value}/10 saved. That sounded like a hard day.`
-          : `Pain ${value}/10 saved.`,
+          : hard ? `Pain ${value}/10 is on your record. That sounded like a hard day.`
+          : `Pain ${value}/10 is on your record.`,
         saved.pending ? undefined : { mood: hard ? 'comfort' : 'proud' },
       );
+      setValue(null);
     } catch {
       setError('That didn’t save. Try again.');
     } finally {
-      setSaving(null);
+      setSaving(false);
     }
   };
 
   return (
-    <Card style={styles.rough}>
-      <View style={styles.roughHead}>
-        <Txt variant="headline" accessibilityRole="header">Pain right now</Txt>
-        <Txt variant="caption">Tap to log</Txt>
+    <Card tone="hero" style={styles.hero}>
+      <LinearGradient
+        colors={[c.glow, 'rgba(0,0,0,0)']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 0.25 }}
+        style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]}
+      />
+      <View style={styles.heroTop}>
+        <Wren mood="idle" size={56} decorative />
+        <View style={styles.heroPrompt}>
+          <Txt variant="hero" accessibilityRole="header">{first ? 'Start your record' : 'How’s your body today?'}</Txt>
+          <Txt variant="caption" style={{ marginTop: 2 }}>Every entry is dated and kept for your doctor.</Txt>
+        </View>
       </View>
-      <View style={styles.scale} accessibilityRole="adjustable" accessibilityLabel="Pain right now, 0 to 10">
-        {Array.from({ length: 11 }, (_, n) => {
-          const on = saving === n;
-          return (
-            <Pressable
-              key={n}
-              onPress={() => log(n)}
-              accessibilityRole="button"
-              accessibilityLabel={`Log pain ${n} out of 10`}
-              style={({ pressed }) => [
-                styles.cell,
-                { backgroundColor: on || pressed ? c.ramp[severityStep(n)] : c.sunken },
-              ]}
-            >
-              {({ pressed }) => (
-                <Txt style={[styles.cellNum, { color: on || pressed ? c.rampFg[severityStep(n)] : c.ink2 }]}>{n}</Txt>
-              )}
-            </Pressable>
-          );
-        })}
+
+      <View>
+        <Txt variant="headline">Pain right now</Txt>
+        <PainSlider value={value} onChange={setValue} label="Pain right now" showLabel={false} readout minLabel="No pain" maxLabel="Worst imaginable" />
+        <Button
+          label={value == null ? 'Choose a number to log it' : `Log pain ${value}/10`}
+          icon={value == null ? undefined : 'check'}
+          onPress={log}
+          loading={saving}
+          disabled={value == null}
+          style={{ marginTop: space.sm }}
+          accessibilityHint="Saves it to today, with the time"
+        />
+        <InlineError message={error} style={{ marginTop: space.xs }} />
       </View>
-      <View style={styles.scaleEnds} aria-hidden>
-        <Txt variant="caption">None</Txt>
-        <Txt variant="caption">Worst</Txt>
+
+      <View style={styles.divider} />
+
+      <View style={{ gap: space.sm }}>
+        <Txt variant="headline">In your own words</Txt>
+        <View style={styles.heroBtns}>
+          {voice ? (
+            <>
+              <Button label="Speak" icon="mic" variant="secondary" onPress={() => openCapture({ mode: 'speak', startRecording: true })} accessibilityHint="Opens a new note and starts recording" style={{ flex: 1 }} />
+              <Button label="Type" icon="pencil" variant="secondary" onPress={() => openCapture({ mode: 'type' })} style={{ flex: 1 }} />
+            </>
+          ) : (
+            <Button label="Write a note" icon="pencil" variant="secondary" onPress={() => openCapture({ mode: 'type' })} style={{ flex: 1 }} />
+          )}
+        </View>
+        <Txt variant="caption">Your words are quoted as you wrote them. Or log something else:</Txt>
+        <QuickRows onPeriod={onPeriod} onCard />
       </View>
-      <InlineError message={error} />
+
+      <TodayEntries />
     </Card>
   );
 }
@@ -268,100 +275,6 @@ export function LatestNoteCard({ note }: { note: Rec<SymptomData> }) {
   );
 }
 
-/** Counts up to `target` once on first show (about half a second); straight to the number under Reduce Motion. */
-function useCountUp(target: number): number {
-  const reduce = useReduceMotion();
-  const [n, setN] = useState(reduce ? target : 0);
-  useEffect(() => {
-    if (reduce || target <= 1) { setN(target); return; }
-    const start = Date.now();
-    const id = setInterval(() => {
-      const t = Math.min(1, (Date.now() - start) / 500);
-      setN(Math.round(target * (1 - (1 - t) * (1 - t))));
-      if (t >= 1) clearInterval(id);
-    }, 40);
-    return () => clearInterval(id);
-  }, [target, reduce]);
-  return n;
-}
-
-/** The screen's one big number: days to the next appointment, else notes in the last 7 days. */
-export function HeroNumberCard() {
-  const router = useRouter();
-  const symptoms = useRecordsStore((s) => s.records.symptom);
-  const appts = useRecordsStore((s) => s.records.appointment);
-  const today = todayKey();
-  const next = nextAppointment(appts);
-  const daysAway = next ? Math.max(0, diffDays(today, next.data.date)) : 0;
-  // Past two months a day count reads as noise; weeks are what a person plans by.
-  const inWeeks = daysAway > 60;
-  const total = noteCount(symptoms);
-  // On the day itself the numeral is the notes ready for the visit, not a "0 days".
-  const count = useCountUp(next ? (daysAway === 0 ? total : inWeeks ? Math.round(daysAway / 7) : daysAway) : noteCount(symptoms, { from: addDays(today, -6), to: today }));
-  let big: string; let line: string; let sub: string; let target: string;
-  if (next) {
-    const days = diffDays(today, next.data.date);
-    const who = next.data.who.trim();
-    if (days === 0) {
-      big = String(count);
-      line = total === 1 ? 'note ready for today’s appointment' : 'notes ready for today’s appointment';
-      const tail = total > 0 ? 'Opens your summary' : 'Add a note and it appears in your summary';
-      sub = who ? `${who} · ${tail}` : tail;
-    } else {
-      big = String(count);
-      line = inWeeks ? 'weeks until your appointment' : days === 1 ? 'day until your appointment' : 'days until your appointment';
-      const notes = total > 0 ? `${notesLabel(total)} ready for your summary` : 'Add a note and it appears in your summary';
-      sub = who ? `${who} · ${notes}` : notes;
-    }
-    target = '/(tabs)/doctor';
-  } else if (total === 0) {
-    big = '0';
-    line = 'notes so far';
-    sub = 'Your first note starts your record';
-    target = '';
-  } else {
-    const week = noteCount(symptoms, { from: addDays(today, -6), to: today });
-    big = String(count);
-    line = week === 1 ? 'note in the last 7 days' : 'notes in the last 7 days';
-    sub = total === week ? 'Open them in Evidence' : `${notesLabel(total)} in all`;
-    target = '/(tabs)/timeline';
-  }
-  return (
-    <HeroNumber
-      big={big} line={line} sub={sub}
-      onPress={target ? () => router.push(target as any) : undefined}
-      accessibilityHint={next ? 'Opens For my doctor' : 'Opens Evidence'}
-    />
-  );
-}
-
-/** Short phones (320x568): the same number as HeroNumberCard as one line above the prompt, so the appointment signal is not pushed off the first screen. */
-export function HeroChip() {
-  const router = useRouter();
-  const symptoms = useRecordsStore((s) => s.records.symptom);
-  const appts = useRecordsStore((s) => s.records.appointment);
-  const today = todayKey();
-  const next = nextAppointment(appts);
-  const total = noteCount(symptoms);
-  const week = noteCount(symptoms, { from: addDays(today, -6), to: today });
-  const days = next ? diffDays(today, next.data.date) : -1;
-  let label = ''; let target = '/(tabs)/timeline';
-  if (next && days === 0 && total > 0) { label = `${next.data.who.trim() || 'Appointment'} today · ${notesLabel(total)} ready`; target = '/(tabs)/doctor'; }
-  else if (next && days > 0) { label = days > 60 ? `${Math.round(days / 7)} weeks to your appointment` : `${days} ${days === 1 ? 'day' : 'days'} to your appointment`; target = '/(tabs)/doctor'; }
-  else if (week > 0) label = `${notesLabel(week)} in the last 7 days`;
-  if (!label) return null;
-  return (
-    <PressableCard
-      onPress={() => router.push(target as any)}
-      accessibilityLabel={label}
-      accessibilityHint={target.includes('doctor') ? 'Opens For my doctor' : 'Opens Evidence'}
-      style={styles.chip}
-    >
-      <Txt variant="headline" style={{ fontVariant: ['tabular-nums'] }}>{label}</Txt>
-    </PressableCard>
-  );
-}
-
 const QUICK_ROWS: { label: string; icon: IconName; tag?: string }[] = [
   { label: 'Pain', icon: 'zap', tag: 'Pain today' },
   { label: 'Bleeding', icon: 'droplet' },
@@ -377,22 +290,22 @@ const PRIMARY_ROWS = ['Pain', 'Bleeding', 'Tired', 'Something new'];
 const CHIP_LABEL: Record<string, string> = { 'Tummy, bowel or bladder': 'Bowel or bladder', 'Something new': 'Other' };
 
 /** One compact, scrolling row of topic chips (her chosen areas first). Each opens a note on that topic. */
-export function QuickRows({ onPeriod }: { onPeriod: () => void }) {
+export function QuickRows({ onPeriod, onCard }: { onPeriod: () => void; /** Inside a card: sunken chips that bleed to the card edge. */ onCard?: boolean }) {
   const focus = useFocusStore((st) => st.areas);
   const primary = topicsFor(focus, PRIMARY_ROWS);
   const rows = [
     ...primary.map((l) => QUICK_ROWS.find((r) => r.label === l)!).filter(Boolean),
     ...QUICK_ROWS.filter((r) => !primary.includes(r.label)),
-  ];
+  ].filter((r) => !(onCard && r.label === 'Pain')); // the check-in's slider is right above
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipRow} style={styles.chipScroll} accessibilityLabel="Log a topic">
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipRow} style={styles.chipScroll} accessibilityLabel="Log something else">
       {rows.map((r) => (
         <Pressable
           key={r.label}
           onPress={() => { haptics.selection(); r.label === 'Bleeding' ? onPeriod() : openCapture({ mode: 'type', tag: r.tag }); }}
           accessibilityRole="button"
           accessibilityLabel={`Log ${r.label}`}
-          style={({ pressed }) => [styles.topicChip, pressed && { opacity: 0.6 }]}
+          style={({ pressed }) => [styles.topicChip, onCard && { backgroundColor: colors.sunken }, pressed && { opacity: 0.6 }]}
         >
           <Icon name={r.icon} size={15} color={colors.accent} />
           <Txt variant="secondary" color={colors.ink} style={{ fontWeight: '500' }}>{CHIP_LABEL[r.label] ?? r.label}</Txt>
@@ -405,7 +318,12 @@ export function QuickRows({ onPeriod }: { onPeriod: () => void }) {
 const styles = StyleSheet.create({
   chip: { paddingVertical: space.xs, paddingHorizontal: space.md, alignItems: "center" },
   qgrid: { flexDirection: 'row', flexWrap: 'wrap', gap: space.xs },
-  hero: { padding: space.md, gap: space.md },
+  hero: { padding: space.md, gap: space.lg },
+  divider: { height: StyleSheet.hairlineWidth, backgroundColor: colors.hairline, marginVertical: -space.xxs },
+  pillar: { paddingHorizontal: space.xxs, marginBottom: space.sm },
+  stepDot: { width: 18, height: 18, borderRadius: 9, backgroundColor: colors.accentTint, alignItems: 'center', justifyContent: 'center' },
+  stepNum: { ...font.roundedBold, fontSize: 11, lineHeight: 13, color: colors.accent },
+  entryChip: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingLeft: 4, paddingRight: space.sm, height: 30, borderRadius: radii.pill, backgroundColor: colors.sunken },
   chipScroll: { marginHorizontal: -layout.gutter },
   chipRow: { paddingHorizontal: layout.gutter, gap: space.xs },
   topicChip: {

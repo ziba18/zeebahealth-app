@@ -1,7 +1,7 @@
 // Share PDF / Print for the doctor summary. Native: expo-print + expo-sharing (both in Expo Go).
 // Web (design preview): expo-print's web build prints the whole app window, so instead the
 // document HTML is printed from a hidden iframe (the browser dialog can "Save as PDF").
-import { Platform } from 'react-native';
+import { Platform, Share } from 'react-native';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 
@@ -70,4 +70,25 @@ export async function printSummary(html: string): Promise<void> {
     return;
   }
   await Print.printAsync({ html, ...A4_PT, margins: IOS_MARGINS });
+}
+
+/**
+ * The summary as plain text (summaryToText) for a GP practice's online form, a patient portal message
+ * or an email to herself. Native: the share sheet (which has Copy). Web: the browser's share, else the
+ * clipboard. Resolves 'copied' when it went to the clipboard; throws on failure.
+ */
+export async function shareSummaryText(text: string, title: string): Promise<'shared' | 'copied'> {
+  if (Platform.OS === 'web') {
+    const nav = typeof navigator !== 'undefined' ? (navigator as Navigator) : undefined;
+    if (nav?.share) {
+      try { await nav.share({ title, text }); return 'shared'; } catch (e) {
+        if ((e as Error)?.name === 'AbortError') throw e;
+      }
+    }
+    if (!nav?.clipboard) throw new Error('clipboard unavailable');
+    await nav.clipboard.writeText(text);
+    return 'copied';
+  }
+  await Share.share({ message: text, title });
+  return 'shared';
 }

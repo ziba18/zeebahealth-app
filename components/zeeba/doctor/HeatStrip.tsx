@@ -18,7 +18,12 @@ import {
 } from '../../../lib/records/summary';
 import { Txt } from '../kit';
 
-const C = DOC_COLORS;
+/** Colours the strip draws with. Default = paper (DOC_COLORS). The dashboard passes the app's own palette. */
+export interface StripPalette {
+  ink: string; ink2: string; borderStrong: string; hairline: string; white: string; clay: string;
+  sev: (n: number) => { bg: string; fg: string };
+}
+const PAPER: StripPalette = { ...DOC_COLORS, sev: docSeverity };
 
 interface Geometry {
   labelW: number;
@@ -32,7 +37,7 @@ interface Geometry {
   ghost: boolean;
 }
 
-function Row({ row, g, width }: { row: HeatDay[]; g: Geometry; width: number }) {
+function Row({ row, g, width, C }: { row: HeatDay[]; g: Geometry; width: number; C: StripPalette }) {
   const rowH = g.cell + g.band + 4;
   const inset = (g.col - g.cell) / 2;
   const cx = (i: number) => g.labelW + i * g.col + inset;
@@ -52,7 +57,7 @@ function Row({ row, g, width }: { row: HeatDay[]; g: Geometry; width: number }) 
           ) : null;
         }
         if (d.value != null) {
-          const s = docSeverity(d.value);
+          const s = C.sev(d.value);
           return (
             <React.Fragment key={d.date}>
               <Rect x={x} y={0} width={g.cell} height={g.cell} rx={g.radius} fill={s.bg} stroke={C.borderStrong} strokeWidth={0.4} />
@@ -99,8 +104,9 @@ function weekBlocks(days: HeatDay[]): ({ kind: 'row'; row: HeatDay[] } | { kind:
 }
 
 export function HeatStrip({
-  strip, width, mode = 'page', textSize = 15,
-}: { strip: HeatStripModel; width: number; mode?: 'page' | 'weeks'; /** Meta text size in 'weeks' mode. */ textSize?: number }) {
+  strip, width, mode = 'page', textSize = 15, palette = PAPER,
+}: { strip: HeatStripModel; width: number; mode?: 'page' | 'weeks'; /** Meta text size in 'weeks' mode. */ textSize?: number; palette?: StripPalette }) {
+  const C = palette;
   const count = (k: 'logged' | 'bleeding' | 'spotting') => strip.days.filter((d) => d[k]).length;
   const spot = count('spotting');
   const label = `Day-by-day strip, ${strip.label}. ${count('logged')} days with a note, ${count('bleeding')} days with bleeding logged` +
@@ -115,7 +121,7 @@ export function HeatStrip({
     };
     return (
       <View accessible accessibilityLabel={label} style={{ gap: 6 }}>
-        {stripRows(strip.days, 31).map((row) => <Row key={row[0].date} row={row} g={g} width={width} />)}
+        {stripRows(strip.days, 31).map((row) => <Row key={row[0].date} row={row} g={g} width={width} C={C} />)}
       </View>
     );
   }
@@ -132,7 +138,7 @@ export function HeatStrip({
     <View accessible accessibilityLabel={label} style={{ gap: Math.round(textSize * 0.8) }}>
       {weekBlocks(strip.days).map((b) =>
         b.kind === 'row' ? (
-          <Row key={b.row[0].date} row={b.row} g={g} width={width} />
+          <Row key={b.row[0].date} row={b.row} g={g} width={width} C={C} />
         ) : (
           <Txt key={b.from} style={{ ...font.regular, fontSize: textSize, lineHeight: textSize * 1.35, color: C.ink2 }}>
             {`No entries ${formatRange(b.from, b.to)}`}

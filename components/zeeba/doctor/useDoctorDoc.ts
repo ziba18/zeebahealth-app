@@ -8,7 +8,7 @@ import { useRecordsStore } from '../../../stores/recordsStore';
 import { isHumanName } from '../../../lib/humanName';
 import { todayKey } from '../../../lib/records/dates';
 import {
-  SINCE_MAX_MONTHS, buildDoctorSummary, monthsBefore, sinceNote, type DoctorDoc, type RangeChoice, type SectionId, type VisitType,
+  SINCE_MAX_MONTHS, buildDoctorSummary, monthsBefore, sinceNote, type Audience, type DoctorDoc, type RangeChoice, type SectionId, type VisitType,
 } from '../../../lib/records/summary';
 import type { AppointmentData, Rec } from '../../../types/records';
 
@@ -20,6 +20,13 @@ interface BuilderState {
   /** True once Sam has typed in the agenda field this session (stops the saved note overwriting it). */
   agendaTouched: boolean;
   include: Partial<Record<SectionId, boolean>>;
+  /** GP or gynaecology: changes the order of the report only. */
+  audience: Audience;
+  /** quoteKey()s of notes taken out of "Symptoms in my words". */
+  hiddenQuotes: string[];
+  setAudience: (a: Audience) => void;
+  hideQuote: (key: string) => void;
+  showAllQuotes: () => void;
   setVisitType: (v: VisitType | null) => void;
   setRange: (r: RangeChoice) => void;
   setAgenda: (t: string) => void;
@@ -33,6 +40,11 @@ export const useDoctorBuilder = create<BuilderState>((set) => ({
   agenda: '',
   agendaTouched: false,
   include: {},
+  audience: 'gp',
+  hiddenQuotes: [],
+  setAudience: (audience) => set({ audience }),
+  hideQuote: (key) => set((s) => ({ hiddenQuotes: s.hiddenQuotes.includes(key) ? s.hiddenQuotes : [...s.hiddenQuotes, key] })),
+  showAllQuotes: () => set({ hiddenQuotes: [] }),
   setVisitType: (visitType) => set({ visitType }),
   setRange: (range) => set({ range }),
   setAgenda: (agenda) => set({ agenda, agendaTouched: true }),
@@ -63,7 +75,7 @@ export function useDoctorDoc(): {
 } {
   const records = useRecordsStore((s) => s.records);
   const rawName = useAuthStore((s) => s.profile?.display_name);
-  const { visitType, range: chosen, agenda, include } = useDoctorBuilder();
+  const { visitType, range: chosen, agenda, include, audience, hiddenQuotes } = useDoctorBuilder();
   const today = todayKey();
 
   return useMemo(() => {
@@ -87,8 +99,8 @@ export function useDoctorDoc(): {
         appointments: records.appointment,
         name: isHumanName(rawName) ? rawName!.trim() : undefined,
       },
-      { from, to: today, today, visitType, agenda, include, appointmentToday: upcoming?.data.date === today },
+      { from, to: today, today, visitType, agenda, include, audience, hiddenQuotes, appointmentToday: upcoming?.data.date === today },
     );
     return { doc, range, hasLast: Boolean(last), rangeNote, upcoming, last };
-  }, [records, rawName, visitType, chosen, agenda, include, today]);
+  }, [records, rawName, visitType, chosen, agenda, include, audience, hiddenQuotes, today]);
 }

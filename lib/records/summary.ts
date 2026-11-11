@@ -67,8 +67,17 @@ export const RANGE_LABEL: Record<RangeChoice, string> = {
 export const SINCE_MAX_MONTHS = 6;
 
 export type SectionId =
-  | 'words' | 'frequency' | 'periods' | 'impacts' | 'tried' | 'appointments' | 'history'
+  | 'words' | 'frequency' | 'periods' | 'bowelBladder' | 'impacts' | 'tried' | 'appointments' | 'history'
   | 'sex' | 'mood' | 'eating';
+
+/**
+ * Who the report is for. Only changes the ORDER of what she recorded (a gynaecology history starts with
+ * bleeding, then pain with sex, bowel and bladder); never adds wording of our own and never names a condition.
+ */
+export type Audience = 'gp' | 'gynae';
+export const AUDIENCE_LABEL: Record<Audience, string> = { gp: 'GP', gynae: 'Gynaecology' };
+/** Printed in the page's meta line. */
+const AUDIENCE_META: Record<Audience, string> = { gp: 'For a GP appointment', gynae: 'For a gynaecology appointment' };
 
 /** Section titles, in document order. Sensitive ones are off unless switched on per summary. */
 // Order = app-blueprint §3.7a page 1: (agenda) · main symptoms pattern · periods · associated
@@ -77,6 +86,7 @@ export type SectionId =
 export const SECTION_META: { id: SectionId; title: string; sensitive: boolean }[] = [
   { id: 'frequency', title: 'How often and how strong', sensitive: false },
   { id: 'periods', title: 'Periods logged', sensitive: false },
+  { id: 'bowelBladder', title: 'Bowel and bladder', sensitive: false },
   { id: 'sex', title: 'Sex & intimacy', sensitive: true },
   { id: 'mood', title: 'Mood', sensitive: true },
   { id: 'eating', title: 'Eating', sensitive: true },
@@ -130,6 +140,15 @@ export type OnsetGroup = 'pain' | 'bleeding' | 'bowelBladder' | 'fatigue' | 'moo
 export interface Onset { month?: number; year?: number; notSure?: boolean }
 export const FERTILITY_OPTIONS = ['Trying to get pregnant', 'Not now', 'Not sure', 'Prefer not to say'] as const;
 export type FertilityWish = (typeof FERTILITY_OPTIONS)[number];
+
+/** Gynaecology order: bleeding first, then the questions a gynaecology history asks next. */
+const GYNAE_ORDER: SectionId[] = [
+  'periods', 'frequency', 'sex', 'bowelBladder', 'impacts', 'tried', 'history', 'appointments', 'mood', 'eating', 'words',
+];
+/** Section ids in document order for this audience. */
+export function sectionOrder(audience: Audience = 'gp'): SectionId[] {
+  return audience === 'gynae' ? GYNAE_ORDER : SECTION_META.map((m) => m.id);
+}
 
 export const isSensitive = (id: SectionId) => SECTION_META.find((s) => s.id === id)?.sensitive ?? false;
 
@@ -214,6 +233,19 @@ export interface HeatStripModel {
 }
 
 export interface PeriodRun { range: string; days: number; flows: string; notes: DocQuote[] }
+
+/**
+ * One "At a glance" figure at the top of the page and the dashboard. Counts and the highest number she
+ * gave — never an average, a score or a trend.
+ */
+export interface GlanceStat {
+  id: 'days' | 'peak' | 'impact' | 'periods';
+  label: string;
+  value: string;
+  /** "/ 91 days", "/10". */
+  unit: string;
+  sub: string;
+}
 export interface CountItem { label: string; days: number }
 export interface TriedItem {
   title: string; dates: string; noticed: string;
@@ -227,8 +259,9 @@ export interface DatedItem { date: string; title: string; lines: DocLine[] }
 export type DocSection =
   | { id: 'words'; title: string; quotes: DocQuote[]; more: string }
   | { id: 'frequency'; title: string; windowLabel: string; bars: FreqBar[]; strip: HeatStripModel; caption: string }
-  | { id: 'periods'; title: string; runs: PeriodRun[]; spotting: string }
-  | { id: 'impacts' | 'sex' | 'mood' | 'eating'; title: string; items: CountItem[]; quotes: DocQuote[] }
+  /** `details` = bleeding answers from her notes ("Flooding on 2 days"), counts only. */
+  | { id: 'periods'; title: string; runs: PeriodRun[]; spotting: string; details: string[] }
+  | { id: 'impacts' | 'sex' | 'mood' | 'eating' | 'bowelBladder'; title: string; items: CountItem[]; quotes: DocQuote[] }
   | { id: 'tried'; title: string; items: TriedItem[]; quotes: DocQuote[] }
   | { id: 'history'; title: string; items: DatedItem[]; more: string; family: string }
   /** `upcoming` = today's appointment and later ones — never shown as past. */
@@ -253,6 +286,13 @@ export interface DoctorDoc {
   entries: number;
   /** One line per PRODUCT §4 area, in DOMAINS order — "Not recorded" when empty. */
   domains: DomainLine[];
+  audience: Audience;
+  /** "At a glance" figures, only those with data. */
+  glance: GlanceStat[];
+  /** Quotes she took out of "Symptoms in my words" (the next ones fill their place). */
+  wordsHidden: number;
+  /** Days the counts are out of: the range, starting at her first entry if that is later (min 14 days). */
+  spanDays: number;
   /** "9 of 13 areas recorded" — a count, never a percentage or a quality score. */
   completeness: string;
   footer: string;
@@ -289,7 +329,13 @@ export interface SummaryOptions {
   /** True when the next appointment is today (changes the agenda heading). */
   appointmentToday?: boolean;
   include?: Partial<Record<SectionId, boolean>>;
+  audience?: Audience;
+  /** `quoteKey`s of notes she chose to leave out of "Symptoms in my words". */
+  hiddenQuotes?: string[];
 }
+
+/** Stable id for a quoted note (date + its words), used to leave one out of the page. */
+export const quoteKey = (q: { date: string; text: string }) => `${q.date}|${q.text.slice(0, 80)}`;
 
 export interface AgendaBlock {
   title: string;
@@ -557,6 +603,11 @@ export function summaryToText(doc: DoctorDoc): string {
     for (const q of doc.agendaBlock.questions) lines.push(`- ${q}`);
     lines.push('');
   }
+  if (doc.glance.length) {
+    lines.push('AT A GLANCE');
+    for (const g of doc.glance) lines.push(`${g.label}: ${g.value}${g.unit} (${g.sub})`);
+    lines.push('');
+  }
   lines.push(`AREAS (${doc.completeness})`);
   for (const d of doc.domains) {
     lines.push(`${d.heading}: ${d.text}`);
@@ -589,7 +640,10 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
   const all: DocSection[] = [];
 
   // 1. Symptoms in my words — real words only (never quick logs or chip answers).
-  const worded = timed.filter((n) => n.s.source !== 'quick' && clean(n.s.words));
+  const hidden = new Set(options.hiddenQuotes ?? []);
+  const allWorded = timed.filter((n) => n.s.source !== 'quick' && clean(n.s.words));
+  const worded = allWorded.filter((n) => !hidden.has(quoteKey({ date: n.s.date, text: clean(n.s.words) })));
+  const wordsHidden = allWorded.length - worded.length;
   const quotes = pickQuotes(worded, MAX_QUOTES).map((n) => quoteOf(n.s, clean(n.s.words)));
   const unquoted = worded.length - quotes.length;
   if (quotes.length) {
@@ -675,14 +729,34 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
     };
   });
   const spottingDays = bleedDays.filter((d) => bleedingStatus(d) === 'spotting').map((d) => d.date).sort();
-  if (runs.length || spottingDays.length) {
+  const noteDaysWith = (has: (s: SymptomData) => boolean) => nOfN(notes, from, to, has).days;
+  const bandDays = (['1-2', '3-5', '6+'] as const)
+    .map((b) => [b, noteDaysWith((s) => s.products === b)] as const).filter(([, n]) => n > 0);
+  const bleedDetails = [
+    ...bandDays.map(([b, n]) => `${b.replace('-', '–')} pads or tampons a day on ${plural(n, 'day')}`),
+    ...([
+      ['Flooding', (s: SymptomData) => s.flooding === true],
+      ['Clots', (s: SymptomData) => s.clots === true],
+      ['Bleeding between periods', (s: SymptomData) => s.bleedingBetween === true],
+    ] as const).map(([label, has]) => [label, noteDaysWith(has)] as const).filter(([, n]) => n > 0)
+      .map(([label, n]) => `${label} on ${plural(n, 'day')}`),
+  ];
+  if (runs.length || spottingDays.length || bleedDetails.length) {
     all.push({
       id: 'periods',
       title: 'Periods logged',
       runs,
       spotting: spottingDays.length ? `Spotting logged: ${spottingDays.map((d) => formatShortDate(d, 'always')).join(', ')}` : '',
+      details: bleedDetails,
     });
   }
+
+  // 3b. Bowel and bladder — days she answered yes (pm: a gynaecology history asks about both).
+  const bbItems: CountItem[] = ([
+    ['Pain opening bowels', (s: SymptomData) => s.bowelPain === true],
+    ['Pain passing urine', (s: SymptomData) => s.urinePain === true],
+  ] as const).map(([label, has]) => ({ label, days: noteDaysWith(has) })).filter((c) => c.days > 0);
+  if (bbItems.length) all.push({ id: 'bowelBladder', title: 'Bowel and bladder', items: bbItems, quotes: [] });
 
   // 4. What it got in the way of (Sex goes to its own sensitive section).
   const impactItems = impactDays(notes, (i) => i !== 'Sex');
@@ -763,12 +837,17 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
   }
 
   // 8. Sensitive sections — only when such data exists (mood / eating have no fields yet).
-  const sexItems = impactDays(notes, (i) => i === 'Sex');
+  // Private: everything about sex lives here, behind its own switch (off unless she turns it on).
+  const sexItems = impactDays(notes, (i) => i === 'Sex').map((c) => ({ ...c, label: 'Got in the way of sex' }));
+  const afterSexDays = nOfN(notes, from, to, (s) => s.bleedingAfterSex === true).days;
+  if (afterSexDays) sexItems.push({ label: 'Bleeding after sex', days: afterSexDays });
   if (sexItems.length) all.push({ id: 'sex', title: 'Sex & intimacy', items: sexItems, quotes: [] });
 
-  const order = (id: SectionId) => SECTION_META.findIndex((m) => m.id === id);
+  const audience: Audience = options.audience ?? 'gp';
+  const ids = sectionOrder(audience);
+  const order = (id: SectionId) => ids.indexOf(id);
   all.sort((a, b) => order(a.id) - order(b.id));
-  const available = SECTION_META.filter((m) => all.some((s) => s.id === m.id));
+  const available = ids.map((id) => SECTION_META.find((m) => m.id === id)!).filter((m) => all.some((s) => s.id === m.id));
   const sections = all.filter((s) => sectionIncluded(s.id, include));
   const domains = domainLines(input, options, notes, bleedDays, impactItems, tried.length + triedQuotes.length);
   const recorded = domains.filter((d) => d.state === 'recorded').length;
@@ -776,9 +855,45 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
   const entries = noteCount(input.symptoms, { from, to });
   const name = clean(input.name);
 
+  // At a glance: over the same window as the day-by-day strip, so the two always agree.
+  const glance: GlanceStat[] = [];
+  // Days before her first entry were never recorded, so they are not counted as days without symptoms.
+  const firstAny = [...input.symptoms.map((r) => r.data.date), ...input.periodDays.map((r) => r.data.date)].filter((d) => d <= to).sort()[0];
+  const floor = addDays(to, -13);
+  const glanceFrom = firstAny && firstAny > from ? (firstAny < floor ? firstAny : floor < from ? from : floor) : from;
+  const gNotes = notes.filter((s) => s.date >= glanceFrom);
+  const gTotal = inclusiveDays(glanceFrom, to);
+  const gDays = daysWith(gNotes, glanceFrom, to);
+  if (gDays) glance.push({ id: 'days', label: 'Days with symptoms', value: String(gDays), unit: ` / ${gTotal}`, sub: `days with a note, since ${formatShortDate(glanceFrom, 'never')}` });
+  const dayPeaks = new Map<string, number>();
+  for (const s of gNotes) {
+    const p = peakOf(s);
+    if (p != null) dayPeaks.set(s.date, Math.max(p, dayPeaks.get(s.date) ?? 0));
+  }
+  if (dayPeaks.size) {
+    const hi = Math.max(...dayPeaks.values());
+    // No threshold of our own ("7 or more"): just how many days she gave this highest number.
+    glance.push({
+      id: 'peak', label: 'Highest number given', value: String(hi), unit: '/10',
+      sub: `given on ${plural([...dayPeaks.values()].filter((v) => v === hi).length, 'day')}`,
+    });
+  }
+  const inWay = new Set(gNotes.filter((s) => (s.impacts ? realImpacts(s).some((i) => i !== 'Sex') : s.stopped === true)).map((s) => s.date));
+  if (inWay.size) {
+    const top = impactDays(gNotes, (i) => i !== 'Sex')[0];
+    glance.push({ id: 'impact', label: 'Got in the way', value: String(inWay.size), unit: ` / ${gTotal}`, sub: top ? `days · most often ${top.label.toLowerCase()}` : 'days noted' });
+  }
+  const starts = periodRuns(bleedDays).length;
+  if (starts) {
+    const bleedN = new Set(bleedDays.filter((d) => bleedingStatus(d) !== 'spotting').map((d) => d.date)).size;
+    const periodsTile: GlanceStat = { id: 'periods', label: 'Periods logged', value: String(starts), unit: '', sub: `${plural(bleedN, 'bleeding day')} in total` };
+    if (audience === 'gynae') glance.unshift(periodsTile); else glance.push(periodsTile);
+  }
+
   return {
     title: name ? `Symptom summary — ${name}` : 'Symptom summary',
-    meta: joinFacts(rangeLabel, options.visitType ?? '', `Made ${formatShortDate(today, 'always')}`),
+    meta: joinFacts(rangeLabel, AUDIENCE_META[audience], options.visitType ?? '', `Made ${formatShortDate(today, 'always')}`),
+    audience, glance, wordsHidden, spanDays: gTotal,
     from, to, rangeLabel, agenda, agendaTitle: agendaTitleFor(options.appointmentToday),
     agendaBlock: agendaBlockOf(agenda, agendaTitleFor(options.appointmentToday)), sections, available, entries,
     domains, completeness: `${recorded} of ${plural(DOMAINS.length, 'area')} recorded`,
@@ -786,6 +901,22 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
     // An agenda on its own isn't a summary: nothing to share until a section has data.
     empty: sections.length === 0,
   };
+}
+
+/**
+ * One closing line on the page: which of the 13 areas have nothing in this time span, so a clinician
+ * can tell "not logged" from "left out". '' when every area is recorded.
+ */
+export function coverageLine(doc: DoctorDoc): string {
+  const names = (st: DomainState) => doc.domains.filter((d) => d.state === st).map((d) => d.heading);
+  const missing = names('not-recorded');
+  const off = names('not-included');
+  if (!missing.length && !off.length) return '';
+  return [
+    `${doc.completeness}.`,
+    missing.length ? `Not recorded: ${missing.join(', ')}.` : '',
+    off.length ? `${NOT_INCLUDED}: ${off.join(', ')}.` : '',
+  ].filter(Boolean).join(' ');
 }
 
 /** Text for one count item: "Work or study · 4 days". */
@@ -973,8 +1104,8 @@ function sectionInner(s: DocSection): string {
         <p class="meta">${esc(joinFacts(s.caption, s.strip.windowNote))}</p></section>`;
     }
     case 'periods':
-      return `<section>${head}${s.runs.map((r) => `<div class="item"><p><span class="strong">${esc(r.range)}</span> · ${esc(daysText(r.days))}${r.flows ? ` · ${esc(r.flows)}` : ''}</p>${r.notes.map(quoteHtml).join('')}</div>`).join('')}${s.spotting ? `<p>${esc(s.spotting)}</p>` : ''}</section>`;
-    case 'impacts': case 'sex': case 'mood': case 'eating':
+      return `<section>${head}${s.runs.map((r) => `<div class="item"><p><span class="strong">${esc(r.range)}</span> · ${esc(daysText(r.days))}${r.flows ? ` · ${esc(r.flows)}` : ''}</p>${r.notes.map(quoteHtml).join('')}</div>`).join('')}${s.spotting ? `<p>${esc(s.spotting)}</p>` : ''}${s.details.length ? `<p class="item"><span class="muted">From my notes:</span> ${s.details.map(esc).join('<span class="sep"> · </span>')}</p>` : ''}</section>`;
+    case 'impacts': case 'sex': case 'mood': case 'eating': case 'bowelBladder':
       return `<section>${head}${s.items.length ? `<p class="item">${s.items.map((c) => esc(countText(c))).join('<span class="sep"> · </span>')}</p>` : ''}${s.quotes.map(quoteHtml).join('')}</section>`;
     case 'tried': {
       // One row per treatment: name · dates · what she noticed (her words, serif).
@@ -998,12 +1129,17 @@ export function summaryToHtml(doc: DoctorDoc): string {
   const C = DOC_COLORS;
   const T = PAGE_TYPE;
   const pt = (v: readonly [number, number]) => `font-size: ${v[0]}pt; line-height: ${v[1]}pt;`;
+  const glance = doc.glance.length
+    ? `<div class="glance">${doc.glance.map((g) => `<div class="g"><p class="gl">${esc(g.label)}</p><p class="gv">${esc(g.value)}<span class="gu">${esc(g.unit)}</span></p><p class="gs">${esc(g.sub)}</p></div>`).join('')}</div>`
+    : '';
   const body = [
     doc.agendaBlock
       ? `<section><h2>${esc(doc.agendaBlock.title)}</h2>${doc.agendaBlock.priority ? `<p class="serif lead">“${esc(curly(doc.agendaBlock.priority))}”</p>` : ''}${
         doc.agendaBlock.questions.length ? `<ul>${doc.agendaBlock.questions.map((q) => `<li class="serif">“${esc(curly(q))}”</li>`).join('')}</ul>` : ''}</section>`
       : '',
+    glance,
     ...doc.sections.map(sectionHtml),
+    coverageLine(doc) ? `<p class="meta cover">${esc(coverageLine(doc))}</p>` : '',
   ].join('');
   return `<!doctype html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>${esc(doc.title)}</title>
@@ -1050,6 +1186,13 @@ export function summaryToHtml(doc: DoctorDoc): string {
   .strip { margin: 5pt 0 3pt; }
   .key { display: inline-block; width: 12pt; height: 3pt; background: ${C.clay}; vertical-align: middle; }
   .key.spot { height: 0; background: none; border-top: ${SPOT_STROKE}pt dashed ${C.clay}; }
+  .glance { display: flex; gap: 6pt; padding: 8pt 0 9pt; border-bottom: 0.75pt solid ${C.borderStrong}; break-inside: avoid; }
+  .g { flex: 1; border: 0.75pt solid ${C.borderStrong}; border-radius: 4pt; padding: 5pt 7pt 6pt; }
+  .gl { color: ${C.ink2}; font-size: 7.5pt; line-height: 10pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3pt; }
+  .gv { font-size: 20pt; line-height: 24pt; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .gu { font-size: 10pt; font-weight: 600; color: ${C.ink2}; }
+  .gs { color: ${C.ink2}; font-size: 8pt; line-height: 10.5pt; }
+  .cover { padding-top: 6pt; }
   tfoot td { padding-top: 8pt !important; color: ${C.ink2}; ${pt(T.footer)} }
   .footer { border-top: 0.5pt solid ${C.borderStrong}; padding-top: 4pt; }
 </style></head><body>

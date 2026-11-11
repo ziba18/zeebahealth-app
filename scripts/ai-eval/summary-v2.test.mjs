@@ -158,7 +158,8 @@ test('agenda block: main priority first, then her questions, rendered FIRST; omi
     assert.equal(empty.agendaBlock, null);
     const t = summaryToText(empty);
     assert.doesNotMatch(t, /WHAT I’D LIKE/);
-    assert.ok(t.split('\n')[3].startsWith('AREAS ('), 'no agenda heading, no "Not recorded" placeholder');
+    // No agenda heading, no "Not recorded" placeholder: the counts come straight after the meta line.
+    assert.ok(/^(AT A GLANCE|AREAS \()/.test(t.split('\n')[3]), 'no agenda heading, no "Not recorded" placeholder');
   }
 });
 
