@@ -43,6 +43,26 @@ class Settings(BaseSettings):
     # gpt-oss is a reasoning model: without this it spends the whole token cap thinking and
     # returns an empty reply. Set to "" for providers/models that don't accept the parameter.
     llm_reasoning_effort: str = "low"
+    # Sign-in emails (confirm your address, reset your password) go through Resend's HTTP API.
+    # Empty key = no emails: sign-up skips the confirmation step and password reset answers 503.
+    resend_api_key: str = ""
+    mail_from: str = "Zeeba Health <no-reply@zeebahealth.com>"
+    # Shown on the public privacy and terms pages. Set both on the server before launch: the law
+    # (UK GDPR Art. 13) wants the legal name of whoever is responsible for the data, not a brand.
+    support_email: str = "zamaniziba18@gmail.com"
+    legal_controller: str = "Zeeba Health"
+    # Paid plan (RevenueCat in front of Apple in-app purchase). All three empty = billing is off:
+    # the webhook answers 503 and everyone is on the free plan. The webhook secret is the value typed
+    # into RevenueCat's "Authorization header" box; the API key is a RevenueCat *secret* key (sk_...),
+    # used only from this server to read what someone has really bought.
+    revenuecat_webhook_secret: str = ""
+    revenuecat_api_key: str = ""
+    revenuecat_entitlement: str = "plus"
+    # Friends (/connections) is off for launch: invites are matched by email and it reads period
+    # dates from a table the app no longer writes. See WORKLOG 2026-11-11.
+    friends_enabled: bool = False
+    # /docs, /redoc and /openapi.json. Off unless API_DOCS=1 (local development).
+    api_docs: bool = False
 
     class Config:
         env_file = ".env"

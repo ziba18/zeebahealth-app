@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime, timezone
-from sqlalchemy import DateTime, String, Text
+from sqlalchemy import DateTime, ForeignKey, Index, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 from app.database import Base
 
@@ -17,9 +17,11 @@ class HealthRecord(Base):
     records without a migration each time. The server only validates `kind` and the size."""
 
     __tablename__ = "health_records"
+    # The list endpoint reads one user's records in created order.
+    __table_args__ = (Index("ix_health_records_user_created", "user_id", "created_at"),)
 
     id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    user_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
+    user_id: Mapped[str] = mapped_column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
     kind: Mapped[str] = mapped_column(String, nullable=False, index=True)
     data: Mapped[str] = mapped_column(Text, nullable=False)  # JSON object, serialised
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)

@@ -38,3 +38,4 @@ class RecordResponse(BaseModel):
 
 class RecordListResponse(BaseModel):
     records: list[RecordResponse]
+    next_cursor: str | None = None

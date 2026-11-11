@@ -6,8 +6,8 @@ from sqlalchemy.orm import Session
 from app.database import Base, get_db
 from app.dependencies import get_current_user
 from app.models import (
-    AlertLog, ConnectedAccount, CycleLog, CyclePrediction, EmergencyContact, HealthMetric,
-    HealthRecord, Profile, SymptomCapture, SymptomLog, User,
+    AlertLog, ConnectedAccount, CycleLog, CyclePrediction, EmailCode, EmergencyContact, Entitlement, HealthMetric,
+    HealthRecord, Profile, PurchaseEvent, SymptomCapture, SymptomLog, User,
 )
 from app.schemas.profile import ProfileResponse, ProfileUpdate
 from app.services.rate_limit import limit
@@ -44,7 +44,7 @@ def update_profile(
 
 
 # Columns that are credentials or secrets, never part of a data copy.
-_EXPORT_HIDDEN = {"hashed_password", "invite_token"}
+_EXPORT_HIDDEN = {"hashed_password", "invite_token", "code_hash"}
 _OWNER_COLUMNS = ("user_id", "owner_user_id", "viewer_user_id")
 
 
@@ -100,7 +100,7 @@ def delete_account(current_user: User = Depends(get_current_user), db: Session =
     """
     uid = current_user.id
     for model in (HealthRecord, CycleLog, SymptomLog, CyclePrediction, SymptomCapture,
-                  HealthMetric, AlertLog, EmergencyContact):
+                  HealthMetric, AlertLog, EmergencyContact, EmailCode, Entitlement, PurchaseEvent):
         db.query(model).filter(model.user_id == uid).delete(synchronize_session=False)
     db.query(ConnectedAccount).filter(
         or_(

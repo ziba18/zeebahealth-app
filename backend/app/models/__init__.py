@@ -8,6 +8,8 @@ from app.models.health import HealthMetric, AlertLog
 from app.models.social import ConnectedAccount, EmergencyContact
 from app.models.capture import SymptomCapture
 from app.models.record import HealthRecord
+from app.models.email_code import EmailCode
+from app.models.billing import Entitlement, PurchaseEvent
 
 __all__ = [
     "User", "Profile",
@@ -16,4 +18,6 @@ __all__ = [
     "ConnectedAccount", "EmergencyContact",
     "SymptomCapture",
     "HealthRecord",
+    "EmailCode",
+    "Entitlement", "PurchaseEvent",
 ]
