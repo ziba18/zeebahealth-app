@@ -58,7 +58,19 @@ interface Backend {
 }
 
 const serverBackend: Backend = {
-  list: async () => (await api.get<{ records: ServerRecord[] }>('/records')).records,
+  // The server sends pages (oldest first); keep asking until there is no next page.
+  list: async () => {
+    const all: ServerRecord[] = [];
+    let after: string | null = null;
+    do {
+      const page: { records: ServerRecord[]; next_cursor?: string | null } = await api.get(
+        after ? `/records?after=${encodeURIComponent(after)}` : '/records',
+      );
+      all.push(...page.records);
+      after = page.next_cursor ?? null;
+    } while (after);
+    return all;
+  },
   create: (kind, data) => api.post<ServerRecord>('/records', { kind, data }),
   update: async (id, data) => { await api.put<ServerRecord>(`/records/${id}`, { data }); },
   remove: async (id) => { await api.delete<void>(`/records/${id}`); },

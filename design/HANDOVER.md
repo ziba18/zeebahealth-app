@@ -123,7 +123,7 @@ Render has no environment groups (checked 9 Nov). The old EAS project (previous 
 ## 7. Open items, in priority order
 
 1. **Device check in Expo Go** (both appearances): native Apple button, blur, haptics, New York/SF Rounded rendering.
-2. ~~For my doctor redesign~~ — done 9 Nov: appointment row → the real page as paper (both modes, tap to read) →
+2. ~~For my doctor redesign~~ — **rebuilt 10 Nov as an editable report dashboard** (GP/Gynaecology order, At a glance, questions edited in place, per-section switches, quotes left out, coverage; see WORKLOG 2026-11-10). Earlier, 9 Nov: appointment row → the real page as paper (both modes, tap to read) →
    Prepare (what to raise, time span, visit type, sections) → Share PDF. Next idea: a "What I was told before" card.
 3. ~~Ship the rename to the server~~ — done 9 Nov (`583b4e7`). Remaining old-name items: §6b.
 4. GitHub repo stays **public** (owner, 9 Nov); description updated to Zeeba Health.
@@ -131,3 +131,24 @@ Render has no environment groups (checked 9 Nov). The old EAS project (previous 
 5. App icon: concepts A/B/C (Wren on bone / bone Wren on burgundy / monogram) — owner to choose.
 6. Android dark mode (currently light only).
 7. Remove `APPLE_ALLOW_EXPO_GO` before launch (see §5).
+9. **UK launch safety (11 Nov, local, not deployed; WORKLOG 2026-11-11).** Built: consent screen before any health
+   data, email confirmation + password reset by code, Friends off, app lock, paged `/records`, API docs off, UK GDPR
+   privacy page, two migrations (`a9c3e5f7b1d2`, `c2e4a6b8d0f1`), draft DPIA in `docs/compliance/DPIA.md`.
+   Sign-in order is now: verify email (password accounts, once email is set up) → consent → onboarding → app
+   (`lib/authRouting.ts`). Owner-only before launch:
+   - pay the ICO data protection fee;
+   - set on Render: `LEGAL_CONTROLLER`, `SUPPORT_EMAIL`, `RESEND_API_KEY`, `MAIL_FROM` (domain verified in Resend);
+     in EAS: `EXPO_PUBLIC_SUPPORT_EMAIL`;
+   - accept the Supabase, Render and Resend data processing agreements (Render and Resend are in the US);
+   - complete and sign the DPIA;
+   - App Store Connect: confirm the owning team is an organisation (5.1.1(ix)), redo App Privacy answers;
+   - a new build is required (app lock added a native module);
+   - test on a phone: sign-up → code → consent → note; forgot password; app lock; Apple sign-in.
+10. **Paid plan (11 Nov).** Server foundation built and tested (`backend/app/routers/billing.py`; WORKLOG 2026-11-11
+    evening); no purchase screen yet. Needs from the owner: the tier decision, a RevenueCat project (entitlement id
+    `plus`, webhook to `https://api.zeebahealth.com/billing/revenuecat` with an Authorization value), products in App
+    Store Connect, and the Paid Apps agreement + bank and tax details on the Apple team that owns the record (the
+    coworker's). Then: add `react-native-purchases`, sign in to RevenueCat with our user id, build the screen, add
+    RevenueCat to the privacy page and DPIA, tell people deleting an account to cancel the subscription in Apple
+    settings.
+11. Repo stays public for now (owner, 11 Nov). If it goes private, Actions minutes are metered (keep-warm workflow).

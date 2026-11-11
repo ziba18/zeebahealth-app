@@ -5,6 +5,170 @@ what was decided and why. Newest entries at the top.
 
 ---
 
+## 2026-11-11 — Security and scale audit; account-takeover fix and table hardening (local, not deployed)
+
+**Found (high):** sign-up with email + password never confirms the address, and Apple/Google sign-in finds the
+account by email. Someone could register a stranger's address, wait for her to sign in with Apple/Google, then read
+her notes with the password they chose.
+
+**Fixed:** `users.email_verified` (false for password sign-up, true for Apple/Google). The first provider-confirmed
+sign-in to an unconfirmed account removes its password and bumps `token_version` (`services/auth.py`
+`get_or_create_social_user`). Side effect: someone who really did sign up with a password and later uses
+Apple/Google with the same email signs in with Apple/Google from then on. Tests: `tests/test_social_takeover.py`.
+
+**Also changed:** `/auth/refresh` rate limited (30/min per IP); length/range caps on profile update and social
+sign-in fields; `health_records.user_id` foreign key (cascade) and `(user_id, created_at)` index.
+
+**Migration `a9c3e5f7b1d2` (runs on the next Render deploy, not applied yet):** the column, the index, the foreign
+key, a unique index on `lower(email)`, and `REVOKE ALL` from Supabase's `anon`/`authenticated` roles on the
+backend's tables. Checked first on the live database (read-only): 0 duplicate emails by case, 0 orphan records.
+SQL checked with `alembic upgrade f5b2c7d1a9e3:head --sql`; the chain cannot run on SQLite (an older migration
+adds a constraint) and there is no local Postgres, so it has not been executed anywhere.
+
+**Verified:** backend 189 passed; `tsc` clean. Git history scanned for secrets: only an old project's public anon
+key and README placeholders.
+
+### Later the same day — UK launch safety (owner: "fix all of these… security and privacy safe")
+
+All local on `design/native-midnight`, nothing committed, pushed or deployed.
+
+- **Explicit consent for health data.** New screen `app/(auth)/consent.tsx` (two switches, both off: 16 or over; agree
+  to storing health information). `routeAfterSignIn` sends everyone there until `users.health_consent_version`
+  equals `CONSENT_VERSION` (`constants/config.ts`, `'2026-11'`; change it to ask everyone again). Server:
+  `POST /auth/consent` stamps the time; creating or updating a record answers 403 without it.
+- **Email confirmation and password reset** by six-digit code (`services/email_codes.py`: keyed hash, 15 minutes,
+  five tries; `services/mailer.py` sends through Resend). Endpoints `/auth/verify-email`, `/auth/verify-email/resend`,
+  `/auth/forgot-password` (same answer for any address, email sent after the response), `/auth/reset-password`
+  (ends every earlier session). App: `verify-email.tsx`, rebuilt `forgot-password.tsx`. **Without `RESEND_API_KEY`
+  on the server nothing is emailed:** sign-up skips confirmation and the reset screen falls back to the support
+  address.
+- **Friends off** in the app (`FRIENDS_ENABLED` in `lib/features.ts`) and on the server (`FRIENDS_ENABLED` setting;
+  the router is not mounted). Removed from the privacy page. Turn all three back on together.
+- **Privacy page** rewritten for UK GDPR: controller, lawful bases, consent and how to withdraw it, rights, ICO
+  complaint route, transfers, Resend. Controller name and contact come from `LEGAL_CONTROLLER` / `SUPPORT_EMAIL`.
+- **App lock** (`lib/appLock.ts`, `expo-local-authentication`, switch on Profile): Face ID / Touch ID / passcode on
+  launch and after every trip to the background, through the existing `PrivacyCover`. New native module, so the
+  fingerprint changes: it needs a new build, not an update.
+- **Sign-out clears the chats kept on the phone.** `/docs`, `/redoc`, `/openapi.json` are off unless `API_DOCS=1`
+  (the daily health-check routine fetches `/docs`; point it at `/health` before it is ever re-enabled).
+- **`/records` is paged** (500 a page, `next_cursor`); the app loops until the last page.
+- Migration `c2e4a6b8d0f1` (consent columns, `email_codes` with RLS and no API-role privileges). Like `a9c3e5f7b1d2`
+  it has only been checked as generated SQL, not run on Postgres.
+- Draft DPIA and record of processing: `docs/compliance/DPIA.md` (owner must complete and sign).
+
+**Verified:** backend 197 passed (new: `tests/test_launch_safety.py`, end to end through the HTTP layer); `tsc`
+clean; `expo export --platform ios` bundles. **Not verified:** nothing was run on a phone; no email was actually
+sent (no Resend key); Face ID was not exercised.
+
+### Evening — repo private, RLS re-checked, paid-plan foundation
+
+- **Repo made private, then public again the same evening** (owner: "keep it public for now", after hearing that
+  private repos meter Actions minutes and the keep-warm workflow runs every 10 minutes).
+- **RLS re-checked on the live database (read-only):** every public table has row level security on with zero
+  policies, so Supabase's public key reads and writes nothing; no storage buckets; the app bundle contains no
+  Supabase key or client. The three functions the website calls (`join_waitlist`, `join_waitlist_v2`,
+  `submit_research_response`) only insert. `join_waitlist` (v1) has no length or format check and the site no longer
+  calls it: candidate to drop.
+- **Paid plan, server side only.** `entitlements` + `purchase_events` tables (migration `e6a8c0d2f4b3`),
+  `GET /billing/me`, `POST /billing/refresh`, `POST /billing/revenuecat` (webhook), `require_plus` dependency.
+  The app never sends a plan: the webhook and refresh both make the server ask RevenueCat
+  (`GET /v1/subscribers/{user id}`) and store that answer. Webhook is closed (503) until both RevenueCat settings
+  exist, needs the dashboard's Authorization value (constant-time compare), and a forged event with the right
+  secret still grants nothing. Tests: `tests/test_billing.py` (206 passed in total). **Not verified:** the shape of
+  RevenueCat's real response (no account yet); no purchase screen in the app.
+
+### Night — server deployed
+
+Backend-only commit (`816da99` here, cherry-picked as `34bad30`) pushed by the owner to `mvp-symptom-capture`; Render
+deployed in about a minute. Before the push the three migrations were run on the live database inside a rolled-back
+transaction. After: alembic head `e6a8c0d2f4b3`; three new tables with RLS on; no app table readable by Supabase's
+API roles; 5 users and 11 records unchanged. Live checks: `/health` 200, `/docs` and `/openapi.json` 404,
+`/connections/friends` 404, `/billing/me` and `/records` 401 without a token, `/billing/revenuecat` 503 (closed, no
+keys yet), `/auth/forgot-password` 503 (no Resend key yet), `/privacy` shows the new wording.
+RevenueCat (owner's existing account): project renamed Zeeba Health, entitlement `plus` created, webhook form filled
+except the Authorization value (owner pastes it, and into Render as `REVENUECAT_WEBHOOK_SECRET`).
+The app-side changes are still uncommitted.
+
+**Left as it is, on purpose:** rate limits and quotas stay in one process's memory (correct for one server; move
+to a shared store before adding a second); `/chat` still holds a worker thread while the model answers (chat is off
+in launch builds); the Render free plan still sleeps (paid plan = owner's decision); `support-site/index.html`
+still says reset by email isn't available (true until the Resend key is set).
+
+**Only the owner can do (before launch):** pay the ICO data protection fee; set `LEGAL_CONTROLLER`,
+`SUPPORT_EMAIL`, `RESEND_API_KEY`, `MAIL_FROM` on Render and `EXPO_PUBLIC_SUPPORT_EMAIL` in EAS; verify the
+sending domain in Resend; accept the Supabase / Render / Resend data processing agreements; complete and sign the
+DPIA; check in App Store Connect whether the team that owns the record is an organisation (guideline 5.1.1(ix));
+update the App Privacy answers; remove `APPLE_ALLOW_EXPO_GO`.
+
+---
+
+## 2026-11-10 (later) — Today redesigned as Record → Prove → Reach; 0–10 is now a slider everywhere
+
+**Why:** owner: pain level should be a slider; Today's items "look very random", no relation to the app's purpose.
+Before: seven unrelated blocks (Wren card, topic chips, 0–10 tap row, This week tiles, appointment strip, latest
+note, chat link).
+
+**Research:** 0–10 numeric scale with end anchors only (IMMPACT core measure; "No pain" … "Worst imaginable");
+phone sliders are valid but suffer finger slip and imprecision, so the slider snaps to integers, always shows the
+number and saves on an explicit Log, never on release; no default thumb (avoids anchoring). Apple State of Mind:
+one slider + optional details, short. Diary studies: shorter entries, visible acknowledgement, evening routine help
+people keep going.
+
+**What changed:**
+- `components/zeeba/kit-parts/PainSlider.tsx` (new, exported from kit): ramp-coloured track filled to her number,
+  11 ticks, digit in the thumb, tap or drag, haptic per step, adjustable for VoiceOver, arrow keys on web,
+  optional big readout and Clear. `SeverityRow` now renders it, so the note flow's Usually / At worst and the entry
+  detail use the same slider.
+- Today (`app/(tabs)/today/index.tsx`): three numbered steps with `PillarHeader` (eyebrow + title + why):
+  1 RECORD "Today's check-in" = one `CheckInCard` (Wren prompt → pain slider → Log pain N/10 → in your own words
+  (speak/type) → other areas → "On your record today" chips that open each entry); 2 PROVE "This week on your
+  record" = week tiles + latest note (Evidence link); 3 REACH "Your next appointment" / "For your doctor" = the
+  appointment card ("Open my report"), with a line on how close it is.
+- Removed unused HeroCard, StarterChips, HeroNumberCard, HeroChip, RoughDayCard.
+
+**Verified:** `tsc` clean, iOS export OK, web preview light + dark; slider driven in headless Chrome: tap at 30% → 3,
+drag to 80% → 8, keyboard ← ← → 6, Log saves (toast "Pain 6/10 is on your record."), slider resets, today's chips
+1 → 2. **Not yet:** real iPhone (native PanResponder inside the ScrollView and sheets).
+
+---
+
+## 2026-11-10 — For my doctor rebuilt as an editable report dashboard (branch design/native-midnight, uncommitted)
+
+**Why:** owner wants the doctor page professional, exportable, editable in place, a real dashboard, useful at a GP
+or a gynaecology (OBGYN) appointment.
+
+**Research:** Visible's Health Report PDF (symptom prevalence/burden, periods, meds; fixed, no editing), Clue's
+doctor's report (6-cycle heatmap of counts), Guava "Prepare for visit" (by visit type, prioritised questions, PDF/
+email/code), Bearable (tells users to screenshot charts and prepare by hand). NICE: keep a symptom diary; a gynae
+history asks about bleeding (flooding, clots, pads/day, between periods, after sex), pain with sex, bowel, bladder.
+Patient-data studies: "text summary + graph" rated most useful; the Powsner–Tufte one-page summary puts the key
+numbers first. Nobody else lets her shape the report before it goes out, so that is the gap we fill.
+
+**What changed:**
+- Screen (`app/(tabs)/doctor/index.tsx`): Report for **GP · Gynaecology** (order only), time span, visit type →
+  Preview the page → **At a glance** tiles → **agenda editor** (`AgendaEditor.tsx`: main priority chips + numbered
+  questions, add/edit/remove/dictate in place; same saved note format) → **In the report**: every section is a card
+  with its own include switch (`ReportDashboard.tsx`), quotes can be left out (next one fills in, "Put back"),
+  compact calendar heatmap (weeks × days, ring = bleeding, dashed ring = spotting) → **What this report covers**
+  (n of 13 areas + the empty ones). Single column on all widths (the web shell is too narrow for two).
+- Model (`lib/records/summary.ts`): `audience` + `sectionOrder()`, `glance` (counts and her highest number; no
+  threshold, no average), `spanDays` (one shared denominator), bleeding answers on Periods (`details`), new
+  **Bowel and bladder** section, "Bleeding after sex" moved under the private Sex & intimacy switch,
+  `hiddenQuotes`/`quoteKey`/`wordsHidden`, `coverageLine()` printed at the end of the page/PDF.
+- PDF + on-screen page: "At a glance" band right after her agenda (agenda stays first, blueprint §3.7a).
+  Share as text (`shareSummaryText`) in the full-page sheet, for practice online forms / portal messages.
+- Removed the now-unused `AgendaField`, `PageOneCards`, `SectionToggles`.
+
+**Verified:** `tsc` clean; `expo export --platform ios` OK; web preview light + dark, phone + desktop; in-place edits
+driven in headless Chrome (gynae switch, two questions typed, quote left out, section off). Summary tests all pass
+(fidelity 300 docs 0 problems, redline/tone 0 hits, v2 10/10, NG73, family history) plus new
+`scripts/ai-eval/doctor-dashboard.test.mjs` (6/6). The fidelity test caught a "7/10 or more" threshold in the first
+draft; removed. Note: these tests need a `react-native` stub to load in Node (they fail on import without one; that
+predates this change). The sample report is now 3 A4 pages (was 2); page 1 carries the summary.
+**Not yet:** a real iPhone check in Expo Go.
+
+---
+
 ## 2026-10-24 — Merged AI Brain + Safety agent work; output guard live on /chat
 
 Owner approved. Merged into `mvp-symptom-capture` and pushed (Render redeploys the backend):

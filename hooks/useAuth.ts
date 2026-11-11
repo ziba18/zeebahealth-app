@@ -4,6 +4,7 @@ import { useAuthStore, type AuthUser } from '../stores/authStore';
 import { syncDailyLogReminder } from '../lib/notifications';
 import type { Profile } from '../types/database';
 import { IS_PREVIEW, PREVIEW_USER_ID } from '../lib/preview/flag';
+import { CONSENT_VERSION } from '../constants/config';
 import { PREVIEW_EMAIL, PREVIEW_PROFILE } from '../lib/preview/seed';
 
 let authInitStarted = false;
@@ -19,7 +20,7 @@ function startAuthInit() {
   // Design preview: signed in as "Sam" immediately, no tokens, no network.
   if (IS_PREVIEW) {
     const { setSession, setUser, setProfile } = useAuthStore.getState();
-    setUser({ id: PREVIEW_USER_ID, email: PREVIEW_EMAIL });
+    setUser({ id: PREVIEW_USER_ID, email: PREVIEW_EMAIL, email_verified: true, health_consent_version: CONSENT_VERSION });
     setProfile(PREVIEW_PROFILE);
     setSession({ access_token: 'design-preview' });
     return;

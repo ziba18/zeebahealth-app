@@ -12,6 +12,11 @@ export interface AuthSession {
 export interface AuthUser {
   id: string;
   email: string;
+  email_verified?: boolean;
+  /** The server wants the emailed code before anything else (password accounts, once email is set up). */
+  verification_required?: boolean;
+  /** Which consent wording she agreed to for storing health information; null = not asked yet. */
+  health_consent_version?: string | null;
 }
 
 interface AuthState {
@@ -28,6 +33,8 @@ interface AuthState {
   register: (email: string, password: string, display_name?: string) => Promise<void>;
   loginWithApple: (idToken: string, displayName?: string | null) => Promise<void>;
   loginWithGoogle: (idToken: string, displayName?: string | null, accessToken?: string) => Promise<void>;
+  /** Finish "forgot password": the emailed code plus a new password signs her in. */
+  resetPassword: (email: string, code: string, newPassword: string) => Promise<void>;
   signOut: () => Promise<void>;
   /** Deletes the account and all its data on the server, then signs out. */
   deleteAccount: () => Promise<void>;
@@ -109,8 +116,24 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ session: { access_token: tokens.access_token }, user, profile, isInitialized: true, isLoading: false });
   },
 
+  resetPassword: async (email, code, newPassword) => {
+    const tokens = await api.post<{ access_token: string; refresh_token: string }>(
+      '/auth/reset-password',
+      { email, code, new_password: newPassword },
+    );
+    await saveTokens(tokens.access_token, tokens.refresh_token);
+    const [user, profile] = await Promise.all([
+      api.get<AuthUser>('/auth/me'),
+      api.get<Profile>('/me'),
+    ]);
+    set({ session: { access_token: tokens.access_token }, user, profile, isInitialized: true, isLoading: false });
+  },
+
   signOut: async () => {
     await clearOutbox(); // notes still waiting to send belong to this account
+    // Chats live only on this phone. Signing out hands the phone back, so they go too.
+    const signedInAs = useAuthStore.getState().user?.id;
+    if (signedInAs) await clearLocalChats(signedInAs);
     await deleteLastSharedPdf();
     await clearTokens();
     set({ session: null, user: null, profile: null, isLoading: false, isInitialized: true });

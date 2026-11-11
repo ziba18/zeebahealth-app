@@ -7,9 +7,35 @@ branch map, design-system architecture (dynamic Light/Dark colour tokens — rea
 (Google can't run in Expo Go; Apple works there only via server env `APPLE_ALLOW_EXPO_GO`, remove before launch) and
 the open-items list. App Store record: Apple ID 6832575398 (see `store/APP_STORE.md`; do NOT submit until the owner says). Design must be research-led (owner rejected a self-picked palette 0/100 on 9 Nov).
 
+## UK LAUNCH SAFETY (2026-11-11; server part DEPLOYED that evening, app part still uncommitted on `design/native-midnight`)
+Owner wants the app security- and privacy-safe for a UK launch. Read WORKLOG 2026-11-11 and `docs/compliance/DPIA.md`
+(draft; owner signs) before touching sign-in, records or the privacy page. Rules that now hold:
+- **No health data without explicit consent.** Sign-in order: verify email (password accounts, only when the server
+  has `RESEND_API_KEY`) → consent screen → onboarding → app (`lib/authRouting.ts`). The server refuses to save a
+  record without `users.health_consent_at`. Changing the consent wording means bumping `CONSENT_VERSION`.
+- **Friends is off** in three places that must move together: `lib/features.ts`, server `FRIENDS_ENABLED`, privacy page.
+- **Chat and analytics are off in launch builds.** Switching either on needs its own consent line, a processor
+  agreement and new App Privacy answers first.
+- The privacy page (`backend/app/routers/legal.py`) must stay true to the code: any new provider or kind of data
+  goes there and in the DPIA in the same change.
+- `/docs` is off in production (`API_DOCS=1` locally). The health-check routine's `/docs` fetch will 404.
+- Server commit `34bad30` is live on Render (`mvp-symptom-capture`; same change is `816da99` on `design/native-midnight`). Migrations
+  `a9c3e5f7b1d2`, `c2e4a6b8d0f1`, `e6a8c0d2f4b3` are applied. Claude cannot push to the deployed branch (blocked as a
+  production deploy): prepare a local branch and give the owner the `git push` line.
+- **Paid plan (server foundation only, 2026-11-11).** `backend/app/services/billing.py` + `routers/billing.py`:
+  Apple in-app purchase through RevenueCat; the plan lives in its own `entitlements` table that only the server
+  writes, after asking RevenueCat itself. Never add a client-writable field that affects plan, quota or price, and
+  put `require_plus` on any endpoint that costs money to serve. Off until `REVENUECAT_API_KEY` and
+  `REVENUECAT_WEBHOOK_SECRET` are set. No purchase screen exists in the app yet (needs the owner's tier decision
+  and a RevenueCat project). Migration `e6a8c0d2f4b3`.
+- If the repo is ever made private: GitHub Actions minutes become metered (2,000 a month free) and the keep-warm
+  workflow on `main` runs every 10 minutes.
+- Owner-only steps (ICO fee, legal controller name, support mailbox, Resend, processor agreements, Apple team type):
+  `design/HANDOVER.md` §7 item 9.
+
 ## NAME: the app is now **Zeeba Health** (owner, 2026-11-08)
 Zeeba Health was renamed Zeeba Health ("Zeeba" only as a casual short form in copy; never "Zeeba Health" in anything a user sees).
-Repo `ziba18/zeebahealth-app` is PUBLIC and stays public (owner, 2026-11-09), folder `~/projects/zeebahealth-app`. Older notes below still say Zeeba Health; read them as Zeeba Health.
+Repo `ziba18/zeebahealth-app` is PUBLIC (owner, 2026-11-09; made private for a few hours on 2026-11-11, then public again "for now" at the owner's request), folder `~/projects/zeebahealth-app`. Older notes below still say Zeeba Health; read them as Zeeba Health.
 Identifiers (2026-11-08, new App Store listing): bundle id / Android package `com.zeebahealth.app`, Expo slug + URL scheme
 `zeebahealth`, new EAS project `@zamaniziba18/zeebahealth` (id 69e41ccd-094f-4227-a786-3a2ade8834da; the old EAS
 project and App Store app 6762570606 belong to Zeeba Health), on-device keys `zeeba.*` / `zeeba_*`. Backend: Render service

@@ -114,6 +114,7 @@ const config: ExpoConfig = {
       },
     ],
     'expo-apple-authentication',
+    ['expo-local-authentication', { faceIDPermission: 'Zeeba Health uses Face ID to keep your notes locked on this phone.' }],
     ...googlePlugin,
   ],
   experiments: {

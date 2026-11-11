@@ -1,7 +1,8 @@
 import React, { useCallback, useState } from 'react';
 import { GroupHeading } from '../../../components/zeeba/records/GroupedRows';
 import { View } from 'react-native';
-import { useFocusEffect } from 'expo-router';
+import { Redirect, useFocusEffect } from 'expo-router';
+import { FRIENDS_ENABLED } from '../../../lib/features';
 import { colors, space } from '../../../constants/zeebaUI';
 import {
   Button, Card, ConfirmCard, InlineError, ScreenLarge, TextField, Txt,
@@ -30,7 +31,7 @@ interface FriendSummary {
   cycle_logs: CyclePhaseLog[];
 }
 
-export default function FriendsScreen() {
+function FriendsScreen() {
   const user = useAuthStore((s) => s.user);
   const profile = useAuthStore((s) => s.profile);
 
@@ -198,4 +199,9 @@ export default function FriendsScreen() {
       ) : null}
     </ScreenLarge>
   );
+}
+
+/** Friends is off for launch (lib/features.ts); a stray link lands back on Profile. */
+export default function FriendsGate() {
+  return FRIENDS_ENABLED ? <FriendsScreen /> : <Redirect href={'/(tabs)/profile' as any} />;
 }

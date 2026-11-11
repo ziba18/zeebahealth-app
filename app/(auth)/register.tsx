@@ -8,6 +8,7 @@ import { LegalLinks } from '../../components/auth/LegalLinks';
 import { useAuthStore } from '../../stores/authStore';
 import { ApiError } from '../../lib/api';
 import { track } from '../../lib/analytics';
+import { routeAfterSignIn } from '../../lib/authRouting';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -41,7 +42,7 @@ export default function RegisterScreen() {
     try {
       await register(trimmedEmail.toLowerCase(), password, trimmedName);
       track('Signup Completed', { method: 'email' });
-      router.replace('/(auth)/onboarding/basics');
+      router.replace(routeAfterSignIn(useAuthStore.getState().profile) as any);
     } catch (err) {
       setLoading(false);
       if (err instanceof ApiError && err.status === 400) setErrors((e) => ({ ...e, email: 'There is already an account with this email. Try signing in.' }));

@@ -6,12 +6,12 @@ import { routeAfterSignIn } from '../lib/authRouting';
 
 export default function Index() {
   const router = useRouter();
-  const { session, profile, isInitialized } = useAuth();
+  const { session, profile, user, isInitialized } = useAuth();
 
   useEffect(() => {
     if (!isInitialized) return;
-    router.replace((session ? routeAfterSignIn(profile) : '/(auth)/welcome') as any);
-  }, [isInitialized, session, profile]); // eslint-disable-line react-hooks/exhaustive-deps
+    router.replace((session ? routeAfterSignIn(profile, user) : '/(auth)/welcome') as any);
+  }, [isInitialized, session, profile, user]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return <LoadingScreen message="Opening Zeeba Health…" />;
 }

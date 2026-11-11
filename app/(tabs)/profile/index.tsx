@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ScrollView, View, type ScrollViewInstance } from 'react-native';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { space } from '../../../constants/zeebaUI';
@@ -7,13 +7,15 @@ import {
   Button, Card, ConfirmCard, SafetyLine, ScreenLarge, Txt, showToast,
 } from '../../../components/zeeba/kit';
 import type { IconName } from '../../../components/ui/Icon';
-import { Group, GroupHeading, GroupRow } from '../../../components/zeeba/records/GroupedRows';
+import { Group, GroupHeading, GroupRow, GroupSwitchRow } from '../../../components/zeeba/records/GroupedRows';
 import { savedLabel } from '../../../components/zeeba/records/RecordsList';
 import { KIND_INFO, firstParam, type RecordDataKind } from '../../../components/zeeba/records/recordKinds';
 import { useAuthStore } from '../../../stores/authStore';
 import { useRecordsStore } from '../../../stores/recordsStore';
 import { isHumanName } from '../../../lib/humanName';
 import { IS_PREVIEW } from '../../../lib/preview/flag';
+import { FRIENDS_ENABLED } from '../../../lib/features';
+import { canAppLock, isAppLockOn, setAppLock } from '../../../lib/appLock';
 import { cancelAllScheduledNotifications } from '../../../lib/notifications';
 import { openLegal } from '../../../components/auth/LegalLinks';
 
@@ -43,6 +45,12 @@ export default function ProfileScreen() {
   const [confirmingSignOut, setConfirmingSignOut] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [lockAvailable, setLockAvailable] = useState(false);
+  const [lockOn, setLockOn] = useState(false);
+  useEffect(() => {
+    canAppLock().then(setLockAvailable);
+    isAppLockOn().then(setLockOn);
+  }, []);
   const scrollRef = useRef<ScrollViewInstance | null>(null);
 
   const name = isHumanName(profile?.display_name) ? profile!.display_name!.trim() : '';
@@ -129,12 +137,22 @@ export default function ProfileScreen() {
           label="Reminders and notifications"
           onPress={() => router.push('/(tabs)/profile/settings' as any)}
         />
-        <GroupRow
-          icon="users"
-          label="Friends"
-          detail="Share only your cycle phase with people you invite"
-          onPress={() => router.push('/(tabs)/profile/friends' as any)}
-        />
+        {FRIENDS_ENABLED ? (
+          <GroupRow
+            icon="users"
+            label="Friends"
+            detail="Share only your cycle phase with people you invite"
+            onPress={() => router.push('/(tabs)/profile/friends' as any)}
+          />
+        ) : null}
+        {lockAvailable ? (
+          <GroupSwitchRow
+            label="App lock"
+            detail="Ask for Face ID, Touch ID or your passcode when Zeeba Health opens"
+            value={lockOn}
+            onChange={async (v) => { setLockOn(await setAppLock(v)); }}
+          />
+        ) : null}
       </Group>
 
       <GroupHeading title="Where your notes are kept" style={{ marginTop: space.xxl }} />

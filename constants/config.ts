@@ -17,3 +17,11 @@ export const LegalUrls = {
   privacy: `${Config.apiUrl}/privacy`,
   terms: `${Config.apiUrl}/terms`,
 };
+
+// Where "email us" goes. Set EXPO_PUBLIC_SUPPORT_EMAIL to the support mailbox before launch.
+export const SUPPORT_EMAIL = process.env.EXPO_PUBLIC_SUPPORT_EMAIL ?? 'zamaniziba18@gmail.com';
+
+// The wording of the health-information consent screen (app/(auth)/consent.tsx). Change this
+// whenever that wording changes in substance: everyone is then asked again, and the server keeps
+// which version each person agreed to.
+export const CONSENT_VERSION = '2026-11';
