@@ -26,3 +26,10 @@ def get_current_user(
     if not user or not user.is_active or user.token_version != version:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
     return user
+
+
+def require_health_consent(current_user: User = Depends(get_current_user)) -> User:
+    """Health information is stored only after explicit consent (POST /auth/consent)."""
+    if not current_user.health_consent_at:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Consent is needed before saving health information")
+    return current_user

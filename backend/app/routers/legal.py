@@ -7,10 +7,11 @@ update this file whenever the app starts collecting or sharing something new.
 from fastapi import APIRouter
 from fastapi.responses import HTMLResponse
 
+from app.config import settings
+
 router = APIRouter(tags=["legal"])
 
-CONTACT_EMAIL = "zamaniziba18@gmail.com"
-EFFECTIVE_DATE = "2 October 2026"
+EFFECTIVE_DATE = "11 November 2026"
 
 # Colours from the app's "Warm Paper, Deep Ink" palette (constants/zeebaUI.ts).
 _PAGE = """<!doctype html>
@@ -48,6 +49,10 @@ _PRIVACY = """
 What you record is sensitive health information, so this page explains plainly what we
 store, why, who else handles it, and how to delete it.</p>
 
+<h2>Who is responsible</h2>
+<p>{controller} is the data controller: the one responsible for your information under UK data
+protection law. You can reach us at <a href="mailto:{email}">{email}</a>.</p>
+
 <h2>What we store</h2>
 <ul>
   <li><strong>Your account:</strong> your email address and name. If you sign up with an
@@ -58,55 +63,77 @@ store, why, who else handles it, and how to delete it.</p>
   appointments, medicines, health history and notes for your doctor.</li>
   <li><strong>Your settings:</strong> your usual cycle and period length, when your last period
   started, time zone, and reminder preferences.</li>
-  <li><strong>Friends:</strong> if you invite someone or accept an invitation, we store that
-  connection and the invited email address.</li>
+  <li><strong>Your consent:</strong> the date and time you agreed to us storing your health
+  information, and which wording you saw.</li>
+</ul>
+
+<h2>Why we are allowed to</h2>
+<ul>
+  <li><strong>Your health information</strong> (symptoms, period days, medicines, health history
+  and notes) is stored only with your <strong>explicit consent</strong>, which the app asks for
+  before you record anything (UK GDPR Article 6(1)(a) and Article 9(2)(a)). You can withdraw it at
+  any time by deleting your account, which deletes the information too.</li>
+  <li><strong>Your account details and settings</strong> are used because we need them to provide
+  the app you signed up for (Article 6(1)(b)).</li>
+  <li><strong>Keeping the service secure</strong>, such as limiting repeated sign-in attempts, is
+  in our legitimate interests and yours (Article 6(1)(f)).</li>
 </ul>
 
 <h2>How we use it</h2>
 <ul>
   <li>To run the app for you: keeping you signed in, saving what you record, and building your
   summary for your doctor.</li>
+  <li>To email you a code when you confirm your address or reset your password. These are the
+  only emails the app sends.</li>
   <li>Reminders are scheduled on your phone; we don't send them from our servers.</li>
   <li>If you use voice input, your speech is turned into text on your phone by Apple's speech
   recognition. We don't receive audio recordings.</li>
 </ul>
 <p>We don't sell your information, show you ads, or use it for advertising. We don't track
-you across other apps or websites.</p>
+you across other apps or websites. Nothing in the app makes decisions about you automatically,
+and it never tells you what condition you might have.</p>
 
 <h2>Who can see it</h2>
 <ul>
   <li><strong>You.</strong> Your records are private to your account.</li>
-  <li><strong>Friends you connect with</strong> see your name and your current cycle phase. To
-  work out the phase, their app receives your usual cycle and period length and the dates of
-  your last 12 periods. They never receive your symptoms, notes or other records. You can
-  remove a friend at any time, which stops this sharing.</li>
   <li><strong>Your doctor</strong>, only if you choose to show or share your summary yourself.</li>
   <li><strong>Our service providers</strong>, which store and run things for us and may not use
   your information for anything else: Render (runs our server, in the United States), Supabase
-  (hosts our database, in the European Union, Ireland), Apple and Google (only if you sign in
-  with them), Groq (if you use the chat on Today, your messages are sent to Groq's AI model to
+  (hosts our database, in the European Union, Ireland), Resend (sends the sign-in code emails,
+  in the United States; it receives your email address and the code, nothing else), Apple and
+  Google (only if you sign in with them), Groq (if you use the chat on Today, your messages are sent to Groq's AI model to
   write a reply; attached photos and files stay on your phone), Mixpanel (product analytics:
   which setup steps you finish, with a random app ID, your device type and app version, never
   your name, email, symptoms or notes), and Expo (delivers app updates, and receives standard technical details such as
   your device type and IP address when the app checks for an update).</li>
 </ul>
+<p>Some of these providers are outside the UK. Where they are, the information is covered by
+the safeguards UK law requires for international transfers (an adequacy decision, or standard
+contractual clauses with the UK addendum).</p>
 <p>We will disclose information if the law requires us to.</p>
 
 <h2>How it is protected</h2>
 <p>Information travels between the app and our server over encrypted connections (HTTPS).
 Your sign-in is kept in your phone's secure storage. Only the account that created a record
-can read it through the app.</p>
+can read it through the app. You can also lock the app with Face ID, Touch ID or your
+passcode (Profile &rarr; App lock).</p>
 
 <h2>Keeping and deleting your information</h2>
 <p>We keep your information for as long as you have an account. You can delete your account
 at any time in the app: <strong>Profile &rarr; Delete account</strong>. That permanently
 deletes your account and everything you've saved, straight away. Copies can remain in our
-providers' backups for a short time before they are overwritten. You can also email us to ask
-for a copy of your information, to correct it, or to delete it.</p>
+providers' backups for a short time before they are overwritten.</p>
+
+<h2>Your rights</h2>
+<p>Under UK data protection law you can ask us for a copy of your information, ask us to
+correct it, delete it, or limit how we use it, receive it in a form you can take elsewhere,
+and withdraw your consent at any time. Email us and we will answer within one month. If you
+are unhappy with how we have handled your information, you can complain to the Information
+Commissioner's Office at <a href="https://ico.org.uk/make-a-complaint/">ico.org.uk</a>.</p>
 
 <h2>Children</h2>
 <p>Zeeba Health is not meant for children under 16, and we don't knowingly collect their
-information.</p>
+information. The app asks you to confirm you are 16 or over before you record anything.</p>
 
 <h2>Changes</h2>
 <p>If we change what we collect or how we use it, we'll update this page and its date, and
@@ -157,7 +184,8 @@ before a significant change takes effect.</p>
 
 
 def _render(title: str, body: str) -> HTMLResponse:
-    return HTMLResponse(_PAGE.format(title=title, body=body, date=EFFECTIVE_DATE, email=CONTACT_EMAIL))
+    body = body.replace("{controller}", settings.legal_controller).replace("{email}", settings.support_email)
+    return HTMLResponse(_PAGE.format(title=title, body=body, date=EFFECTIVE_DATE, email=settings.support_email))
 
 
 @router.get("/privacy", response_class=HTMLResponse, include_in_schema=False)

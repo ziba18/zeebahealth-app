@@ -67,14 +67,27 @@ def get_or_create_social_user(db: Session, email: str, display_name: str | None 
     """Find a user by email, creating one (with no password — OAuth-only) if none exists."""
     user = get_user_by_email(db, email)
     if user:
+        if not user.email_verified:
+            # Apple/Google has now proved who owns this address. Sign-up with a password never confirmed it,
+            # so a password set before this moment may belong to someone who registered the address first
+            # in order to share the account later. Remove it and end every session made with it.
+            if user.hashed_password:
+                user.hashed_password = None
+                user.token_version += 1
+            user.email_verified = True
+            db.commit()
+            db.refresh(user)
         return user
-    return create_user(db, email, password=None, display_name=display_name)
+    return create_user(db, email, password=None, display_name=display_name, email_verified=True)
 
 
-def create_user(db: Session, email: str, password: str | None, display_name: str | None = None) -> User:
+def create_user(
+    db: Session, email: str, password: str | None, display_name: str | None = None, email_verified: bool = False,
+) -> User:
     user = User(
         email=email.strip().lower(),
         hashed_password=hash_password(password) if password else None,
+        email_verified=email_verified,
     )
     db.add(user)
     db.flush()  # write to DB but don't commit yet — we need user.id for the profile

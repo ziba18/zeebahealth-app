@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime, timezone
-from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, false
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database import Base
 
@@ -17,8 +17,15 @@ class User(Base):
     email: Mapped[str] = mapped_column(String, unique=True, nullable=False, index=True)
     hashed_password: Mapped[str | None] = mapped_column(String, nullable=True)  # null for OAuth users
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    # True once Apple or Google has confirmed this address belongs to the person signing in. Email-and-password
+    # sign-up does not confirm the address, so those accounts start False (see get_or_create_social_user).
+    email_verified: Mapped[bool] = mapped_column(Boolean, default=False, server_default=false(), nullable=False)
     # Bumped to sign the account out everywhere: tokens carry the number they were issued with.
     token_version: Mapped[int] = mapped_column(Integer, default=0, server_default="0", nullable=False)
+    # Explicit consent to store health information (UK GDPR Art. 9(2)(a)): when she gave it and which
+    # wording she saw. Null = not given yet; the records endpoints refuse to store anything until it is.
+    health_consent_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    health_consent_version: Mapped[str | None] = mapped_column(String, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
     profile: Mapped["Profile"] = relationship("Profile", back_populates="user", uselist=False)

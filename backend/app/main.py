@@ -6,11 +6,13 @@ from sqlalchemy import text
 from sqlalchemy.orm import Session
 from app.config import settings
 from app.database import get_db
-from app.routers import auth, profiles, connections, chat, records, legal, basket_buddy
+from app.routers import auth, profiles, connections, chat, records, legal, basket_buddy, billing
 
 MAX_BODY_BYTES = 256 * 1024
 
-app = FastAPI(title="Zeeba Health API", version="1.0.0")
+# The interactive API pages describe every endpoint to anyone who asks; they are for development only.
+_docs = {} if settings.api_docs else {"docs_url": None, "redoc_url": None, "openapi_url": None}
+app = FastAPI(title="Zeeba Health API", version="1.0.0", **_docs)
 
 
 @app.exception_handler(RequestValidationError)
@@ -46,10 +48,12 @@ async def security_headers(request, call_next):
 
 app.include_router(auth.router)
 app.include_router(profiles.router)
-app.include_router(connections.router)
+if settings.friends_enabled:
+    app.include_router(connections.router)
 app.include_router(chat.router)
 app.include_router(records.router)
 app.include_router(legal.router)
+app.include_router(billing.router)
 app.include_router(basket_buddy.router)
 
 
