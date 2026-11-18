@@ -41,12 +41,15 @@ settled; tagline on website and pitch now, App Store text at submission.
 - **Consent etc.:** consent point 1 now "symptoms and pain, period days, treatments you have tried, appointments
   and what was said at them, how it affects your work, plans and sleep, health history, notes";
   `CONSENT_VERSION` `2026-11` → `2026-12` (everyone is asked again). Privacy page (`legal.py`, effective date 18 Nov)
-  lists the new data and clinician names; **not deployed** (owner pushes). DPIA §3 row updated, §5 risks 12–14
+  lists the new data and clinician names. **Deployed 18 Nov** at the owner's request: branch
+  `server/privacy-2026-11-18` (`0edccd6`, only `legal.py`, on top of live `34bad30`) pushed to `mvp-symptom-capture`;
+  https://api.zeebahealth.com/privacy served it about 75 s later (effective date 18 November 2026). DPIA §3 row updated, §5 risks 12–14
   (time off work seen by an employer, clinicians named in notes, counts read as a verdict). Delete-account text
   says treatments.
 - **Website (`~/projects/zeebahealth-site`, not git):** title "Zeeba Health · Builds your case", og:title and the
-  hero lead start "Other apps track your cycle. Zeeba builds your case." Not deployed (owner runs `vercel deploy
-  --prod` + the alias step). Backup of the old page in this session's scratchpad only.
+  hero lead start "Other apps track your cycle. Zeeba builds your case." Deployed the same day at the owner's
+  request (`vercel deploy --prod`, deployment `dpl_5J4nL6aZw2jeXo4SawGDSx2x3Z38`), alias zeebahealth.vercel.app moved
+  to it; both addresses checked live. Backup of the old page in this session's scratchpad only.
 - **Not done (as recommended):** "Your case" group on the Evidence tab; App Store text (at submission); show page 1
   to 2–3 GPs; voice, clinician co-design, wearables.
 
