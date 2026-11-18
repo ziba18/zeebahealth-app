@@ -8,6 +8,7 @@ import { useAuthStore } from '../../../stores/authStore';
 import { isHumanName } from '../../../lib/humanName';
 import { AnimatedPressable, usePressSpring } from './pressSpring';
 import { haptics } from '../../../lib/haptics';
+import { useTourTarget } from '../../../lib/tour';
 import { Icon, type IconName } from '../../ui/Icon';
 import { AddFieldChip, Button, type ButtonVariant } from './controls';
 import { Quote, Txt } from './Txt';
@@ -36,7 +37,7 @@ export function ScreenLarge({
   wide?: boolean;
   /** Small ZEEBA HEALTH wordmark above the title (sign in / register), so the auth screens carry the brand. */
   brand?: boolean;
-  /** iOS inset-grouped screens (Profile, Settings): sunken background behind white groups. */
+  /** iOS inset-grouped screens (Settings and its pages). Same canvas as every screen since 11 Nov 2026; kept so callers need not change. */
   grouped?: boolean;
 }) {
   const scrollY = React.useRef(new Animated.Value(0)).current;
@@ -57,7 +58,7 @@ export function ScreenLarge({
     </View>
   );
   return (
-    <SafeAreaView edges={["top"]} role="main" style={[styles.screen, grouped && { backgroundColor: colors.sunken }]}>
+    <SafeAreaView edges={["top"]} role="main" style={styles.screen}>
       {scroll ? (
         <Animated.ScrollView
           ref={scrollRef as any}
@@ -79,7 +80,7 @@ export function ScreenLarge({
         </View>
       )}
       {scroll ? (
-        <Animated.View style={[styles.navBar, Platform.OS === 'web' && { backgroundColor: grouped ? colors.sunken : colors.canvas }, { opacity: barOpacity }]} aria-hidden>
+        <Animated.View style={[styles.navBar, Platform.OS === 'web' && { backgroundColor: colors.canvas }, { opacity: barOpacity }]} aria-hidden>
           {Platform.OS === 'web' ? null : <BlurView intensity={60} tint="systemChromeMaterial" style={StyleSheet.absoluteFill} />}
           <Txt variant="headline" numberOfLines={1} style={styles.navTitle}>{title}</Txt>
         </Animated.View>
@@ -93,26 +94,40 @@ export function ScreenLarge({
 /** Tab route name → its visible title, so Profile's BackChevron can name the tab it came from. */
 const TAB_TITLES: Record<string, string> = { today: 'Today', timeline: 'Evidence', doctor: 'For my doctor' };
 
-export function HeaderAvatar() {
+export function HeaderAvatar({ tour }: { /** Today only: the guided tour points at this one. */ tour?: boolean } = {}) {
   const router = useRouter();
   const segments = useSegments() as string[];
   const from = TAB_TITLES[segments[1] ?? ''] ?? 'Today';
   const name = useAuthStore((s) => s.profile?.display_name);
   const email = useAuthStore((s) => s.user?.email);
   const initial = ((isHumanName(name) ? name!.trim() : email)?.[0] ?? 'A').toUpperCase();
+  const spring = usePressSpring(0.94);
+  const target = useTourTarget(tour ? 'avatar' : null);
   return (
-    <Pressable
-      onPress={() => router.push({ pathname: '/(tabs)/profile', params: { from } } as any)}
+    <AnimatedPressable
+      ref={target as any}
+      onPress={() => { haptics.selection(); router.push({ pathname: '/(tabs)/profile', params: { from } } as any); }}
+      onPressIn={spring.onPressIn}
+      onPressOut={spring.onPressOut}
+      hitSlop={4}
       accessibilityRole="button"
-      accessibilityLabel="Open profile and settings"
-      style={({ pressed }) => [styles.avatar, pressed && { backgroundColor: colors.hairline }]}
+      accessibilityLabel="Profile and settings"
+      accessibilityHint="Your details, reminders, app lock, privacy and account"
+      style={[styles.avatar, { transform: [{ scale: spring.scale }] }]}
     >
       <Txt style={styles.avatarText}>{initial}</Txt>
-    </Pressable>
+      {/* A small gear on the corner says what this opens, without relying on the initial alone. */}
+      <View style={styles.avatarGear} aria-hidden>
+        <Icon name="settings" size={12} color={colors.ink2} />
+      </View>
+    </AnimatedPressable>
   );
 }
 
-/** "‹ Timeline" — top-left back link naming the previous screen. Plum, 44 hit. */
+/**
+ * "‹ Today": the top-left way back, naming the screen it returns to. The same soft 48 pt pill as "‹ Back" on
+ * the first-run screens (components/zeeba/onboarding/Scaffold.tsx), so going back looks the same everywhere.
+ */
 export function BackChevron({ label, onPress }: { label: string; onPress?: () => void }) {
   const router = useRouter();
   return (
@@ -122,8 +137,8 @@ export function BackChevron({ label, onPress }: { label: string; onPress?: () =>
       accessibilityLabel={`Back to ${label}`}
       style={({ pressed }) => [styles.back, pressed && { opacity: 0.6 }]}
     >
-      <Icon name="chevron-left" size={24} color={colors.accent} />
-      <Txt variant="body" color={colors.accent}>{label}</Txt>
+      <Icon name="chevron-left" size={22} color={colors.ink} />
+      <Txt numberOfLines={1} maxFontSizeMultiplier={1.4} style={styles.backText}>{label}</Txt>
     </Pressable>
   );
 }
@@ -142,14 +157,23 @@ export function SectionTitle({ title, right, style }: { title: string; right?: R
 
 export type CardTone = 'default' | 'sunken' | 'selected' | 'error' | 'hero' | 'coral' | 'blue' | 'green' | 'plain';
 
+// Depth (11 Nov 2026): white cards sit on the grey canvas with a soft two-layer shadow in light mode. On Midnight
+// the same shadow is invisible against the near-black canvas, and the card's 1 px light edge (cardBorder) does the
+// work instead. Plain strings: a box shadow cannot follow the appearance by itself, and does not need to here.
+const DEPTH: { card: ViewStyle; hero: ViewStyle } = {
+  card: { boxShadow: '0 1px 2px rgba(16,18,40,0.04), 0 6px 18px rgba(16,18,40,0.06)' },
+  hero: { boxShadow: '0 1px 3px rgba(16,18,40,0.05), 0 14px 34px rgba(16,18,40,0.10)' },
+};
+
 const toneStyle = (tone: CardTone): ViewStyle => {
   switch (tone) {
     case 'sunken': return { backgroundColor: colors.sunken, borderColor: colors.sunken };
     case 'selected': case 'blue': return { backgroundColor: colors.accentTint, borderColor: colors.accentTint };
     case 'error': case 'coral': return { backgroundColor: colors.errorTint, borderColor: colors.error };
     case 'green': return { backgroundColor: colors.savedTint, borderColor: colors.savedTint };
-    case 'hero': return { ...shadows.hero };
-    default: return { ...shadows.card };
+    case 'hero': return DEPTH.hero;
+    case 'plain': return {};
+    default: return DEPTH.card;
   }
 };
 
@@ -190,20 +214,23 @@ export function PressableCard({
   onAccessibilityAction?: (name: string) => void;
   style?: StyleProp<ViewStyle>;
 }) {
+  const spring = usePressSpring(0.98);
   return (
-    <Pressable
+    <AnimatedPressable
       onPress={onPress}
+      onPressIn={spring.onPressIn}
+      onPressOut={spring.onPressOut}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
       accessibilityHint={accessibilityHint}
       accessibilityActions={accessibilityActions}
-      onAccessibilityAction={onAccessibilityAction ? (e) => onAccessibilityAction(e.nativeEvent.actionName) : undefined}
-      style={({ pressed }) => [styles.card, styles.pressable, edge && styles.edgePad, pressed && { backgroundColor: colors.sunken, transform: [{ scale: 0.985 }] }, style]}
+      onAccessibilityAction={onAccessibilityAction ? (e: { nativeEvent: { actionName: string } }) => onAccessibilityAction(e.nativeEvent.actionName) : undefined}
+      style={[styles.card, DEPTH.card, styles.pressable, edge && styles.edgePad, spring.pressed && { backgroundColor: colors.sunken }, style, { transform: [{ scale: spring.scale }] }]}
     >
       {edge ? <View style={styles.clayEdge} /> : null}
       <View style={{ flex: 1, minWidth: 0 }}>{children}</View>
       {chevron ? <Icon name="chevron-right" size={20} color={colors.ink3} /> : null}
-    </Pressable>
+    </AnimatedPressable>
   );
 }
 
@@ -469,26 +496,38 @@ const styles = StyleSheet.create({
   },
   navTitle: { maxWidth: '60%', textAlign: 'center' },
   head: { paddingTop: space.sm, marginBottom: space.xl },
-  titleRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space.xs, minHeight: 44 },
+  titleRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space.xs, minHeight: 48 },
   right: { marginLeft: 'auto', flexDirection: 'row', alignItems: 'center', gap: space.xs, flexShrink: 0 },
   footer: { paddingVertical: space.sm, borderTopWidth: 1, borderTopColor: colors.hairline, backgroundColor: colors.canvas },
   // Sunken + ink2 (V31): plum is for actions/selection, so the header's only plum is "+".
   avatar: {
-    width: 44, height: 44, borderRadius: radii.pill, backgroundColor: colors.sunken,
+    width: 48, height: 48, borderRadius: radii.pill, backgroundColor: colors.surface,
     borderWidth: StyleSheet.hairlineWidth * 2, borderColor: colors.hairline, alignItems: 'center', justifyContent: 'center',
+    boxShadow: '0 1px 2px rgba(16,18,40,0.06), 0 4px 10px rgba(16,18,40,0.06)',
   },
-  avatarText: { ...font.semibold, fontSize: 17, lineHeight: 22, color: colors.ink2 },
-  back: { flexDirection: 'row', alignItems: 'center', minHeight: 44, alignSelf: 'flex-start', marginLeft: -6, paddingRight: space.xs },
+  avatarText: { ...font.semibold, fontSize: 17, lineHeight: 22, color: colors.ink },
+  avatarGear: {
+    position: 'absolute', right: -3, bottom: -3, width: 20, height: 20, borderRadius: 10, backgroundColor: colors.surface,
+    borderWidth: StyleSheet.hairlineWidth * 2, borderColor: colors.hairline, alignItems: 'center', justifyContent: 'center',
+    boxShadow: '0 1px 2px rgba(0,0,0,0.12)',
+  },
+  back: {
+    height: 48, flexDirection: 'row', alignItems: 'center', gap: 2, alignSelf: 'flex-start', maxWidth: '100%',
+    paddingLeft: space.xs, paddingRight: space.md, marginBottom: space.xs,
+    borderRadius: radii.pill, backgroundColor: colors.surface, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.hairline,
+    boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+  },
+  backText: { ...font.semibold, fontSize: 16, lineHeight: 21, color: colors.ink, flexShrink: 1 },
   sectionTitle: { flexDirection: 'row', alignItems: 'center', gap: space.sm, marginBottom: space.sm },
   card: {
     backgroundColor: colors.surface, borderRadius: radii.card, borderWidth: 1, borderColor: colors.cardBorder,
     padding: space.md, overflow: 'hidden',
   },
   confirmRow: { flexDirection: 'row', alignItems: 'center', gap: space.xs },
-  pressable: { flexDirection: 'row', alignItems: 'center', gap: space.sm, minHeight: heights.minHit },
+  pressable: { flexDirection: 'row', alignItems: 'center', gap: space.sm, minHeight: 48 },
   edgePad: { paddingLeft: space.lg + 4 },
   clayEdge: { position: 'absolute', left: 0, top: 0, bottom: 0, width: 4, backgroundColor: colors.clay },
-  noted: { flexDirection: 'row', alignItems: 'center', gap: space.sm, paddingVertical: space.sm, minHeight: heights.minHit },
+  noted: { flexDirection: 'row', alignItems: 'center', gap: space.sm, paddingVertical: space.sm, minHeight: 48 },
   notedDivider: { borderTopWidth: 1, borderTopColor: colors.hairline },
   empty: { alignItems: 'center', gap: space.lg, paddingVertical: space.xxxl },
   emptyFill: { flexGrow: 1, justifyContent: 'center', paddingBottom: 80 },

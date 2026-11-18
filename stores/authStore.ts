@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import type { Profile } from '../types/database';
 import { api, clearTokens, saveTokens } from '../lib/api';
+import { clearOfflineCache } from '../lib/offlineCache';
 import { clearOutbox } from '../lib/outbox';
 import { clearLocalChats } from './chatStore';
 import { deleteLastSharedPdf } from '../components/zeeba/doctor/share';
@@ -131,6 +132,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   signOut: async () => {
     await clearOutbox(); // notes still waiting to send belong to this account
+    await clearOfflineCache(); // and so does the copy of her records kept for offline use
     // Chats live only on this phone. Signing out hands the phone back, so they go too.
     const signedInAs = useAuthStore.getState().user?.id;
     if (signedInAs) await clearLocalChats(signedInAs);
@@ -142,6 +144,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   deleteAccount: async () => {
     await api.delete('/me');
     await clearOutbox();
+    await clearOfflineCache();
     const id = useAuthStore.getState().user?.id;
     if (id) await clearLocalChats(id);
     await deleteLastSharedPdf();

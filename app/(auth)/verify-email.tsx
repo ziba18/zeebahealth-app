@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
-import { View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
-import { space } from '../../constants/zeebaUI';
-import { Button, InlineError, ScreenLarge, TextField, Txt } from '../../components/zeeba/kit';
-import { FieldGroup } from '../../components/zeeba/records/GroupedRows';
+import { colors, font, space } from '../../constants/zeebaUI';
+import { InlineError, Txt } from '../../components/zeeba/kit';
+import { Rise } from '../../components/zeeba/motion';
+import { AuthScreen } from '../../components/auth/AuthScreen';
+import { Field } from '../../components/zeeba/onboarding/Field';
+import { BigButton } from '../../components/zeeba/onboarding/Scaffold';
 import { useAuthStore, type AuthUser } from '../../stores/authStore';
 import { ApiError, api } from '../../lib/api';
 import { routeAfterSignIn } from '../../lib/authRouting';
@@ -47,29 +50,43 @@ export default function VerifyEmailScreen() {
   };
 
   return (
-    <ScreenLarge brand grouped title="Check your email" subtitle={email ? `We sent a six-digit code to ${email}.` : 'We sent you a six-digit code.'}>
-      <FieldGroup>
-        <TextField
-          label="Code"
+    <AuthScreen
+      back={false}
+      title="Check your email"
+      subtitle={email ? `We sent a six-digit code to ${email}.` : 'We sent you a six-digit code.'}
+      mood={codeError || error ? 'thinking' : code.length === 6 ? 'happy' : 'idle'}
+    >
+      <Rise index={1}>
+        <Field
+          label="Code from the email"
           value={code}
           onChangeText={(v) => { setCode(v.replace(/\D/g, '').slice(0, 6)); setCodeError(''); }}
           keyboardType="number-pad"
           textContentType="oneTimeCode"
           autoComplete="one-time-code"
+          placeholder="000000"
+          maxLength={6}
           returnKeyType="go"
           onSubmitEditing={confirm}
           error={codeError}
+          hint="It works for 15 minutes. Look in junk if you can’t see it."
+          inputStyle={styles.code}
         />
-      </FieldGroup>
-      <Txt variant="caption" style={{ marginTop: space.xs }}>It works for 15 minutes. Look in junk if you can’t see it.</Txt>
+      </Rise>
 
-      <View style={{ marginTop: space.xxl, gap: space.xs }}>
-        {note ? <Txt variant="secondary" style={{ textAlign: 'center' }}>{note}</Txt> : null}
-        <InlineError message={error} style={{ marginBottom: space.xs }} />
-        <Button label={busy ? 'Checking…' : 'Confirm email'} loading={busy} onPress={confirm} />
-        <Button label="Send a new code" variant="text" onPress={resend} />
-        <Button label="Sign out" variant="text" onPress={async () => { await signOut(); router.replace('/(auth)/welcome'); }} />
-      </View>
-    </ScreenLarge>
+      <Rise index={2} style={styles.actions}>
+        {note ? <Txt variant="secondary" style={styles.note} accessibilityLiveRegion="polite">{note}</Txt> : null}
+        <InlineError message={error} />
+        <BigButton label={busy ? 'Checking…' : 'Confirm email'} loading={busy} onPress={confirm} />
+        <BigButton label="Send a new code" variant="text" onPress={resend} />
+        <BigButton label="Sign out" variant="text" onPress={async () => { await signOut(); router.replace('/(auth)/welcome'); }} />
+      </Rise>
+    </AuthScreen>
   );
 }
+
+const styles = StyleSheet.create({
+  code: { ...font.rounded, fontSize: 30, letterSpacing: 10, textAlign: 'center', minHeight: 68, fontVariant: ['tabular-nums'] },
+  note: { textAlign: 'center', color: colors.ink },
+  actions: { marginTop: space.xl, gap: space.xxs },
+});

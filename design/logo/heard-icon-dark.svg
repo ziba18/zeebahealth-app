@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024"><defs><linearGradient id="bgB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#232A47"/><stop offset="1" stop-color="#0A0C16"/></linearGradient>
+   <radialGradient id="liB" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff" stop-opacity=".06"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+   <linearGradient id="buB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFD9C6"/><stop offset="1" stop-color="#FF9468"/></linearGradient>
+   <filter id="blB" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur stdDeviation="30"/></filter></defs><rect width="1024" height="1024" fill="url(#bgB)"/><ellipse cx="330" cy="150" rx="620" ry="420" fill="url(#liB)"/>
+   <path d="M292 250 H732 A112 112 0 0 1 844 362 V598 A112 112 0 0 1 732 710 H470 L330 836 Q312 850 314 826 L322 710 H292 A112 112 0 0 1 180 598 V362 A112 112 0 0 1 292 250 Z" fill="rgba(0,0,0,.5)" filter="url(#blB)" transform="translate(0 34)"/>
+   <path d="M292 250 H732 A112 112 0 0 1 844 362 V598 A112 112 0 0 1 732 710 H470 L330 836 Q312 850 314 826 L322 710 H292 A112 112 0 0 1 180 598 V362 A112 112 0 0 1 292 250 Z" fill="url(#buB)"/>
+   <rect x="318" y="492" width="104" height="130" rx="34" fill="#B3542F"/><rect x="460" y="418" width="104" height="204" rx="34" fill="#7A2E1C"/><rect x="602" y="338" width="104" height="284" rx="34" fill="#3A120C"/></svg>

@@ -1,19 +1,24 @@
-// Onboarding step 2: "What brings you here?" — the areas she wants to keep a record of.
+// Question: "What would you like to keep a record of?" — the areas she wants on her record.
 // Replaces the old cycle/period-length questions (Zeeba Health is not a cycle predictor). Her answer
 // visibly changes the app: these topics come first on Today. The server's required profile fields
 // still get their usual defaults in the same PATCH, so nothing downstream changes.
 import React, { useState } from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { space } from '../../../constants/zeebaUI';
-import { Button, ChipGroup, InlineError } from '../../../components/zeeba/kit';
+import { InlineError } from '../../../components/zeeba/kit';
+import { Rise } from '../../../components/zeeba/motion';
 import { OnboardingScreen } from '../../../components/auth/OnboardingScreen';
+import { ChoiceTile } from '../../../components/zeeba/onboarding/ChoiceCard';
+import { BigButton, useUsableHeight } from '../../../components/zeeba/onboarding/Scaffold';
 import { api } from '../../../lib/api';
 import { track } from '../../../lib/analytics';
 import { FOCUS_AREAS, useFocusStore } from '../../../lib/focus';
 
 const DEFAULT_CYCLE = 28;
 const DEFAULT_PERIOD = 5;
+
+const ROWS = Array.from({ length: Math.ceil(FOCUS_AREAS.length / 2) }, (_, i) => FOCUS_AREAS.slice(i * 2, i * 2 + 2));
 
 export default function OnboardingFocus() {
   const router = useRouter();
@@ -22,6 +27,8 @@ export default function OnboardingFocus() {
   const [areas, setLocal] = useState<string[]>(saved);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  // Eight tiles and both buttons fit on one screen of a standard iPhone only with the tighter tile.
+  const compact = useUsableHeight() < 800;
 
   const next = async (skip: boolean) => {
     setLoading(true);
@@ -38,31 +45,53 @@ export default function OnboardingFocus() {
     }
   };
 
+  const toggle = (value: string) => {
+    setLocal((cur) => (cur.includes(value) ? cur.filter((v) => v !== value) : [...cur, value]));
+  };
+
+  const answered = areas.length > 0;
   return (
     <OnboardingScreen
-      step={2}
-      back={{ label: 'Back' }}
-      title="What would you like to keep a record of?"
-      helper="Pick any that apply. They go first on your Today screen, and you can always note anything else."
+      question="focus"
+      ask="What would you like to keep a record of?"
+      hint={areas.length ? 'Got it. These go first on Today.' : 'Tap all that fit.'}
+      mood={answered ? 'happy' : 'thinking'}
+      footer={
+        <>
+          <InlineError message={error} />
+          <BigButton
+            label={loading ? 'Saving…' : 'Continue'}
+            loading={loading}
+            disabled={!answered || loading}
+            onPress={() => next(false)}
+          />
+          {/* "I'm not sure yet" is an answer too, and always in view: it saves no areas and moves on. */}
+          <BigButton label="I’m not sure yet" variant="text" disabled={loading} onPress={() => next(true)} />
+        </>
+      }
     >
-      <ChipGroup
-        mode="multi"
-        options={FOCUS_AREAS.map((f) => ({ value: f.value, label: f.label }))}
-        value={areas}
-        onChange={setLocal}
-        exclusive={[]}
-        accessibilityLabel="What you'd like to keep a record of"
-      />
-      <View style={{ marginTop: space.xxl, gap: space.xs }}>
-        <InlineError message={error} style={{ marginBottom: space.xs }} />
-        <Button
-          label={loading ? 'Saving…' : 'Continue'}
-          loading={loading}
-          disabled={areas.length === 0 || loading}
-          onPress={() => next(false)}
-        />
-        <Button label="Skip for now" variant="text" disabled={loading} onPress={() => next(true)} />
+      <View style={[styles.grid, compact && styles.gridShort]} accessibilityLabel="What you’d like to keep a record of">
+        {ROWS.map((row, r) => (
+          <Rise key={r} index={r + 1} style={styles.row}>
+            {row.map((f) => (
+              <ChoiceTile
+                key={f.value}
+                label={f.label}
+                icon={f.icon}
+                selected={areas.includes(f.value)}
+                onPress={() => toggle(f.value)}
+                compact={compact}
+              />
+            ))}
+          </Rise>
+        ))}
       </View>
     </OnboardingScreen>
   );
 }
+
+const styles = StyleSheet.create({
+  grid: { gap: space.xs + 2 },
+  gridShort: { gap: space.xs },
+  row: { flexDirection: 'row', gap: space.xs + 2 },
+});

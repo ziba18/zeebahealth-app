@@ -2,7 +2,9 @@
 // what Sam entered. One model (lib/records/summary.ts) feeds this dashboard, the page preview,
 // Show on screen, the plain-text share and the PDF, so they can never say different things.
 //
-// Order (research, 10 Nov 2026 — design/HANDOVER.md §7): who it's for + time span → At a glance
+// Order (11 Nov 2026 review): the report itself comes first ("Read my report"), so the tab opens on the thing
+// she came for and not on a form; the choices that change it follow.
+// Then (research, 10 Nov 2026 — design/HANDOVER.md §7): who it's for + time span → At a glance
 // (counts first: clinicians read numbers before prose) → her agenda (printed first on the page) →
 // each section as a card she can switch off in place → what the report covers (gaps made visible).
 import { usePageTitle } from '../../../lib/usePageTitle';
@@ -22,6 +24,8 @@ import { CoverageCard, GlanceTiles, SectionCards, animateLayout } from '../../..
 import { printSummary, shareSummaryPdf } from '../../../components/zeeba/doctor/share';
 import { useDoctorBuilder, useDoctorDoc } from '../../../components/zeeba/doctor/useDoctorDoc';
 import { haptics } from '../../../lib/haptics';
+import { reportShared } from '../../../lib/milestones';
+import { Rise } from '../../../components/zeeba/motion';
 import { formatDay, joinFacts, notesLabel } from '../../../lib/records/format';
 import { todayKey } from '../../../lib/records/dates';
 import {
@@ -38,12 +42,13 @@ const AUDIENCE_HINT: Record<Audience, string> = {
 };
 
 /**
- * 48 outlined circle with an icon — Print and Show on screen in the share bar (labelled for screen
- * readers). Disabled: an ink-3 glyph on a sunken disc, so it can't be mistaken for an active button.
+ * Print and Show in the share bar: an icon WITH its word under it (an icon alone is a guess), 56 tall to match
+ * the main button beside it. `label` is the full spoken name; `word` is the short one shown.
+ * Disabled: ink-3 on a sunken fill, so it can't be mistaken for an active button.
  */
 function BarIconButton({
-  icon, label, onPress, disabled, busy,
-}: { icon: IconName; label: string; onPress: () => void; disabled?: boolean; busy?: boolean }) {
+  icon, label, word, onPress, disabled, busy,
+}: { icon: IconName; label: string; word: string; onPress: () => void; disabled?: boolean; busy?: boolean }) {
   const inactive = disabled || busy;
   return (
     <Pressable
@@ -52,14 +57,14 @@ function BarIconButton({
       accessibilityRole="button"
       accessibilityLabel={label}
       accessibilityState={{ disabled: !!inactive, busy: !!busy }}
-      hitSlop={4}
       style={({ pressed }) => ({
-        width: heights.secondary, height: heights.secondary, borderRadius: radii.pill, borderWidth: 1,
+        minWidth: 64, height: 56, paddingHorizontal: space.xs, borderRadius: 18, borderWidth: 1, gap: 1,
         borderColor: inactive ? colors.hairline : colors.borderStrong, alignItems: 'center', justifyContent: 'center',
-        backgroundColor: inactive || pressed ? colors.sunken : 'transparent',
+        backgroundColor: inactive || pressed ? colors.sunken : colors.surface,
       })}
     >
-      <Icon name={icon} size={24} color={inactive ? colors.ink3 : colors.ink} />
+      <Icon name={icon} size={22} color={inactive ? colors.ink3 : colors.ink} />
+      <Txt maxFontSizeMultiplier={1.3} style={{ fontSize: 12, lineHeight: 15, fontWeight: '600', color: inactive ? colors.ink3 : colors.ink }}>{word}</Txt>
     </Pressable>
   );
 }
@@ -115,6 +120,9 @@ export default function DoctorScreen() {
         // On web the browser's print window is the confirmation; a toast would outlive a cancelled dialog.
         if (Platform.OS !== 'web') showToast('Report ready to share.');
       });
+      // The first report to leave the app is a milestone of the record. It is celebrated later, away from this
+      // tab: nothing here ever shows the mascot.
+      void reportShared();
     } catch (e) {
       if (!isCancel(e)) setActionError('The report couldn’t be made into a PDF. Please try again.');
     } finally {
@@ -169,12 +177,12 @@ export default function DoctorScreen() {
           onPress={share}
           loading={busy === 'share'}
           disabled={off}
-          style={{ flex: 1, minWidth: winWidth < 280 ? 64 : 120 }}
+          style={{ flex: 1, minWidth: winWidth < 280 ? 64 : 120, minHeight: 56 }}
           accessibilityHint={doc.empty ? 'Nothing to share yet' : Platform.OS === 'web' ? 'Opens the print window; choose Save as PDF' : 'Makes a PDF and opens the share sheet'}
         />
-        <BarIconButton icon="printer" label="Print" onPress={print} disabled={off} busy={busy === 'print'} />
+        <BarIconButton icon="printer" label="Print" word="Print" onPress={print} disabled={off} busy={busy === 'print'} />
         <BarIconButton
-          icon="monitor" label="Show on screen" disabled={doc.empty}
+          icon="monitor" label="Show on screen" word="Show" disabled={doc.empty}
           onPress={() => router.push('/(tabs)/doctor/show' as any)}
         />
       </View>
@@ -183,7 +191,7 @@ export default function DoctorScreen() {
 
   const settings = (
     <Card style={{ gap: space.sm }}>
-      <Txt variant="groupLabel">Report for</Txt>
+      <Txt variant="groupLabel">Who is it for?</Txt>
       <SegmentedControl<Audience>
         accessibilityLabel="Who the report is for"
         options={(['gp', 'gynae'] as const).map((a) => ({ value: a, label: AUDIENCE_LABEL[a] }))}
@@ -193,7 +201,7 @@ export default function DoctorScreen() {
       <Txt variant="caption">{AUDIENCE_HINT[audience]}</Txt>
       {nothingYet && !olderData ? null : (
         <>
-          <Txt variant="groupLabel" style={{ marginTop: space.xs }}>Time span</Txt>
+          <Txt variant="groupLabel" style={{ marginTop: space.xs }}>How far back?</Txt>
           <SegmentedControl<RangeChoice>
             accessibilityLabel="How far back"
             options={rangeOptions}
@@ -205,7 +213,7 @@ export default function DoctorScreen() {
       )}
       {nothingYet ? null : (
         <>
-          <Txt variant="groupLabel" style={{ marginTop: space.xs }}>This visit is</Txt>
+          <Txt variant="groupLabel" style={{ marginTop: space.xs }}>This visit is…</Txt>
           <ChipGroup
             mode="single"
             options={[...VISIT_TYPES]}
@@ -223,7 +231,7 @@ export default function DoctorScreen() {
     <Card style={{ marginTop: space.lg }}>
       <EmptyState
         message={olderData
-          ? 'Nothing logged in this time span. Choose a longer one above, or add a note.'
+          ? 'Nothing recorded in this time. Choose a longer time above, or add a note.'
           : 'Your report fills in as you add notes.'}
         action={{ label: 'Add a note', onPress: () => openCapture() }}
         style={{ paddingVertical: space.xl }} />
@@ -231,17 +239,17 @@ export default function DoctorScreen() {
   ) : (
     <>
       {doc.glance.length ? (
-        <View style={{ marginTop: space.xxl }}>
+        <Rise index={3} style={{ marginTop: space.xxl }}>
           <SectionHeader title="At a glance" />
           <GlanceTiles doc={doc} />
-        </View>
+        </Rise>
       ) : null}
 
-      <View style={{ marginTop: space.xxl }}>
+      <Rise index={4} style={{ marginTop: space.xxl }}>
         <AgendaEditor value={agenda} onChange={setAgenda} onCommit={saveAgenda} title={agendaTitle} error={noteError} />
-      </View>
+      </Rise>
 
-      <View style={{ marginTop: space.xxl }}>
+      <Rise index={5} style={{ marginTop: space.xxl }}>
         <SectionHeader title="In the report" />
         <Txt variant="caption" style={{ marginBottom: space.sm, paddingHorizontal: space.xxs }}>
           Switch a section off to leave it out. Your notes stay saved.
@@ -252,11 +260,11 @@ export default function DoctorScreen() {
           </Card>
         ) : null}
         <SectionCards doc={doc} include={include} onToggle={setInclude} onHideQuote={hideQuote} onShowAllQuotes={showAllQuotes} />
-      </View>
+      </Rise>
 
-      <View style={{ marginTop: space.lg }}>
+      <Rise index={6} style={{ marginTop: space.lg }}>
         <CoverageCard doc={doc} onAddNote={() => openCapture()} />
-      </View>
+      </Rise>
     </>
   );
 
@@ -281,13 +289,16 @@ export default function DoctorScreen() {
 
   return (
     <ScreenLarge title="For my doctor" right={<HeaderAvatar />} footer={footer}>
-      {appointment}
+      {/* Motion only on this tab, and never the mascot: sections arrive one after another, the paper slides up. */}
+      {appointment ? <Rise index={0}>{appointment}</Rise> : null}
       {/* Nothing recorded at all: the empty state alone, no settings to choose between. */}
-      {nothingYet && !olderData ? null : <View style={{ marginTop: upcoming ? space.sm : space.xl }}>{settings}</View>}
       {doc.empty ? null : (
-        <View style={{ marginTop: space.sm }}>
+        <Rise index={1} distance={36} style={{ marginTop: upcoming ? space.sm : space.xl }}>
           <DocumentPreview doc={doc} compact onPrint={print} />
-        </View>
+        </Rise>
+      )}
+      {nothingYet && !olderData ? null : (
+        <Rise index={2} style={{ marginTop: doc.empty && !upcoming ? space.xl : space.sm }}>{settings}</Rise>
       )}
       {dashboard}
       <SafetyLine style={{ marginTop: space.xxl }} />

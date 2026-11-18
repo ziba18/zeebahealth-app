@@ -74,8 +74,8 @@ export function DocumentPreview({
             onPress={() => setOpen(true)}
             onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
             accessibilityRole="button"
-            accessibilityLabel={`Preview of your summary, ${pages === 1 ? 'one page' : `about ${pages} pages`}`}
-            accessibilityHint="Opens the summary at a size you can read"
+            accessibilityLabel={`Preview of your report, ${pages === 1 ? 'one page' : `about ${pages} pages`}`}
+            accessibilityHint="Opens the report at a size you can read"
             style={({ pressed }) => [{
               // Paper in both appearances: the report is always ink on white.
               borderRadius: radii.input, borderWidth: 1, borderColor: 'rgba(0,0,0,0.08)', backgroundColor: '#FFFFFF',
@@ -98,11 +98,11 @@ export function DocumentPreview({
           <Pressable
             onPress={() => setOpen(true)}
             accessibilityRole="button"
-            accessibilityLabel={`Your summary page, ${pages === 1 ? 'one page' : `about ${pages} pages`}, ${doc.entries} ${doc.entries === 1 ? 'note' : 'notes'}, ${doc.rangeLabel}`}
-            accessibilityHint="Opens the summary at a size you can read"
+            accessibilityLabel={`Your report page, ${pages === 1 ? 'one page' : `about ${pages} pages`}, ${doc.entries} ${doc.entries === 1 ? 'note' : 'notes'}, ${doc.rangeLabel}`}
+            accessibilityHint="Opens the report at a size you can read"
             style={({ pressed }) => [{
               flexDirection: 'row', alignItems: 'center', gap: space.sm, padding: space.md, minHeight: 72,
-              borderRadius: radii.input, borderWidth: 1, borderColor: colors.hairline, backgroundColor: colors.surface,
+              borderRadius: radii.card, borderWidth: 1, borderColor: colors.cardBorder, backgroundColor: colors.surface,
               opacity: pressed ? 0.85 : 1,
             }, shadows.hero]}
           >
@@ -110,7 +110,7 @@ export function DocumentPreview({
               <Icon name="file-text" size={22} color={colors.accent} />
             </View>
             <View style={{ flex: 1 }}>
-              <Txt variant="headline">{compact ? 'Preview the page' : 'See the full page'}</Txt>
+              <Txt variant="headline">{compact ? 'Read my report' : 'See the full page'}</Txt>
               <Txt variant="secondary">{`${pages === 1 ? 'One page' : `About ${pages} pages`} · ${doc.entries} ${doc.entries === 1 ? 'note' : 'notes'} · ${doc.rangeLabel}`}</Txt>
             </View>
             <View aria-hidden><Icon name="chevron-right" size={20} color={colors.ink3} /></View>
@@ -123,13 +123,13 @@ export function DocumentPreview({
           <Quote numberOfLines={3}>{words.text}</Quote>
         </View>
       ) : null}
-      {tall ? <Button label="See the full page" variant="secondary" onPress={() => setOpen(true)} style={{ marginTop: space.xs }} accessibilityHint="Opens the summary at a size you can read" /> : null}
+      {tall ? <Button label="See the full page" variant="secondary" onPress={() => setOpen(true)} style={{ marginTop: space.xs }} accessibilityHint="Opens the report at a size you can read" /> : null}
       {Platform.OS === 'web' && !hero && !compact ? (
         <Txt variant="caption" style={{ marginTop: space.xs, textAlign: 'center' }}>Save PDF opens your browser’s print window. Choose “Save as PDF” there.</Txt>
       ) : null}
       {doc.sections.length && !hero && !compact ? (
         <View style={{ marginTop: space.md, gap: space.xs }}>
-          <Txt variant="groupLabel">In this summary</Txt>
+          <Txt variant="groupLabel">In this report</Txt>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', columnGap: space.md, rowGap: space.xs }}>
             {doc.sections.map((sec) => (
               <View key={sec.id} style={{ flexDirection: 'row', alignItems: 'flex-start', gap: space.xs, flexBasis: '100%' }}>
@@ -141,7 +141,7 @@ export function DocumentPreview({
         </View>
       ) : null}
 
-      <Sheet visible={open} onClose={() => setOpen(false)} title="Your summary" full scroll={false} closeLabel="Close summary">
+      <Sheet visible={open} onClose={() => setOpen(false)} title="Your report" full scroll={false} closeLabel="Close report">
         <ScrollView
           style={{ flex: 1 }}
           contentContainerStyle={{ paddingBottom: space.xxxl, alignItems: 'center' }}

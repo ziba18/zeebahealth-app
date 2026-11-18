@@ -1,5 +1,5 @@
 // Evidence tab: Overview (dashboard + charts) · Notes (filterable feed grouped by week) · Calendar (month + DaySheet).
-import { Wren } from '../../../components/zeeba/Wren';
+import { WrenSays } from '../../../components/zeeba/motion';
 import { usePageTitle } from '../../../lib/usePageTitle';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { View, type ScrollViewInstance } from 'react-native';
@@ -21,7 +21,7 @@ import {
   AFTER_SHEET_MS, bleedingHref, entryHref, periodHref, recordHref,
 } from '../../../components/zeeba/timeline/navigation';
 import { AREA_FILTERS, TIMELINE_FILTERS, useTimelineSession, type TimelineFilter, type TimelineMode } from '../../../components/zeeba/timeline/session';
-import { font, colors, fonts, space } from '../../../constants/zeebaUI';
+import { font, colors, fonts, severityColor, space } from '../../../constants/zeebaUI';
 import { openCapture } from '../../../lib/captureStore';
 import { mondayOf, parseKey, todayKey } from '../../../lib/records/dates';
 import { bleedingStatus, noteCount, notesLabel, worstOf } from '../../../lib/records/format';
@@ -35,6 +35,8 @@ const MODES: { value: TimelineMode; label: string }[] = [
 ];
 
 const dayWord = (n: number) => `${n} ${n === 1 ? 'day' : 'days'}`;
+const keyRow = { flexDirection: 'row', alignItems: 'center', gap: space.xs } as const;
+const keySwatch = { width: 16, height: 16, borderRadius: 8 } as const;
 
 export default function TimelineScreen() {
   const router = useRouter();
@@ -104,7 +106,7 @@ export default function TimelineScreen() {
       ) : failed ? null : mode === 'list' ? (
         <ListView feed={feed} symptoms={symptom} filter={filter} setFilter={setFilter} onOpen={open} focusWeek={focusWeek} onFocused={() => setFocusWeek(null)} scrollRef={scrollRef} />
       ) : mode === 'patterns' ? (
-        <PatternsView onOpen={(f) => { setFilter(f); setMode('list'); }} onOpenWeek={(w) => { setFilter('Symptoms'); setFocusWeek(w); setMode('list'); }} />
+        feed.length === 0 ? <NothingYet /> : <PatternsView onOpen={(f) => { setFilter(f); setMode('list'); }} onOpenWeek={(w) => { setFilter('Symptoms'); setFocusWeek(w); setMode('list'); }} />
       ) : (
         <MonthView
           feed={feed}
@@ -131,6 +133,30 @@ export default function TimelineScreen() {
         onClose={() => setBleedingFor(null)}
       />
     </ScreenLarge>
+  );
+}
+
+// ---- Empty ----------------------------------------------------------------------------------
+
+/** Nothing recorded at all: Wren points the way to Today, with one button. Nothing here says she is behind. */
+function NothingYet() {
+  const router = useRouter();
+  return (
+    <View style={{ flexGrow: 1, justifyContent: 'center', gap: space.lg, paddingBottom: space.xxxl }}>
+      <WrenSays
+        side="top"
+        mood="point"
+        pointAt="left"
+        size={132}
+        textVariant="title"
+        header
+        text="Your evidence starts on Today."
+        bubbleStyle={{ alignSelf: 'stretch', alignItems: 'center' }}
+      >
+        <Txt variant="secondary" style={{ textAlign: 'center' }}>Each entry you save lines up here by date, and turns into charts.</Txt>
+      </WrenSays>
+      <Button label="Go to Today" icon="sun" onPress={() => router.navigate('/(tabs)/today' as any)} style={{ minHeight: 56 }} />
+    </View>
   );
 }
 
@@ -174,24 +200,13 @@ function ListView({
     else if (targetKey && groupY.current[targetKey] != null) jump();
   });
 
-  if (feed.length === 0) {
-    return (
-      <EmptyState
-        fill
-        illustration={<Wren mood="sleepy" size={96} decorative />}
-        message="Nothing here yet. Your notes will line up here by date."
-        action={{ label: 'Add a note', onPress: () => openCapture() }}
-      />
-    );
-  }
+  if (feed.length === 0) return <NothingYet />;
 
   return (
     <View onLayout={(e) => { rootY.current = e.nativeEvent.layout.y; jump(); }}>
       {/* Filters lead so the chips never move when the strip comes and goes. */}
       <View style={{ marginTop: space.lg }}>
         <ChipGroup
-          scroll
-          bleed
           accessibilityLabel="Show"
           options={options}
           value={filter}
@@ -282,8 +297,8 @@ function MonthView({
   }
   const summary = [
     noteDays ? `Notes on ${dayWord(noteDays)} this month.` : '',
-    bleedingDays ? `Bleeding logged on ${dayWord(bleedingDays)}.` : '',
-    spottingDays ? `Spotting logged on ${dayWord(spottingDays)}.` : '',
+    bleedingDays ? `Bleeding on ${dayWord(bleedingDays)}.` : '',
+    spottingDays ? `Spotting on ${dayWord(spottingDays)}.` : '',
   ].filter(Boolean).join(' ');
 
   const shift = (n: number) => {
@@ -293,7 +308,7 @@ function MonthView({
 
   return (
     <View style={{ marginTop: space.lg, gap: space.lg }}>
-      <Button variant="secondary" label="Log a period" onPress={onLogPeriod} />
+      <Button variant="secondary" icon="droplet" label="Add bleeding" onPress={onLogPeriod} />
       <MonthCalendar
         year={month.y}
         month0={month.m0}
@@ -303,15 +318,30 @@ function MonthView({
         onDayPress={onDayPress}
       />
       {summary ? <Txt variant="secondary" color={colors.ink2}>{summary}</Txt> : null}
-      {noteDays || bleedingDays || spottingDays ? (
-        <Txt variant="caption">
-          {[
-            noteDays ? 'A darker day had a higher number. A dot under a day means a note.' : '',
-            [bleedingDays ? 'Solid red-brown days are bleeding.' : '', spottingDays ? 'A hatched outline is spotting.' : ''].filter(Boolean).join(' '),
-            'Tap a day to open it.',
-          ].filter(Boolean).join(' ')}
-        </Txt>
-      ) : null}
+      {/* The key is drawn with the calendar's own colours, so it is right in light and in dark. */}
+      <View style={{ gap: space.xs }} accessible accessibilityLabel="Key. Coloured days show the pain number you gave, from low to high. A filled band is bleeding. A ring is spotting. A dot under a day means a note. Tap a day to open it.">
+        <View style={keyRow} aria-hidden>
+          <View style={{ flexDirection: 'row', gap: 3 }}>
+            {[2, 5, 7, 10].map((v) => <View key={v} style={[keySwatch, { backgroundColor: severityColor(v).bg }]} />)}
+          </View>
+          <Txt variant="caption" color={colors.ink2}>Pain number, low to high</Txt>
+        </View>
+        <View style={[keyRow, { flexWrap: 'wrap', columnGap: space.lg }]} aria-hidden>
+          <View style={keyRow}>
+            <View style={[keySwatch, { width: 30, backgroundColor: colors.clay }]} />
+            <Txt variant="caption" color={colors.ink2}>Bleeding</Txt>
+          </View>
+          <View style={keyRow}>
+            <View style={[keySwatch, { backgroundColor: 'transparent', borderWidth: 1.5, borderColor: colors.clay }]} />
+            <Txt variant="caption" color={colors.ink2}>Spotting</Txt>
+          </View>
+          <View style={keyRow}>
+            <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: colors.accent }} />
+            <Txt variant="caption" color={colors.ink2}>A note</Txt>
+          </View>
+        </View>
+        <Txt variant="caption" color={colors.ink2} aria-hidden>Tap a day to open it.</Txt>
+      </View>
     </View>
   );
 }

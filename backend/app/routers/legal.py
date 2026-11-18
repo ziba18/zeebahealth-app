@@ -86,6 +86,8 @@ protection law. You can reach us at <a href="mailto:{email}">{email}</a>.</p>
   <li>To email you a code when you confirm your address or reset your password. These are the
   only emails the app sends.</li>
   <li>Reminders are scheduled on your phone; we don't send them from our servers.</li>
+  <li>The app keeps a copy of your records on your phone, so you can open it and read them
+  without a connection. Signing out or deleting your account removes that copy.</li>
   <li>If you use voice input, your speech is turned into text on your phone by Apple's speech
   recognition. We don't receive audio recordings.</li>
 </ul>

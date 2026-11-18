@@ -2,6 +2,7 @@
 //   1. Speak or type  →  2. follow-ups only for gaps  →  3. "Here's what I noted"  →  save.
 // "That's all for now" saves from step 2 on. X / Android back / swipe / scrim always close;
 // with unsaved words the sheet first asks "Keep this note?" in-page (never Alert.alert).
+import { entryLanded } from './saveMoment';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, TextInput, View, type ScrollViewInstance, type TextInputInstance } from 'react-native';
 import {
@@ -217,6 +218,8 @@ function CaptureFlow({ visible, options }: { visible: boolean; options: CaptureO
       closeCapture();
       const n = noteCount(useRecordsStore.getState().records.symptom);
       const hard = (draft.worst ?? draft.typical ?? 0) >= 8;
+      // The save moment: once the sheet is out of the way, a chip flies to the Doctor tab (see saveMoment.ts).
+      setTimeout(() => entryLanded({ value: draft.worst ?? draft.typical ?? null }), 260);
       showToast(
         saved.pending ? 'Saved on this phone. It will send when you’re online.'
           : hard ? 'Saved. That sounded like a hard day.' : `Saved. ${notesLabel(n)} ready for your doctor.`,

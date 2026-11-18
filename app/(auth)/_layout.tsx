@@ -14,9 +14,13 @@ export default function AuthLayout() {
     return () => sub.remove();
   }, []);
 
+  // Each screen pushes in from the right, like turning a page forwards. The steps that must not be
+  // swiped away (email code, consent, the celebration) switch the back gesture off; the first
+  // question does the same from inside the screen (components/auth/OnboardingScreen.tsx).
   return (
     <Stack screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
       <Stack.Screen name="welcome" />
+      <Stack.Screen name="intro" />
       <Stack.Screen name="login" />
       <Stack.Screen name="register" />
       <Stack.Screen name="forgot-password" />
@@ -26,7 +30,7 @@ export default function AuthLayout() {
       <Stack.Screen name="onboarding/basics" />
       <Stack.Screen name="onboarding/last-period" />
       <Stack.Screen name="onboarding/reminders" />
-      <Stack.Screen name="onboarding/ready" options={{ gestureEnabled: false }} />
+      <Stack.Screen name="onboarding/ready" options={{ gestureEnabled: false, animation: 'fade' }} />
     </Stack>
   );
 }

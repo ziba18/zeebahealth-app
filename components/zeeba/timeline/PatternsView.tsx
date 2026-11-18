@@ -3,10 +3,10 @@
 // Each chart has a text equivalent that a screen reader reads first, and each card opens the
 // Timeline list filtered to what it counts.
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Easing, Pressable, StyleSheet, View } from 'react-native';
+import { Animated, Easing, Platform, Pressable, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useReduceMotion } from '../kit-parts/Sheet';
-import { Card, EmptyState, FadeIn, PressableCard, Quote, SegmentedControl, Txt } from '../kit';
+import { Button, Card, ChipGroup, FadeIn, PressableCard, Quote, Txt } from '../kit';
 import { font, colors, fonts, severityColor, severityRamp, space } from '../../../constants/zeebaUI';
 import { untaggedLine } from '../../../lib/records/counts';
 import { openCapture } from '../../../lib/captureStore';
@@ -18,24 +18,45 @@ import { formatShortDate, joinFacts } from '../../../lib/records/format';
 import { useRecordsStore } from '../../../stores/recordsStore';
 import type { TimelineFilter } from './session';
 import { Tile, TileRow } from '../dash/Dash';
+import { CountUp, ProgressSteps, WrenSays } from '../motion';
+
+// Motion on this view plays ONCE, the first time Overview is seen in a session: numbers count up, bars grow.
+// After that (switching to Notes and back, changing tab) everything is simply there. Numbers still glide to
+// their new value when she changes the range, because that is a real change.
+let played = false;
+const ND = Platform.OS !== 'web';
 
 const BAR_AREA = 150;
 /** Narrowest a week column may be before its digit is dropped (digits would run together; the text above and the spoken label still give the counts). */
 const MIN_DIGIT_COL = 18;
 const plural = (n: number, one: string) => `${n} ${one}${n === 1 ? '' : 's'}`;
 
+/** A fill that grows from the left edge once (staggered by `index`); already full after the first view or under Reduce Motion. */
+function GrowFill({ pct, index }: { pct: number; index: number }) {
+  const reduce = useReduceMotion();
+  const still = reduce || played;
+  const t = useRef(new Animated.Value(still ? 1 : 0)).current;
+  useEffect(() => {
+    if (still) { t.setValue(1); return undefined; }
+    const a = Animated.timing(t, { toValue: 1, duration: 520, delay: 260 + index * 70, easing: Easing.out(Easing.cubic), useNativeDriver: ND });
+    a.start();
+    return () => a.stop();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  return <Animated.View style={[styles.fill, { width: `${pct}%`, transformOrigin: 'left', transform: [{ scaleX: t }] }]} />;
+}
+
 /** One horizontal bar per label: fill = days / total, count always written. */
 function Bars({ rows, total }: { rows: { label: string; days: number }[]; total: number }) {
   return (
     <View style={{ gap: space.sm }}>
-      {rows.map((r) => (
+      {rows.map((r, i) => (
         <View key={r.label} style={{ gap: 4 }}>
           <View style={styles.barHead}>
             <Txt variant="body" style={{ flexShrink: 1 }}>{r.label}</Txt>
             <Txt variant="secondary" numberOfLines={1} style={{ flexShrink: 0 }}>{plural(r.days, "day")}</Txt>
           </View>
           <View style={styles.track}>
-            <View style={[styles.fill, { width: `${Math.max(2, Math.min(100, (r.days / total) * 100))}%` }]} />
+            <GrowFill pct={Math.max(2, Math.min(100, (r.days / total) * 100))} index={i} />
           </View>
         </View>
       ))}
@@ -43,13 +64,14 @@ function Bars({ rows, total }: { rows: { label: string; days: number }[]; total:
   );
 }
 
-/** A week bar that eases up from its baseline once (200 ms); no motion under Reduce Motion. */
-function WeekBar({ height, color, strength = 1 }: { height: number; color: string; strength?: number }) {
+/** A week bar that grows up from its baseline once, each a beat after the one before; no motion under Reduce Motion. */
+function WeekBar({ height, color, strength = 1, index = 0 }: { height: number; color: string; strength?: number; index?: number }) {
   const reduce = useReduceMotion();
-  const t = useRef(new Animated.Value(reduce ? 1 : 0)).current;
+  const still = reduce || played;
+  const t = useRef(new Animated.Value(still ? 1 : 0)).current;
   useEffect(() => {
-    if (reduce) { t.setValue(1); return; }
-    const a = Animated.timing(t, { toValue: 1, duration: 200, easing: Easing.out(Easing.cubic), useNativeDriver: true });
+    if (still) { t.setValue(1); return undefined; }
+    const a = Animated.timing(t, { toValue: 1, duration: 520, delay: 180 + Math.min(index, 12) * 60, easing: Easing.out(Easing.back(1.4)), useNativeDriver: ND });
     a.start();
     return () => a.stop();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -96,26 +118,50 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
     [symptom, periodDay, medicine, history, appointment, range],
   );
 
+  // What the numbers start from: 0 the first time (they count up), their own value afterwards (no replay).
+  const first = useRef(!played).current;
+  useEffect(() => {
+    if (m.tooEarly) return undefined;
+    const t = setTimeout(() => { played = true; }, 1600);
+    return () => clearTimeout(t);
+  }, [m.tooEarly]);
+  const n = (value: number, color?: string) => <CountUp value={value} from={first ? 0 : value} duration={800} variant="statement" color={color} />;
+
   const toggle = (
-    <SegmentedControl accessibilityLabel="Patterns range" options={PATTERNS_RANGES.map((r) => ({ value: r.value, label: r.label }))} value={range} onChange={setRange} />
+    // Chips, not a second segmented control: the row above (Overview · Notes · Calendar) changes the view, this
+    // only changes how far back the view looks, the same job the chips do on Notes.
+    <ChipGroup
+      accessibilityLabel="How far back"
+      options={PATTERNS_RANGES.map((r) => ({ value: r.value, label: `Last ${r.label}` }))}
+      value={range}
+      onChange={(v) => { if (v) setRange(v as PatternsRange); }}
+    />
   );
 
   if (m.tooEarly) {
     const recent = m.days.filter((d) => d.logged).length;
     return (
-      <View style={{ marginTop: space.lg }}>
-        <EmptyState
-          icon="calendar-days"
-          message={`Patterns appear after a week of notes. ${recent === 0 ? 'No notes yet.' : `So far: notes on ${plural(recent, 'day')}.`}`}
-          action={{ label: 'Add a note', onPress: () => openCapture() }}
-          style={{ marginTop: space.xxl }}
-        />
+      <View style={{ marginTop: space.xxl, gap: space.lg }}>
+        <WrenSays
+          side="top"
+          mood="thinking"
+          size={120}
+          textVariant="headline"
+          text={`Charts appear after ${MIN_NOTE_DAYS} days of notes.`}
+          bubbleStyle={{ alignSelf: 'stretch' }}
+        >
+          <Txt variant="secondary">{recent === 0 ? 'No notes in these weeks yet.' : `So far: notes on ${plural(recent, 'day')}.`}</Txt>
+          <ProgressSteps total={MIN_NOTE_DAYS} current={recent} style={{ marginTop: space.xxs }} />
+        </WrenSays>
+        <Button label="Add a note" icon="pencil" onPress={() => openCapture()} style={{ minHeight: 56 }} />
       </View>
     );
   }
 
   const inRange = symptom.filter((r) => r.data.date >= m.from && r.data.date <= m.to).map((r) => r.data);
-  const sleepLine = untaggedLine(inRange, 'tired') || 'Not recorded yet. You can mention them in any note.';
+  // "Not tagged yet — “tired” appears in 3 of 10 notes" (lib/records/counts.ts), said in plain words here.
+  const mentions = untaggedLine(inRange, 'tired').replace(/^Not tagged yet — /, '');
+  const sleepLine = mentions ? `The word ${mentions}.` : 'Not recorded yet. You can mention them in any note.';
   const maxWeek = Math.max(1, ...m.weeks.map((w) => w.noteDays));
   const rangeText = `${formatShortDate(m.from, 'always')} – ${formatShortDate(m.to, 'always')}`;
 
@@ -126,8 +172,8 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
       <FadeIn index={0}>
         <View style={{ gap: space.xxs }} accessible accessibilityRole="header" accessibilityLabel={`Symptoms on ${m.noteDays} of the last ${m.totalDays} days.${m.strongDays ? ` ${m.strongDays} of those days at ${STRONG_FROM} out of 10 or worse.` : ''}`}>
           <Txt variant="statement">
-            Symptoms on <Txt variant="statement" style={styles.em}>{m.noteDays} of the last {m.totalDays} days.</Txt>
-            {m.strongDays ? <Txt variant="statement">{` ${m.strongDays} of those days at ${STRONG_FROM}/10 or worse.`}</Txt> : null}
+            Symptoms on <Txt variant="statement" style={styles.em}>{n(m.noteDays, colors.accent)} of the last {m.totalDays} days.</Txt>
+            {m.strongDays ? <Txt variant="statement">{' '}{n(m.strongDays)}{` of those days at ${STRONG_FROM}/10 or worse.`}</Txt> : null}
           </Txt>
           <Txt variant="caption">{rangeText} · {plural(m.notes, 'note')}</Txt>
         </View>
@@ -143,13 +189,14 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
         >
           <Txt variant="eyebrow">Days with symptoms, by week</Txt>
           <View style={styles.chart} onLayout={(e) => setChartW(e.nativeEvent.layout.width)} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-            {m.weeks.map((w) => (
+            {m.weeks.map((w, wi) => (
               <Pressable key={w.from} disabled={w.noteDays === 0} onPress={() => onOpenWeek({ from: w.from, to: w.to })} style={styles.weekCol} hitSlop={4}>
                 {chartW === 0 || chartW / m.weeks.length >= MIN_DIGIT_COL ? <Txt variant="caption" style={styles.weekNum}>{w.noteDays}</Txt> : null}
                 <WeekBar
                   height={Math.max(4, (w.noteDays / maxWeek) * (BAR_AREA - 22))}
                   color={w.noteDays === 0 ? colors.chartTrack : colors.accent}
                   strength={w.noteDays === 0 || w.peak == null ? 1 : 0.35 + (w.peak / 10) * 0.65}
+                  index={wi}
                 />
               </Pressable>
             ))}
@@ -167,8 +214,8 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
             </View>
           )}
           <View style={styles.legend} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-            <View style={styles.legendItem}><View style={[styles.legendDot, { backgroundColor: colors.accent }]} /><Txt variant="caption">Stronger = worse that week</Txt></View>
-            <View style={styles.legendItem}><View style={[styles.legendDot, { backgroundColor: colors.accent, opacity: 0.4 }]} /><Txt variant="caption">Milder</Txt></View>
+            <View style={styles.legendItem}><View style={[styles.legendDot, { backgroundColor: colors.accent }]} /><Txt variant="caption">Higher numbers that week</Txt></View>
+            <View style={styles.legendItem}><View style={[styles.legendDot, { backgroundColor: colors.accent, opacity: 0.4 }]} /><Txt variant="caption">Lower</Txt></View>
           </View>
           {chartW > 0 && chartW / m.weeks.length < MIN_DIGIT_COL ? (
             <Txt variant="caption" style={{ marginTop: space.xs }}>Most in one week: {plural(maxWeek, 'day')}.</Txt>
@@ -178,10 +225,12 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
 
       <FadeIn index={2}>
         <TileRow>
-          <Tile label={`At ${STRONG_FROM}+ / 10`} value={String(m.strongDays)} unit={m.strongDays === 1 ? ' day' : ' days'} onPress={() => onOpen('Symptoms')} />
+          <Tile label={`${STRONG_FROM}/10 or worse`} value={String(m.strongDays)} count={m.strongDays} countFrom={first ? 0 : m.strongDays} unit={m.strongDays === 1 ? ' day' : ' days'} onPress={() => onOpen('Symptoms')} />
           <Tile
             label="Bleeding"
             value={String(m.bleedingDays)}
+            count={m.bleedingDays}
+            countFrom={first ? 0 : m.bleedingDays}
             unit={m.bleedingDays === 1 ? ' day' : ' days'}
             note={m.spottingDays ? `${plural(m.spottingDays, 'day')} spotting` : undefined}
             onPress={() => onOpen('Bleeding')}
@@ -190,7 +239,7 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
       </FadeIn>
 
       {m.zones.length ? (
-        <FadeIn index={2}>
+        <FadeIn index={3}>
           <PressableCard onPress={() => onOpen('Symptoms')} accessibilityLabel={`Where. ${m.zones.map((z) => `${z.label}, ${plural(z.days, 'day')}`).join('; ')}. Opens your notes.`}>
             <Txt variant="groupLabel" style={{ marginBottom: space.sm }}>Where you felt it</Txt>
             <Bars rows={m.zones.slice(0, 5)} total={m.totalDays} />
@@ -201,7 +250,7 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
       )}
 
       {m.bleedingDays || m.spottingDays ? (
-        <FadeIn index={2}>
+        <FadeIn index={4}>
           <PressableCard edge="clay" onPress={() => onOpen('Bleeding')} accessibilityLabel={`${bleedingText(m)} Opens your bleeding days.`}>
             <Txt variant="groupLabel">Bleeding</Txt>
             <Txt variant="body" style={{ marginTop: space.xxs }}>{bleedingText(m)}</Txt>
@@ -229,7 +278,7 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
       )}
 
       {m.impacts.length ? (
-        <FadeIn index={3}>
+        <FadeIn index={5}>
           <PressableCard onPress={() => onOpen('Symptoms')} accessibilityLabel={`What it got in the way of. ${m.impacts.map((i) => `${i.label}, ${plural(i.days, 'day')}`).join('; ')}. Opens your notes.`}>
             <Txt variant="groupLabel" style={{ marginBottom: space.sm }}>What it got in the way of</Txt>
             <Bars rows={m.impacts} total={m.totalDays} />
@@ -240,7 +289,7 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
       )}
 
       {m.tried.length ? (
-        <FadeIn index={4}>
+        <FadeIn index={6}>
           <PressableCard
             onPress={() => router.push('/(tabs)/doctor' as any)}
             accessibilityLabel={`What you tried. ${m.tried.slice(0, 3).map((t) => joinFacts(t.title, t.helped)).join('; ')}. Opens For my doctor.`}
@@ -261,7 +310,7 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
       <EmptyLine title="Sleep and mood" line={sleepLine} />
 
       {m.latest ? (
-        <FadeIn index={4}>
+        <FadeIn index={7}>
           <Card>
             <Txt variant="caption">Latest, in your words · {m.latest.dateLabel}</Txt>
             <View style={{ marginTop: space.xs }}><Quote numberOfLines={3}>{m.latest.text}</Quote></View>
@@ -271,14 +320,14 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
 
       <PressableCard
         onPress={() => router.push('/(tabs)/doctor' as any)}
-        accessibilityLabel="Make my summary for my doctor. Opens For my doctor."
+        accessibilityLabel="Open my report for the doctor. Opens the Doctor tab."
       >
-        <Txt variant="headline">Make my summary for my doctor</Txt>
+        <Txt variant="headline">Open my report for the doctor</Txt>
         <Txt variant="secondary" style={{ marginTop: space.xxs }}>One clear page from your notes, in your words.</Txt>
       </PressableCard>
 
       <Txt variant="caption" style={{ textAlign: 'center', marginTop: space.xs }}>
-        Counts of what you logged, from {MIN_NOTE_DAYS}+ days of notes. They match your summary for the same dates.
+        These are counts of what you recorded. They match your report for the same dates.
       </Txt>
     </View>
   );

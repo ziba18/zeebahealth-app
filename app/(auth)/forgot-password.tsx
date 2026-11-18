@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import { Linking, View } from 'react-native';
+import { Linking, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
-import { space } from '../../constants/zeebaUI';
+import { colors, font, space } from '../../constants/zeebaUI';
 import { SUPPORT_EMAIL } from '../../constants/config';
-import { Button, Card, InlineError, ScreenLarge, TextField, Txt } from '../../components/zeeba/kit';
-import { FieldGroup } from '../../components/zeeba/records/GroupedRows';
+import { InlineError, Txt } from '../../components/zeeba/kit';
+import { Rise } from '../../components/zeeba/motion';
+import { AuthScreen } from '../../components/auth/AuthScreen';
+import { Field } from '../../components/zeeba/onboarding/Field';
+import { BigButton } from '../../components/zeeba/onboarding/Scaffold';
 import { useAuthStore } from '../../stores/authStore';
 import { ApiError, api } from '../../lib/api';
 import { routeAfterSignIn } from '../../lib/authRouting';
@@ -65,51 +68,114 @@ export default function ForgotPasswordScreen() {
     }
   };
 
+  const hasError = !!error || Object.values(errors).some(Boolean);
+
   if (step === 'unavailable') {
     return (
-      <ScreenLarge brand grouped title="Forgot password?" back={{ label: 'Sign in' }}>
-        <Card style={{ gap: space.sm }}>
+      <AuthScreen title="Forgot password?" backLabel="Sign in" mood="thinking">
+        <Rise index={1} style={styles.card}>
           <Txt variant="body">
             Resetting a password by email isn’t switched on yet. If you signed up with Apple or Google, use that button on the sign-in screen. Otherwise, email us from the address you signed up with and we can delete the account so you can start again. For your privacy we can’t give anyone access to saved notes by email.
           </Txt>
           <Txt variant="headline" selectable>{SUPPORT_EMAIL}</Txt>
-        </Card>
-        <Button
-          label="Email support"
-          icon="send"
-          style={{ marginTop: space.xxl }}
-          onPress={() => Linking.openURL(`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent('Zeeba Health password help')}`).catch(() => {})}
-        />
-      </ScreenLarge>
+        </Rise>
+        <Rise index={2} style={styles.actions}>
+          <BigButton
+            label="Email support"
+            icon="send"
+            onPress={() => Linking.openURL(`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent('Zeeba Health password help')}`).catch(() => {})}
+          />
+        </Rise>
+      </AuthScreen>
     );
   }
 
   if (step === 'code') {
     return (
-      <ScreenLarge brand grouped title="Choose a new password" subtitle={`If ${email} has an account, we’ve emailed it a six-digit code.`} back={{ label: 'Back', onPress: () => setStep('email') }}>
-        <FieldGroup>
-          <TextField label="Code from the email" value={code} onChangeText={(v) => { setCode(v.replace(/\D/g, '').slice(0, 6)); setErrors({}); }} keyboardType="number-pad" textContentType="oneTimeCode" autoComplete="one-time-code" error={errors.code} />
-          <TextField label="New password" hint="At least 8 characters" secret value={password} onChangeText={(v) => { setPassword(v); setErrors({}); }} autoComplete="new-password" textContentType="newPassword" returnKeyType="go" onSubmitEditing={finish} error={errors.password} />
-        </FieldGroup>
-        <Txt variant="caption" style={{ marginTop: space.xs }}>The code works for 15 minutes. Signed up with Apple or Google? Use that button on the sign-in screen.</Txt>
-        <View style={{ marginTop: space.xxl, gap: space.xs }}>
-          <InlineError message={error} style={{ marginBottom: space.xs }} />
-          <Button label={busy ? 'Saving…' : 'Save and sign in'} loading={busy} onPress={finish} />
-          <Button label="Send a new code" variant="text" onPress={requestCode} />
-        </View>
-      </ScreenLarge>
+      <AuthScreen
+        title="Choose a new password"
+        subtitle={`If ${email} has an account, we’ve emailed it a six-digit code.`}
+        mood={hasError ? 'thinking' : code.length === 6 && password.length >= 8 ? 'happy' : 'idle'}
+        onBack={() => setStep('email')}
+      >
+        <Rise index={1} style={styles.fields}>
+          <Field
+            label="Code from the email"
+            value={code}
+            onChangeText={(v) => { setCode(v.replace(/\D/g, '').slice(0, 6)); setErrors({}); }}
+            keyboardType="number-pad"
+            textContentType="oneTimeCode"
+            autoComplete="one-time-code"
+            placeholder="000000"
+            maxLength={6}
+            error={errors.code}
+            inputStyle={styles.code}
+          />
+          <Field
+            label="New password"
+            hint="At least 8 characters. Tap Show to check it."
+            secret
+            value={password}
+            onChangeText={(v) => { setPassword(v); setErrors({}); }}
+            autoCapitalize="none"
+            autoComplete="new-password"
+            textContentType="newPassword"
+            returnKeyType="go"
+            onSubmitEditing={finish}
+            error={errors.password}
+          />
+        </Rise>
+        <Rise index={2}>
+          <Txt variant="caption" style={styles.caption}>The code works for 15 minutes. Signed up with Apple or Google? Use that button on the sign-in screen.</Txt>
+        </Rise>
+        <Rise index={3} style={styles.actions}>
+          <InlineError message={error} />
+          <BigButton label={busy ? 'Saving…' : 'Save and sign in'} loading={busy} onPress={finish} />
+          <BigButton label="Send a new code" variant="text" onPress={requestCode} />
+        </Rise>
+      </AuthScreen>
     );
   }
 
   return (
-    <ScreenLarge brand grouped title="Forgot password?" subtitle="We’ll email you a code to choose a new one." back={{ label: 'Sign in' }}>
-      <FieldGroup>
-        <TextField label="Email" value={email} onChangeText={(v) => { setEmail(v); setErrors({}); }} keyboardType="email-address" autoCapitalize="none" autoComplete="email" textContentType="emailAddress" placeholder="you@example.com" returnKeyType="go" onSubmitEditing={requestCode} error={errors.email} />
-      </FieldGroup>
-      <View style={{ marginTop: space.xxl, gap: space.xs }}>
-        <InlineError message={error} style={{ marginBottom: space.xs }} />
-        <Button label={busy ? 'Sending…' : 'Email me a code'} loading={busy} onPress={requestCode} />
-      </View>
-    </ScreenLarge>
+    <AuthScreen
+      title="Forgot password?"
+      subtitle="We’ll email you a code to choose a new one."
+      backLabel="Sign in"
+      mood={hasError ? 'thinking' : EMAIL_RE.test(email.trim()) ? 'happy' : 'idle'}
+    >
+      <Rise index={1}>
+        <Field
+          label="Email"
+          value={email}
+          onChangeText={(v) => { setEmail(v); setErrors({}); }}
+          keyboardType="email-address"
+          autoCapitalize="none"
+          autoCorrect={false}
+          autoComplete="email"
+          textContentType="emailAddress"
+          placeholder="you@example.com"
+          returnKeyType="go"
+          onSubmitEditing={requestCode}
+          error={errors.email}
+        />
+      </Rise>
+      <Rise index={2} style={styles.actions}>
+        <InlineError message={error} />
+        <BigButton label={busy ? 'Sending…' : 'Email me a code'} loading={busy} onPress={requestCode} />
+      </Rise>
+    </AuthScreen>
   );
 }
+
+const styles = StyleSheet.create({
+  fields: { gap: space.lg },
+  code: { ...font.rounded, fontSize: 30, letterSpacing: 10, textAlign: 'center', minHeight: 68, fontVariant: ['tabular-nums'] },
+  caption: { marginTop: space.sm, marginLeft: space.xxs },
+  card: {
+    gap: space.sm, padding: space.lg, borderRadius: 24, backgroundColor: colors.surface,
+    borderWidth: StyleSheet.hairlineWidth, borderColor: colors.hairline,
+    boxShadow: '0 1px 2px rgba(0,0,0,0.04), 0 6px 18px rgba(0,0,0,0.05)',
+  },
+  actions: { marginTop: space.xl, gap: space.xxs },
+});

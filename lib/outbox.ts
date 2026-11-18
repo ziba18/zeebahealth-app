@@ -41,7 +41,7 @@ export const clearOutbox = () => write([]);
 
 /** True for "no connection / server down" failures, false for ones a retry cannot fix (bad data, signed out). */
 export function isOfflineError(e: unknown): boolean {
-  if (e instanceof ApiError) return e.status >= 500;
+  if (e instanceof ApiError) return e.status >= 500 || e.status === 0; // 0 = no connection while renewing the session
   // fetch rejects with a TypeError when there is no network ("Network request failed" on iOS); the preview backend throws Error('offline').
   if (!(e instanceof Error)) return false;
   // Only a failed network request: RN "Network request failed", Chrome "Failed to fetch", Safari "Load failed", or the preview's own throw.

@@ -37,6 +37,7 @@ no profiling, no automated decisions.
 | Email codes (hash only, 15 minutes) | User | Same database, `email_codes` | Confirm address, reset password | Contract / security | Used, expired, or account deleted |
 | Sign-in attempts per email and IP (counts) | User | Server memory only | Stop password guessing | Legitimate interests, Art. 6(1)(f) | 15 minutes; lost on restart |
 | Sign-in tokens | User | Phone keychain (this device only) | Stay signed in | Contract | Sign-out |
+| Copy of her records and account details, kept for offline use (added 2026-11-11) | User | Phone only (the app's own storage) | Open the app and read her record with no connection | Explicit consent (same records she agreed to store) | Sign-out, account deletion, account switch |
 | Chat messages (**feature off at launch**) | User | Phone only; text sent to Groq (US) for a reply | Help wording symptoms | Explicit consent (needs its own consent line before it is switched on) | Sign-out / deleted on phone |
 | Onboarding step analytics (**off at launch; nothing asks for the opt-in**) | User | Mixpanel | Improve onboarding | Consent (PECR) | — |
 | Paid plan (**not switched on**): plan name, expiry, product id, event type and time | User | Same database, `entitlements`, `purchase_events`; RevenueCat and Apple hold the purchase itself | Give access to what was bought | Contract | Account deleted |
@@ -67,13 +68,13 @@ safeguards exist; that sentence is only true once the agreements are accepted.
 | 2 | Account taken over through an unconfirmed email | Low / severe | Password accounts confirm the address by emailed code once email is set up; the first Apple/Google sign-in removes an unconfirmed password; reset codes are hashed, 15 minutes, five tries. | Low once `RESEND_API_KEY` is set. **Until then password accounts are unconfirmed.** |
 | 3 | Password guessing | Medium / severe | bcrypt, common-password blocklist, 8 wrong tries locks the email for 15 minutes, per-IP limits. | Limits live in one server's memory: fine for one server, must move to a shared store before a second server is added. |
 | 4 | Database reached directly, bypassing the API | Low / severe | Supabase's public API roles have row level security on with no policies **and** no table privileges; the database password is only on the server. Encrypted in transit (TLS) and at rest (provider disk encryption). | Records are not encrypted with a key the provider cannot see. Consider field-level encryption later. |
-| 5 | Someone picks up her unlocked phone | Medium / high | Optional app lock (Face ID / Touch ID / passcode); a plain cover hides the app in the app switcher; chats and the last PDF are removed at sign-out. | App lock is off by default. |
+| 5 | Someone picks up her unlocked phone | Medium / high | Optional app lock (Face ID / Touch ID / passcode); a plain cover hides the app in the app switcher; chats, the last PDF and the offline copy of her records are removed at sign-out. | App lock is off by default. |
 | 6 | A provider is breached or misuses data | Low / severe | Few providers; health records only at Supabase (EU) and passing through Render. | Agreements not yet accepted (section 3). |
 | 7 | Health information sent to an AI provider | — | Chat is off in launch builds (`EXPO_PUBLIC_CHAT_ENABLED` unset). | Before switching on: Groq agreement with zero retention, a separate consent line, App Store privacy label update. |
 | 8 | Sharing with friends exposes period dates | — | Friends is off in the app and on the server. | Do not switch on until invites need a confirmed email. |
 | 9 | She believes the app gave medical advice | Low / high | No diagnosis anywhere; urgent-symptom wording points to 999/111; terms and consent screen say it is not a medical service. | Keep marketing claims inside this line (MHRA: a symptom diary is not a device; interpretation can make it one). |
 | 10 | Records lost | Low / medium | Provider backups. | **OWNER: confirm the Supabase plan's backup retention**; the free plan's is limited. |
-| 11 | The service is unavailable when she needs her record | Medium / low | Offline outbox for notes; she can export a PDF in advance. | Render's free plan sleeps when idle. |
+| 11 | The service is unavailable when she needs her record | Medium / low | The app opens with no connection and shows the copy of her record kept on the phone; notes written offline are sent later; she can export a PDF in advance. | Render's free plan sleeps when idle. |
 
 ## 6. If something goes wrong
 

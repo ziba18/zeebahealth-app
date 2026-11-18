@@ -1,7 +1,7 @@
 // Today's building blocks (Record · Prove · Reach): the check-in card (pain slider, her words, other areas,
 // today's entries), pillar headers, the week's tiles and the latest note.
-import React, { useState } from 'react';
-import { Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import {
@@ -19,7 +19,10 @@ import {
 } from '../../../lib/records/format';
 import { useRecordsStore } from '../../../stores/recordsStore';
 import type { Rec, SymptomData } from '../../../types/records';
-import { Wren } from '../Wren';
+import { ClayIcon } from '../art/ClayIcon';
+import { Pop, PressScale, Pulse } from '../motion';
+import { useTourTarget, type Measurable, type Rect } from '../../../lib/tour';
+import { entryLanded } from './saveMoment';
 import { topicsFor, useFocusStore } from '../../../lib/focus';
 import { Gauge, MiniBars, Tile, TileRow } from '../dash/Dash';
 import { type IconName } from '../../ui/Icon';
@@ -91,64 +94,94 @@ export function PillarHeader({
   );
 }
 
-/** Today's entries as small chips ("6/10 · 09:12", "Note · 13:05"): proof that what she just did was kept. */
-function TodayEntries() {
+/** Today's entries as chips ("6/10 · 09:12", "Note · 13:05"): proof that what she just did was kept. Each opens its entry. */
+function TodayEntries({ list }: { list: Rec<SymptomData>[] }) {
   const router = useRouter();
-  const symptoms = useRecordsStore((s) => s.records.symptom);
-  const today = todayKey();
-  const list = symptoms.filter((r) => r.data.date === today).sort(compareNotesNewestFirst).reverse();
   if (!list.length) return null;
   return (
-    <View style={{ gap: space.xs }}>
-      <Txt variant="groupLabel">{`On your record today · ${notesLabel(list.length)}`}</Txt>
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.xs }}>
-        {list.slice(-6).map((r) => {
-          const n = worstOf(r.data) ?? typicalOf(r.data);
-          const time = formatTimeOfDay(noteWrittenAt(r));
-          const quick = r.data.source === 'quick';
-          const label = joinFacts(n != null ? `${n}/10` : quick ? 'Rough day' : 'Note', time);
-          return (
-            <Pressable
-              key={r.id}
-              onPress={() => router.push(`/(tabs)/timeline/entry/${r.id}?from=Today` as any)}
-              accessibilityRole="button"
-              accessibilityLabel={`${quick ? 'Pain' : 'Note'} ${label}. Opens it`}
-              style={({ pressed }) => [styles.entryChip, pressed && { opacity: 0.6 }]}
-            >
-              {n != null ? <SeverityTag value={n} style={{ height: 22, minWidth: 22 }} /> : <Icon name={quick ? 'zap' : 'pencil'} size={14} color={colors.accent} />}
-              <Txt variant="caption" color={colors.ink}>{n != null ? time || 'Today' : label}</Txt>
-            </Pressable>
-          );
-        })}
-      </View>
+    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.xs }}>
+      {list.slice(-6).map((r) => {
+        const n = worstOf(r.data) ?? typicalOf(r.data);
+        const time = formatTimeOfDay(noteWrittenAt(r));
+        const quick = r.data.source === 'quick';
+        const label = joinFacts(n != null ? `${n}/10` : quick ? 'Rough day' : 'Note', time);
+        return (
+          <PressScale
+            key={r.id}
+            onPress={() => router.push(`/(tabs)/timeline/entry/${r.id}?from=Today` as any)}
+            haptic="selection"
+            accessibilityLabel={`${quick ? 'Pain' : 'Note'} ${label}. Opens it`}
+            style={styles.entryChip}
+          >
+            {n != null ? <SeverityTag value={n} suffix="/10" style={{ height: 28 }} /> : <Icon name={quick ? 'zap' : 'pencil'} size={16} color={colors.accent} />}
+            <Txt variant="secondary" color={colors.ink} style={{ fontWeight: '500' }}>{n != null ? time || 'Today' : label}</Txt>
+            <Icon name="chevron-right" size={14} color={colors.ink3} />
+          </PressScale>
+        );
+      })}
     </View>
   );
 }
 
+/** The tick that pops in when today is on the record. */
+function DoneTick() {
+  return (
+    <Pop from={0.6}>
+      <View style={styles.doneTick}><Icon name="check" size={26} color={colors.saved} strokeWidth={2.6} /></View>
+    </Pop>
+  );
+}
+
 /**
- * RECORD: the one check-in card. Pain on a 0–10 slider (nothing pre-set; Log saves it, dated, in about ten
- * seconds), then her own words (speak or type), then any other area. Everything she adds here lands in
- * Evidence and in the report for her doctor.
+ * RECORD: the one check-in card, and the one obvious thing to do on Today.
+ *   Before today's entry — "How's your pain right now?": the number, very big, between a minus and a plus; the
+ *   slider under it (drag, or tap a digit); one Save button. One tap on a number is a complete entry.
+ *   After — "Done for today": today's entries as chips, and two ways to add more. It never nags for more.
+ * The same record is written as before (a `source: 'quick'` symptom with `worst`); only how it looks changed.
  */
-export function CheckInCard({ first, onPeriod }: { first?: boolean; onPeriod: () => void }) {
+export function CheckInCard({
+  first, onPeriod, onDraft,
+}: {
+  first?: boolean;
+  onPeriod: () => void;
+  /** Tells Today that she is choosing a number (Wren leans in to listen), or has stopped. */
+  onDraft?: (choosing: boolean) => void;
+}) {
   const create = useRecordsStore((s) => s.create);
+  const symptoms = useRecordsStore((s) => s.records.symptom);
   const c = useColors();
-  const [value, setValue] = useState<number | null>(null);
+  const [value, setValueState] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [adding, setAdding] = useState(false);
   const voice = VOICE_AVAILABLE && Platform.OS !== 'web';
+  const today = todayKey();
+  const todays = symptoms.filter((r) => r.data.date === today).sort(compareNotesNewestFirst).reverse();
+  const done = todays.length > 0 && !adding;
+  const dial = useRef<Measurable | null>(null);
+  const tourTarget = useTourTarget('checkin');
+
+  const setValue = (n: number | null) => { setValueState(n); onDraft?.(n != null); };
 
   const log = async () => {
     if (value == null || saving) return;
     setSaving(true);
     setError('');
     try {
+      // Where the number is on screen, so the chip can fly from it to the Doctor tab.
+      const from = await new Promise<Rect | null>((resolve) => {
+        const node = dial.current;
+        if (!node?.measureInWindow) { resolve(null); return; }
+        node.measureInWindow((x, y, w, h) => resolve(w > 0 ? { x: x + w / 2 - 32, y: y + 20, w: 64, h: 34 } : null));
+        setTimeout(() => resolve(null), 300);
+      });
       const saved = await create('symptom', {
         date: todayKey(), words: '', where: '', typical: null, worst: value, score: value,
         duration: '', stopped: null, stoppedWords: '', source: 'quick', createdAt: noteStamp(todayKey()),
       });
       haptics.success();
       const hard = value >= 8;
+      entryLanded({ from, value });
       showToast(
         saved.pending ? 'Saved on this phone. It will send when you’re online.'
           : hard ? `Pain ${value}/10 is on your record. That sounded like a hard day.`
@@ -156,6 +189,7 @@ export function CheckInCard({ first, onPeriod }: { first?: boolean; onPeriod: ()
         saved.pending ? undefined : { mood: hard ? 'comfort' : 'proud' },
       );
       setValue(null);
+      setAdding(false);
     } catch {
       setError('That didn’t save. Try again.');
     } finally {
@@ -163,56 +197,91 @@ export function CheckInCard({ first, onPeriod }: { first?: boolean; onPeriod: ()
     }
   };
 
+  const words = (
+    <View style={styles.heroBtns}>
+      {voice ? (
+        <>
+          <Button label="Speak" icon="mic" variant="secondary" onPress={() => openCapture({ mode: 'speak', startRecording: true })} accessibilityHint="Opens a new note and starts recording" style={styles.wordBtn} />
+          <Button label="Type" icon="pencil" variant="secondary" onPress={() => openCapture({ mode: 'type' })} accessibilityLabel="Type a note" style={styles.wordBtn} />
+        </>
+      ) : (
+        <Button label={done ? 'Add a note in your words' : 'Write a note instead'} icon="pencil" variant="secondary" onPress={() => openCapture({ mode: 'type' })} style={styles.wordBtn} />
+      )}
+    </View>
+  );
+
   return (
     <Card tone="hero" style={styles.hero}>
       <LinearGradient
         colors={[c.glow, 'rgba(0,0,0,0)']}
         start={{ x: 0, y: 0 }}
-        end={{ x: 0, y: 0.25 }}
+        end={{ x: 0, y: 0.32 }}
         style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]}
       />
-      <View style={styles.heroTop}>
-        <Wren mood="idle" size={56} decorative />
-        <View style={styles.heroPrompt}>
-          <Txt variant="hero" accessibilityRole="header">{first ? 'Start your record' : 'How’s your body today?'}</Txt>
-          <Txt variant="caption" style={{ marginTop: 2 }}>Every entry is dated and kept for your doctor.</Txt>
-        </View>
+      <View style={styles.pillarRow}>
+        <ClayIcon name="record" size={30} />
+        <Txt variant="eyebrow" color={colors.accent} style={{ flex: 1 }}>Record</Txt>
+        <Txt variant="caption">{formatDay(today)}</Txt>
       </View>
 
-      <View>
-        <Txt variant="headline">Pain right now</Txt>
-        <PainSlider value={value} onChange={setValue} label="Pain right now" showLabel={false} readout minLabel="No pain" maxLabel="Worst imaginable" />
-        <Button
-          label={value == null ? 'Choose a number to log it' : `Log pain ${value}/10`}
-          icon={value == null ? undefined : 'check'}
-          onPress={log}
-          loading={saving}
-          disabled={value == null}
-          style={{ marginTop: space.sm }}
-          accessibilityHint="Saves it to today, with the time"
-        />
-        <InlineError message={error} style={{ marginTop: space.xs }} />
-      </View>
-
-      <View style={styles.divider} />
-
-      <View style={{ gap: space.sm }}>
-        <Txt variant="headline">In your own words</Txt>
-        <View style={styles.heroBtns}>
-          {voice ? (
-            <>
-              <Button label="Speak" icon="mic" variant="secondary" onPress={() => openCapture({ mode: 'speak', startRecording: true })} accessibilityHint="Opens a new note and starts recording" style={{ flex: 1 }} />
-              <Button label="Type" icon="pencil" variant="secondary" onPress={() => openCapture({ mode: 'type' })} style={{ flex: 1 }} />
-            </>
-          ) : (
-            <Button label="Write a note" icon="pencil" variant="secondary" onPress={() => openCapture({ mode: 'type' })} style={{ flex: 1 }} />
-          )}
+      {done ? (
+        <View style={{ gap: space.md }}>
+          {/* Once today is recorded the slider is put away, so the tour points here instead. */}
+          <View ref={tourTarget as any} collapsable={false} style={styles.doneRow}>
+            <DoneTick />
+            <View style={{ flex: 1, minWidth: 0 }}>
+              <Txt variant="hero" accessibilityRole="header">Done for today</Txt>
+              <Txt variant="secondary" style={{ marginTop: 2 }}>Dated, saved and already in your report.</Txt>
+            </View>
+          </View>
+          <TodayEntries list={todays} />
+          <View style={styles.divider} />
+          <View style={{ gap: space.xs }}>
+            <Txt variant="caption">Something changed? Add to today any time.</Txt>
+            <Button label="Add another number" icon="plus" variant="secondary" onPress={() => setAdding(true)} style={styles.wordBtn} />
+            {words}
+          </View>
         </View>
-        <Txt variant="caption">Your words are quoted as you wrote them. Or log something else:</Txt>
+      ) : (
+        <>
+          <View>
+            <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: space.sm }}>
+              <View style={{ flex: 1, minWidth: 0 }}>
+                <Txt variant="hero" accessibilityRole="header">{adding ? 'Add another number' : 'How’s your pain right now?'}</Txt>
+                <Txt variant="secondary" style={{ marginTop: 2 }}>{first ? 'Start here. One tap is a full entry.' : 'One tap is a full entry.'}</Txt>
+              </View>
+              {adding ? (
+                <Button label="Cancel" variant="text" small onPress={() => { setValue(null); setAdding(false); }} style={{ marginTop: -10 }} />
+              ) : null}
+            </View>
+            <View ref={((node: unknown) => { dial.current = node as Measurable | null; tourTarget(node); }) as any} collapsable={false} style={{ marginTop: space.sm }}>
+              <PainSlider value={value} onChange={setValue} label="Pain right now" showLabel={false} readout size="large" minLabel="No pain" maxLabel="Worst imaginable" />
+            </View>
+            <Pulse active={!!first && value != null && !saving} radius={radii.pill} style={{ marginTop: space.md }}>
+              <Button
+                label={value == null ? 'Choose a number first' : `Save ${value}/10 to my record`}
+                icon={value == null ? undefined : 'check'}
+                onPress={log}
+                loading={saving}
+                disabled={value == null}
+                style={{ minHeight: 56 }}
+                accessibilityHint="Saves it to today, with the time"
+              />
+            </Pulse>
+            <InlineError message={error} style={{ marginTop: space.xs }} />
+          </View>
+          <View style={styles.divider} />
+          <View style={{ gap: space.xs }}>
+            <Txt variant="caption">Or say it in your own words. They are quoted exactly as you wrote them.</Txt>
+            {words}
+          </View>
+        </>
+      )}
+
+      <View style={{ gap: space.xs }}>
+        <Txt variant="caption">Note something else</Txt>
         <QuickRows onPeriod={onPeriod} onCard />
       </View>
-
-      <TodayEntries />
     </Card>
   );
 }
@@ -289,7 +358,7 @@ const PRIMARY_ROWS = ['Pain', 'Bleeding', 'Tired', 'Something new'];
 /** Short chip labels (the long names stay as note tags). */
 const CHIP_LABEL: Record<string, string> = { 'Tummy, bowel or bladder': 'Bowel or bladder', 'Something new': 'Other' };
 
-/** One compact, scrolling row of topic chips (her chosen areas first). Each opens a note on that topic. */
+/** Topic chips (her chosen areas first), wrapped onto as many rows as they need so none hides off the side. Each opens a note on that topic. */
 export function QuickRows({ onPeriod, onCard }: { onPeriod: () => void; /** Inside a card: sunken chips that bleed to the card edge. */ onCard?: boolean }) {
   const focus = useFocusStore((st) => st.areas);
   const primary = topicsFor(focus, PRIMARY_ROWS);
@@ -298,36 +367,39 @@ export function QuickRows({ onPeriod, onCard }: { onPeriod: () => void; /** Insi
     ...QUICK_ROWS.filter((r) => !primary.includes(r.label)),
   ].filter((r) => !(onCard && r.label === 'Pain')); // the check-in's slider is right above
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipRow} style={styles.chipScroll} accessibilityLabel="Log something else">
+    <View style={styles.chipRow} accessibilityLabel="Note something else">
       {rows.map((r) => (
-        <Pressable
+        <PressScale
           key={r.label}
-          onPress={() => { haptics.selection(); r.label === 'Bleeding' ? onPeriod() : openCapture({ mode: 'type', tag: r.tag }); }}
-          accessibilityRole="button"
-          accessibilityLabel={`Log ${r.label}`}
-          style={({ pressed }) => [styles.topicChip, onCard && { backgroundColor: colors.sunken }, pressed && { opacity: 0.6 }]}
+          onPress={() => { r.label === 'Bleeding' ? onPeriod() : openCapture({ mode: 'type', tag: r.tag }); }}
+          haptic="selection"
+          accessibilityLabel={`Note ${r.label === 'Something new' ? 'something else' : r.label.toLowerCase()}`}
+          style={[styles.topicChip, onCard && { backgroundColor: colors.sunken }]}
         >
-          <Icon name={r.icon} size={15} color={colors.accent} />
+          <Icon name={r.icon} size={17} color={r.label === 'Bleeding' ? colors.clay : colors.accent} />
           <Txt variant="secondary" color={colors.ink} style={{ fontWeight: '500' }}>{CHIP_LABEL[r.label] ?? r.label}</Txt>
-        </Pressable>
+        </PressScale>
       ))}
-    </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   chip: { paddingVertical: space.xs, paddingHorizontal: space.md, alignItems: "center" },
   qgrid: { flexDirection: 'row', flexWrap: 'wrap', gap: space.xs },
-  hero: { padding: space.md, gap: space.lg },
-  divider: { height: StyleSheet.hairlineWidth, backgroundColor: colors.hairline, marginVertical: -space.xxs },
+  hero: { padding: space.md, gap: space.md },
+  pillarRow: { flexDirection: 'row', alignItems: 'center', gap: space.xs },
+  doneRow: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
+  doneTick: { width: 52, height: 52, borderRadius: 26, backgroundColor: colors.savedTint, alignItems: 'center', justifyContent: 'center' },
+  wordBtn: { flex: 1, minHeight: 52 },
+  divider: { height: StyleSheet.hairlineWidth, backgroundColor: colors.hairline },
   pillar: { paddingHorizontal: space.xxs, marginBottom: space.sm },
   stepDot: { width: 18, height: 18, borderRadius: 9, backgroundColor: colors.accentTint, alignItems: 'center', justifyContent: 'center' },
   stepNum: { ...font.roundedBold, fontSize: 11, lineHeight: 13, color: colors.accent },
-  entryChip: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingLeft: 4, paddingRight: space.sm, height: 30, borderRadius: radii.pill, backgroundColor: colors.sunken },
-  chipScroll: { marginHorizontal: -layout.gutter },
-  chipRow: { paddingHorizontal: layout.gutter, gap: space.xs },
+  entryChip: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingLeft: 8, paddingRight: space.xs, height: 48, borderRadius: radii.pill, backgroundColor: colors.sunken },
+  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: space.xs },
   topicChip: {
-    flexDirection: 'row', alignItems: 'center', gap: 6, height: 36, paddingHorizontal: space.sm,
+    flexDirection: 'row', alignItems: 'center', gap: 6, height: 48, paddingHorizontal: space.md,
     borderRadius: radii.pill, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.cardBorder,
   },
   rough: { paddingVertical: space.sm, gap: space.xs },

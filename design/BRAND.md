@@ -39,13 +39,44 @@ light raspberry `#F9D3DE → #93103A`; dark peach that *glows brighter* as it ge
 Web preview stands in Newsreader for New York (desktop Chrome can't reach it). Scale = iOS text styles (Large Title
 34 bold, Title 22, Headline 17 semibold, Body 17, Subheadline 15, Footnote 13), plus `statement` 28, `metric` 34.
 
-## 4. Wren — the mascot (the owner's favourite; never re-tinted)
-A knitted hot-water bottle: burgundy knit `#7A1F3A`, bone ribbed collar, stitched heart. Same colours in both modes.
-`components/zeeba/Wren.tsx` — moods idle, happy, listening, comfort, proud, sleepy; breathes; still under Reduce Motion;
-`decorative` prop hides it from VoiceOver when text says the same thing.
+## 4. Wren — the mascot and guide (version 3, 11 Nov 2026)
+A knitted hot-water bottle: burgundy knit, bone ribbed collar and hem, cream mittens, stitched heart, small feet.
+Same colours in both modes; never re-tinted. On 11 Nov the owner asked for a "much more beautiful, 3D-looking"
+Wren that guides people step by step, so Wren was redrawn and now does more than comfort.
 
-Rules: at most once per screen. Appears on Welcome, the Today hero, onboarding "You're set", empty states, the save toast
-(proud; comfort after a 8+/10 day). **Never on For my doctor or the PDF. Never speaks medical content.**
+`components/zeeba/Wren.tsx`: one small vector drawing (gradients, a clip path, one pattern; no image files, no SVG
+filters) lit like a soft toy: key light top left, pink rim light lower right, plum shadows, contact shadow. It is
+split into stacked layers so every movement is a plain view transform: Wren breathes, blinks at uneven intervals,
+springs between poses and squashes a little on each change. Still under Reduce Motion.
+Moods: `idle` `happy` `wave` `proud` `point` (with `pointAt` left/right/up/down) `listening` `thinking` `comfort` `sleepy`.
+Master artwork for the website: the same drawing as an SVG string generator, inlined in the site's `index.html`.
+See every mood live in the design preview at `/wren-lab`.
+
+Where Wren appears: launch screen, Welcome (waving), the intro pages (pointing at each clay icon), every onboarding
+question (asking it in a speech bubble, `WrenSays` in `components/zeeba/motion.tsx`), the "You're all set"
+celebration, Today's greeting, the first-run tour (pointing at one control per step), milestone celebrations, empty
+states and the save toast.
+
+Rules:
+- At most one Wren per screen (a second tiny one in a toast is fine).
+- **Never on For my doctor or the PDF. Never speaks medical content.**
+- Wren reacts to the act of recording, never to the pain number. A hard day (8/10 or worse) gets `comfort`,
+  never confetti. Wren is never sad, worried or disappointed.
+- When Wren teaches, Wren points at one control and says eight words or fewer.
+
+## 4b. Motion, clay icons and light gamification (11 Nov 2026)
+- **Motion kit** `components/zeeba/motion.tsx`: `Pop`, `Rise`, `PressScale`, `Confetti`, `CountUp`,
+  `ProgressSteps`, `Pulse`, `WrenSays`. Built on React Native's own `Animated`; no animation packages. Press scales
+  to 0.97; interface motion under 300 ms; springs gentle for interface, playful only for Wren and celebrations.
+- **Clay icons** `components/zeeba/art/ClayIcon.tsx`: twelve soft 3D vector illustrations (record, prove, reach,
+  bell, calendar, lock, heart, pencil, sparkle, doctor, moon, sun) lit like Wren. For warmth in onboarding, intro,
+  milestones and pillar headers; the tab bar keeps simple glyphs. Gallery: `/art-lab` in the preview.
+- **Borrowed from games, on purpose** (research: `gamification` notes, WORKLOG 2026-11-11): a total that only
+  goes up ("N days on your record") with one knitted stitch per recorded day; milestones celebrated once each
+  (first entry, 3, 7, 14, 28 days, first report shared); an early win (the first entry is on the report at once); a
+  guided first-run tour; the entry visibly flying to the report on save.
+- **Refused, on purpose:** streaks and anything that counts consecutive days, anything that decays, guilt
+  notifications, scores on symptoms, confetti on a pain entry, leaderboards.
 
 ## 5. iPhone feel
 Floating **glass tab bar** (blur + translucent fill + hairline edge, selected tab on a soft accent lozenge, iOS 26 style) ·

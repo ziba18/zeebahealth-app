@@ -102,9 +102,12 @@ export function Sheet({
       drag.setValue(0);
       scrolled.current = false;
       edge.setValue(0);
-      Animated.timing(progress, {
-        toValue: 1, duration: motion.sheet, easing: Easing.bezier(0.2, 0, 0, 1), useNativeDriver: Platform.OS !== 'web',
-      }).start();
+      // Settles with a gentle spring (no overshoot, so the sheet never lifts off the bottom edge); a plain fade under Reduce Motion.
+      if (reduceMotion) {
+        Animated.timing(progress, { toValue: 1, duration: motion.fast, easing: Easing.out(Easing.quad), useNativeDriver: Platform.OS !== 'web' }).start();
+      } else {
+        Animated.spring(progress, { toValue: 1, stiffness: 230, damping: 30, mass: 1, useNativeDriver: Platform.OS !== 'web' }).start();
+      }
       return undefined;
     }
     if (!mounted) return undefined;
@@ -209,9 +212,11 @@ export function Sheet({
                 accessibilityRole="button"
                 accessibilityLabel={closeLabel}
                 hitSlop={4}
-                style={({ pressed }) => [styles.close, pressed && { backgroundColor: colors.sunken }]}
+                style={({ pressed }) => [styles.close, pressed && { opacity: 0.6 }]}
               >
-                <Icon name="x" size={20} color={colors.ink} />
+                {/* The cross AND the word: a cross alone is a guess for someone new to phones. */}
+                <Icon name="x" size={18} color={colors.ink} />
+                <Txt maxFontSizeMultiplier={1.4} style={styles.closeText}>{/^close/i.test(closeLabel) ? 'Close' : closeLabel}</Txt>
               </Pressable>
             </View>
           </View>
@@ -253,10 +258,14 @@ const styles = StyleSheet.create({
   },
   grabberHit: { height: 20, alignItems: 'center', justifyContent: 'center' },
   grabber: { width: 36, height: 5, borderRadius: radii.pill, backgroundColor: colors.borderStrong },
-  titleRow: { flexDirection: 'row', alignItems: 'center', gap: space.sm, paddingLeft: layout.gutter, paddingRight: space.sm, minHeight: 44 },
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: space.sm, paddingLeft: layout.gutter, paddingRight: space.sm, minHeight: 48 },
   titleWrap: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: space.xs },
   edge: { height: StyleSheet.hairlineWidth * 2, backgroundColor: colors.hairline, marginBottom: -StyleSheet.hairlineWidth * 2, zIndex: 1 },
-  close: { width: 44, height: 44, borderRadius: radii.pill, alignItems: 'center', justifyContent: 'center' },
+  close: {
+    height: 40, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4,
+    paddingLeft: space.sm, paddingRight: space.md, marginRight: space.xxs, borderRadius: radii.pill, backgroundColor: colors.sunken,
+  },
+  closeText: { fontSize: 15, lineHeight: 20, fontWeight: '600', color: colors.ink },
   header: { paddingHorizontal: layout.gutter, paddingBottom: space.sm },
   content: { paddingHorizontal: layout.gutter, paddingTop: space.xs, paddingBottom: space.xl },
   footer: {

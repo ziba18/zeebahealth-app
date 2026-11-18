@@ -8,15 +8,19 @@ import { formatRelativeDay } from '../../../lib/records/format';
 import { Icon, type IconName } from '../../ui/Icon';
 import { Txt } from './Txt';
 
+// Sizes for this audience (11 Nov 2026 review): the same as the first-run screens, so the app is one app.
+// Main buttons 56, every other button 48, chips 44 inside a 48 touch area, segmented control 40 inside 48.
+const SIZE = { primary: 56, secondary: 48, text: 48, chip: 44, segmented: 40, icon: 48 } as const;
+
 // ---- Button -------------------------------------------------------------------------------
 
 export type ButtonVariant = 'primary' | 'secondary' | 'text' | 'destructive' | 'destructiveOutline';
 
 /**
- * primary — 56, plum, white text. One per screen/sheet.
- * secondary — 48, outline borderStrong, ink text.
- * text — 44, plum text, no fill (links such as "Type instead", "Add more").
- * destructive — 44 text-style button in error red ("Delete note" on a note, "Delete entry" on other records). Confirm with ConfirmCard.
+ * primary — 56, accent fill. One per screen/sheet.
+ * secondary — 48, soft accent tint, accent text.
+ * text — 48, accent text, no fill (links such as "Type instead", "Add more").
+ * destructive — 48 text-style button in error red ("Delete note" on a note, "Delete entry" on other records). Confirm with ConfirmCard.
  * destructiveOutline — 48 outline in error red; ConfirmCard's confirm action (N21).
  * Disabled primary = sunken fill + ink2 text (still readable, clearly inactive).
  */
@@ -39,29 +43,34 @@ export function Button({
   small?: boolean;
 }) {
   const inactive = disabled || loading;
+  const spring = usePressSpring(0.97);
+  const pressed = spring.pressed && !inactive;
+  const solid = variant === 'primary' || variant === 'secondary' || variant === 'destructiveOutline';
   const fg =
     variant === 'primary' ? (inactive ? colors.ink2 : colors.onAccent)
     : variant === 'secondary' ? (inactive ? colors.ink3 : colors.accent)
     : variant === 'destructive' || variant === 'destructiveOutline' ? colors.error
     : colors.accent;
   return (
-    <Pressable
+    <AnimatedPressable
       onPress={() => { if (variant === 'primary') haptics.light(); onPress(); }}
+      onPressIn={spring.onPressIn}
+      onPressOut={spring.onPressOut}
       disabled={inactive}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel ?? label}
       accessibilityHint={accessibilityHint}
       accessibilityState={{ disabled: !!inactive, busy: !!loading }}
-      style={({ pressed }) => [
+      style={[
         styles.btnBase,
-        // A 2% press-in on the filled and outlined buttons: the colour change alone is only ~1.2:1.
-        pressed && !inactive && (variant === 'primary' || variant === 'secondary' || variant === 'destructiveOutline') && { transform: [{ scale: 0.97 }] },
-        variant === 'primary' && [styles.primary, { backgroundColor: inactive ? colors.sunken : pressed ? colors.accentPressed : colors.accent }],
-        variant === 'secondary' && [styles.secondary, { backgroundColor: inactive ? colors.sunken : colors.accentTint, opacity: pressed ? 0.75 : 1 }],
+        variant === 'primary' && [styles.primary, { backgroundColor: inactive ? colors.sunken : pressed ? colors.accentPressed : colors.accent }, !inactive && styles.primaryLift],
+        variant === 'secondary' && [styles.secondary, { backgroundColor: inactive ? colors.sunken : colors.accentTint, opacity: pressed ? 0.8 : 1 }],
         variant === 'destructiveOutline' && [styles.secondary, { borderColor: colors.error, backgroundColor: pressed ? colors.errorTint : 'transparent', opacity: inactive ? 0.5 : 1 }],
         (variant === 'text' || variant === 'destructive') && [styles.textBtn, { opacity: inactive ? 0.5 : pressed ? 0.6 : 1 }],
         align === 'start' && { justifyContent: 'flex-start', alignSelf: 'flex-start', paddingHorizontal: 0 },
         style,
+        // The filled and tinted buttons press in with a spring (0.97); text links only dim.
+        solid && { transform: [{ scale: spring.scale }] },
       ]}
     >
       {loading ? <ActivityIndicator color={fg} /> : icon ? <Icon name={icon} size={20} color={fg} /> : null}
@@ -72,12 +81,12 @@ export function Button({
       >
         {label}
       </Txt>
-    </Pressable>
+    </AnimatedPressable>
   );
 }
 
 /**
- * 44×44 icon-only button. Interactive glyphs are ink (or pass `color`). `filled` (plum circle)
+ * 48×48 icon-only button. Interactive glyphs are ink (or pass `color`). `filled` (plum circle)
  * is deprecated for header "+" — use `AddButton` (review 1, V16: one add treatment).
  */
 export function IconButton({
@@ -88,7 +97,6 @@ export function IconButton({
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={label}
-      hitSlop={4}
       style={({ pressed }) => [
         styles.iconBtn,
         filled && { backgroundColor: pressed ? colors.accentPressed : colors.accent },
@@ -101,11 +109,26 @@ export function IconButton({
 }
 
 /**
- * THE header "add" affordance (Timeline, every records list): a plain plum `plus` at 24 in a
- * 44 hit, unfilled. Hide it while an EmptyState shows its own primary for the same action.
+ * THE header "add" affordance (Evidence, every records list): a soft pill with a plus AND the word "Add"
+ * (an icon alone is a guess for someone new to phones). 44 tall inside a 48 touch area. `label` is the full
+ * spoken name ("Add a note"). Hide it while an EmptyState shows its own primary for the same action.
  */
 export function AddButton({ label, onPress }: { label: string; onPress: () => void }) {
-  return <IconButton icon="plus" label={label} onPress={onPress} color={colors.accent} />;
+  const spring = usePressSpring(0.97);
+  return (
+    <AnimatedPressable
+      onPress={() => { haptics.selection(); onPress(); }}
+      onPressIn={spring.onPressIn}
+      onPressOut={spring.onPressOut}
+      hitSlop={2}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      style={[styles.addPill, spring.pressed && { opacity: 0.8 }, { transform: [{ scale: spring.scale }] }]}
+    >
+      <Icon name="plus" size={20} color={colors.accent} />
+      <Txt maxFontSizeMultiplier={1.4} style={styles.addPillText}>Add</Txt>
+    </AnimatedPressable>
+  );
 }
 
 // ---- Chips --------------------------------------------------------------------------------
@@ -132,6 +155,7 @@ export function Chip({
       onPressOut={spring.onPressOut}
       onPress={() => { haptics.selection(); onPress(); }}
       disabled={disabled}
+      hitSlop={{ top: 2, bottom: 2 }}
       accessibilityRole={accessibilityRole}
       accessibilityLabel={label}
       accessibilityState={accessibilityRole === 'button' ? { selected, disabled } : { checked: selected, disabled }}
@@ -366,14 +390,21 @@ export function DatePill({ value, onPress, label }: { value: string; onPress: ()
 
 const styles = StyleSheet.create({
   btnBase: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space.xs, borderRadius: radii.pill },
-  primary: { minHeight: heights.primary, paddingHorizontal: space.xl },
+  primary: { minHeight: SIZE.primary, paddingHorizontal: space.xl },
+  // A soft lift under the one main action (reads in light; invisible on Midnight, where the peach fill glows by itself).
+  primaryLift: { boxShadow: '0 1px 2px rgba(0,0,0,0.10), 0 6px 14px rgba(0,0,0,0.10)' },
   // iOS "tinted" button: accent text on a soft accent fill, no outline.
-  secondary: { minHeight: heights.secondary, paddingHorizontal: space.lg },
-  textBtn: { minHeight: heights.minHit, paddingHorizontal: space.xs },
-  iconBtn: { width: heights.minHit, height: heights.minHit, borderRadius: radii.pill, alignItems: 'center', justifyContent: 'center' },
+  secondary: { minHeight: SIZE.secondary, paddingHorizontal: space.lg },
+  textBtn: { minHeight: SIZE.text, paddingHorizontal: space.xs },
+  iconBtn: { width: SIZE.icon, height: SIZE.icon, borderRadius: radii.pill, alignItems: 'center', justifyContent: 'center' },
+  addPill: {
+    height: 44, flexDirection: 'row', alignItems: 'center', gap: 4, paddingLeft: space.sm, paddingRight: space.md,
+    borderRadius: radii.pill, backgroundColor: colors.accentTint,
+  },
+  addPillText: { ...font.semibold, fontSize: 16, lineHeight: 21, color: colors.accent },
 
   chip: {
-    minHeight: heights.chip, borderRadius: radii.pill, borderWidth: 1, borderColor: colors.borderStrong,
+    minHeight: SIZE.chip, borderRadius: radii.pill, borderWidth: 1, borderColor: colors.borderStrong,
     paddingHorizontal: space.md, alignItems: 'center', justifyContent: 'center', backgroundColor: 'transparent',
   },
   // Selected border is 2px: trim padding by 1 so the chip doesn't grow.
@@ -390,7 +421,7 @@ const styles = StyleSheet.create({
   chipRowBleed: { paddingHorizontal: layout.gutter, paddingRight: layout.gutter + space.xxl },
   fade: { position: 'absolute', top: 0, bottom: 0, right: 0, width: space.xxl },
 
-  addHit: { minHeight: heights.minHit, justifyContent: 'center', alignSelf: 'flex-start' },
+  addHit: { minHeight: SIZE.text, justifyContent: 'center', alignSelf: 'flex-start' },
   addChip: {
     height: heights.addChip, borderRadius: radii.pill, borderWidth: 1, borderStyle: 'dashed', borderColor: colors.borderStrong,
     paddingHorizontal: space.sm, flexDirection: 'row', alignItems: 'center', gap: space.xxs,
@@ -398,10 +429,10 @@ const styles = StyleSheet.create({
   addText: { ...font.medium, fontSize: 15, lineHeight: 20, color: colors.accent },
 
   // Pill like every other control (V9); the white thumb gets a hairline + the one micro-shadow.
-  segTrack: { flexDirection: 'row', height: heights.segmented, borderRadius: radii.pill, backgroundColor: colors.sunken, padding: 3 },
+  segTrack: { flexDirection: 'row', height: SIZE.segmented, borderRadius: radii.pill, backgroundColor: colors.sunken, padding: 3 },
   seg: { flex: 1, minWidth: 0, paddingHorizontal: 1, alignItems: 'center', justifyContent: 'center', borderRadius: radii.pill, borderWidth: StyleSheet.hairlineWidth, borderColor: 'transparent' },
   segSelected: { backgroundColor: colors.surface, borderColor: colors.hairline, ...shadows.thumb },
-  segText: { ...font.medium, fontSize: 15, lineHeight: 20, color: colors.ink2 },
+  segText: { ...font.medium, fontSize: 16, lineHeight: 21, color: colors.ink2 },
 
   datePill: {
     height: heights.datePill, borderRadius: radii.pill, borderWidth: 1, borderColor: colors.borderStrong,

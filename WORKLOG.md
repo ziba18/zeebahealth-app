@@ -3,6 +3,270 @@
 Running log for the `mvp-symptom-capture` branch: what changed, what broke,
 what was decided and why. Newest entries at the top.
 
+## 2026-11-18 — "Builds your case": evidence pack plan for treatments, appointments and life impact (plan and mock-up only; nothing built)
+
+Owner's brief: read `docs/feature-brief-evidence-pack-2026-11-18.md`; check what the app already has for its six
+features; plan features 1–3 (treatments tried, appointment history, impact on life) with the consent, privacy page,
+DPIA and `CONSENT_VERSION` changes; suggest where "Other apps track your cycle. Zeeba builds your case." can go.
+No app or server code changed, nothing stashed or committed; the existing uncommitted work is untouched apart from
+this entry.
+
+- **What exists (read from the code):** 1 Treatments = partly: the `medicine` record (name, dose, dates with
+  "around", `helped` Helped/A little/No/Not sure, `sideEffects`) in `types/records.ts`, Profile → Records, and the
+  PDF section "What I've tried" (`lib/records/summary.ts` ~772); there's no way to record a treatment that isn't a medicine (physio,
+  diet, heat). 2 Appointments = partly: `AppointmentData` (who, why, told, tests, next, notes) +
+  `AddAppointmentSheet` (`components/zeeba/capture/AppointmentCard.tsx`) + PDF "Appointments"; "who" is free text,
+  and there is no "what I said" field or "what happened next" choice, so nothing can be counted. 3 Impact = partly: `impacts` chips on each
+  note (`lib/records/fields.ts:21`: Work or study, Sleep, Exercise, Plans with people, Sex) + PDF "What it got in
+  the way of" + glance tile; "got in the way" is not "missed". 4 Voice = partly (on-device Apple speech,
+  `lib/transcription.ts`, parsing in `components/zeeba/capture/infer.ts`; not verified on a device). 5 Clinician-designed
+  report = missing. 6 Wearables / research data = missing in the app (the website has `research_responses`).
+- **Plan (not approved):** no new record kinds and no migration. Extend `medicine` (add `category`, show as
+  "Treatments tried"), extend `appointment` (add `seenBy` choice, `said`, `outcomes[]`), and change the note's
+  impact chips to "Missed work or uni / Left work or uni early / Cancelled plans / Broken sleep last night /
+  Couldn't exercise / Sex / Nothing today" (old values still read). New "Your case" group at the top of Evidence;
+  page 1 of the PDF becomes the evidence pack: glance + impact counts, treatments table, appointments table with
+  counts of her own "what happened next" choices, her agenda. Wren is not on any of it. No score or flag.
+- **Before shipping:** consent sentence names treatments, appointments and what was said, work/plans/sleep →
+  bump `CONSENT_VERSION` `2026-11` → `2026-12`; privacy page (`backend/app/routers/legal.py` ~72) and DPIA §3/§5
+  (work-absence data, clinicians named in her notes, the PDF shared beyond a doctor).
+- **Mock-up:** https://claude.ai/artifact/XNGftxaXWVfCkeHt9GbuJx (Evidence "Your case", Add a treatment, Add an
+  appointment, check-in impact question, A4 page 1). Sample data. Waiting for the owner's reaction.
+
+## 2026-11-13 (evening) — Two-hour UI/UX sprint for endometriosis and PCOS (research, 12 directions, a flagship; nothing built into the app)
+
+Owner's brief (20:39, then away for two hours, "don't ask me any questions"): audience is women with PCOS and
+endometriosis, women only, "McDonald's for women"; research first, nothing from memory; UK law on patient data and
+on a possible "PCOS likelihood score"; many design varieties built on what the best apps really do; a tester agent;
+10/10 UX. Everything is in `design/uiux-2026-11-13/` (untracked). No app code, server code, deploy or commit.
+
+- **Research** (agents; every claim carries a URL they opened; unverified items are marked):
+  `research/01-clinical.md` (NICE NG73, the 2023 PCOS guideline, NHS; question bank §10.2, body zones §10.3, GP
+  heading order §10.4), `02-legal-uk.md` (MHRA medical-device line, UK GDPR, consent wording §9.3, photos),
+  `03-competitors-west.md` (46 apps, 5,334 reviews) and `04-competitors-asia-world.md` (49 apps: China, Japan,
+  Korea, India) with real App Store screenshots in `refs/` (git-ignored), `05-ux-evidence.md` (62 sources, a
+  100-point scorecard, 30 rules), `06-lead-browser-notes.md` (live UK charts: Flo no. 2 in Health & Fitness).
+- **Findings that change the product:** a personal PCOS/endometriosis score is a medical device under MHRA guidance
+  (likely Class IIa; offence if unregistered; disclaimers do not help): replaced by "Record strength" (parts of her
+  record filled), a fixed reading page, the same GP questions for everyone, and counts of her own entries. The NHS
+  now titles PCOS "PMOS". NICE NG73 1.3.3 says a symptom diary "can aid discussions". Nearest UK endometriosis apps
+  have 16–31 ratings; Balance (menopause, GP report) is the UK proof of the model. No competitor has a pelvis-level
+  pain map. A Tokyo university hospital endometriosis clinic asks patients to bring a one-page month grid, which
+  became the model for the printed report.
+- **Spec:** `00-PRODUCT-SPEC.md` (who it is for, the three tabs, first-run questions, rules, sample data, later
+  corrections from the clinical and legal passes).
+- **Designs** (`mockups/`, self-contained HTML, each direction 7 phones on the app's own sample record, each
+  modelled on named real apps whose screenshots the designer opened; renders in `mockups/shots/`): 01 Apple Health
+  native · 02 Records you can trust · 03 Report first · 04 Already familiar (Flo) · 05 Real women, bold type · 06
+  Friendly data · 07 Wren guides you · 08 Gentle and tidy (Japan) · 09 Warm companion (China/Korea/India) · 10 Calm
+  and premium · 11 Soft and reassuring · 12 The body tells it. Then **13 Zeeba flagship** (house look, 18 phones
+  incl. consent, saved moment, bad-day entry, return after a gap, error, help and privacy, reading pages, largest
+  text, dark sample, plain-pad alternative) and its companions: 13b five colourways, 13c first run (12 phones),
+  13d daily check-in incl. the endometriosis and PCOS sets (12), 13e doctor report incl. three printed A4 pages,
+  13f Evidence tab (12), 13g App Store frames, 13t the whole flagship in deep teal with serif headings, 13p tappable
+  single-phone prototype (tried in the owner's Chrome on the published page: first run, save and back link work). Shared body figure:
+  `mockups/shared/body-figure-v2.svg.html` (our own drawing; no usable public-domain outline was found).
+- **Reviewers** (their reports are in `mockups/`): `TEST-REPORT.md` (measured by script: text sizes, targets,
+  contrast, wording; flagship 92.5 → 98/100, the only one above 95; the twelve finished 89–92; none with a red-line
+  fail), `BENCHMARK.md` (against the real apps: flagship 9/10, 03 Report first 9, others 7.5–8.5; check-in 9,
+  printed report 9, store frames 7.5), `LEGAL-CHECK.md` (no score, match or judging of results anywhere; wording
+  fixes applied; a solicitor must still confirm the device line, consent, 18+, photos), `CLINICAL-CHECK.md` (ten
+  must-fix wording items found in the flagship sheets; seven fixed outright, three partly: the full NHS "when to call
+  999 / use 111" screens are not drawn, the help link is not on every question screen, and the sample record still
+  says "pain relievers" and "birth control pills").
+  A 98 means no known rule is broken in a mock-up, not that women will love it; the tester's first three things to
+  try with real users are the arc against the plain pad, the doctor page with GPs, and Wren on the saved moment.
+- **Gallery for the owner:** https://claude.ai/artifact/Qj4f5HLNwqUzcvgVvdgEP9 (private). Rebuild with
+  `python3 fill_gallery.py && python3 build_gallery.py` in `design/uiux-2026-11-13/`.
+- **Also done:** 50 free Pexels photographs as stand-ins (`photos/`, catalogue with licences; recognisable faces
+  cannot ship near condition names); six Wren poses on a transparent ground generated from
+  `design/logo/generate-wren.mjs` into `assets/` (the smooth redrawn Wren the owner has not yet approved in-app);
+  `.gitignore` now excludes `refs/`, `gallery/` and `mockups/shots/` there; `CLAUDE.md` has a short note.
+- **Not done / open:** nothing is built into the app; no real users or clinicians have seen any of it; the reading
+  pages, check-in questions and help numbers need a clinician's sign-off; photographs need a shoot or licensed
+  stock; motion exists only in the prototype; the audience change is not yet reconciled with the 4 Nov fixed
+  purpose; storing blood results needs consent wording, privacy page, DPIA and `CONSENT_VERSION` first; 18+ vs 16.
+- **Blocked on the way:** Unsplash's site refuses automated downloads (bot check) and a workaround through the
+  owner's browser was declined by the permission system, so the photo set is all Pexels. NICE CKS, NCBI Bookshelf
+  and some regulator pages refused the fetch tool; the files list what could not be opened.
+
+## 2026-11-12 to 13 — App test, first TestFlight build of Zeeba Health, "For my doctor" design exploration (nothing approved)
+
+- **Tested** (12 Nov): typecheck clean; production iOS bundle exports; 206 server tests pass on an in-memory
+  database; all 31 in-app route targets exist; email sign-up → consent → onboarding → record → sign-in → delete
+  passed on the live server with a throwaway account (deleted); every screen clicked through in the web preview.
+  Apple and Google sign-in not testable off a phone. Live server: password reset returns 503 (no Resend key).
+- **Launch hang fixed** (`lib/api.ts`, `hooks/useAuth.ts`): requests now time out (60 s; 6 s for the launch check
+  when a copy is on the phone), so a sleeping Render server no longer holds the opening screen. Not run on a phone.
+- **TestFlight**: `eas build --platform ios --profile production --auto-submit` run by the owner; signed with the
+  coworker's team (5MZF6USVHW), build b2667dce, 1.0.0 (2), FINISHED; submission scheduled, delivery not confirmed.
+  Built from the uncommitted `design/wren-guide` working tree (eas.json has no requireCommit).
+- **Expo packages** were updated to the SDK 58 patch versions by the owner on 12 Nov (uncommitted).
+- **Expo Go would not load** on a Wi-Fi that blocks device-to-device traffic; worked over the iPhone hotspot.
+  A later network reset every connection to zeebahealth.com; the server itself was up.
+- **GitHub keep-warm** only ran every 5–8 hours, not every 10 minutes; the server sleeps between.
+- **"For my doctor" design exploration**: six rounds on a design canvas, none approved; the owner ended the
+  session unhappy. Full state, reactions and research in `design/doctor-dashboard-2026-11-13/README.md`.
+  Nothing from it is in the app.
+
+
+---
+
+## 2026-11-11 (night) — App opens offline; Wren logo redrawn and installed as the app icon
+
+**Offline (owner: "the app should load on devices that are offline… see the things they have put in").**
+What was wrong: at launch `hooks/useAuth.ts` asked the server who she is, and on ANY failure, including no
+connection or a sleeping server, deleted her sign-in and showed the welcome screen. Nothing she had recorded was
+kept on the phone except unsent notes (the outbox).
+Now:
+- `lib/offlineCache.ts` (new): a copy of her account details and her records in AsyncStorage (one row per kind of
+  record, because Android cannot read a row over about 2 MB). Removed on sign-out, account deletion, a session the
+  server refuses, and account switch.
+- `hooks/useAuth.ts`: no connection at launch = she stays signed in from the phone's copy; the server is asked again
+  when the app comes forward and every 30 s. Only an answer from the server that refuses the session signs her out.
+- `stores/recordsStore.ts`: every successful load and every change she makes refreshes the copy; when the server
+  cannot be reached the copy is shown (`stale: true`) with unsent notes on top, and `load(userId, { quiet: true })`
+  retries in the background. `app/(tabs)/_layout.tsx` says once "No connection. Showing what is saved on this phone."
+- `lib/outbox.ts`: `isOfflineError` now also counts status 0 (no connection while renewing the session).
+- Still needs a connection: signing in or creating an account; saving anything other than a symptom note
+  (appointments, medicines, period days, edits, deletes); making the PDF was not checked offline.
+- Privacy: the on-phone copy is described in `backend/app/routers/legal.py` (one new line; **needs a server deploy
+  by the owner to show**) and in `docs/compliance/DPIA.md` (inventory row, risks 5 and 11).
+- The app's code and pictures are inside a store or TestFlight build, so it starts with no network. Expo Go is
+  different: it downloads the app from the Mac each time and cannot start offline.
+
+**App size.** iPhone bundle measured: 4.7 MB of compiled code plus 104 KB of pictures (23 small PNGs). No fonts ship:
+the two Newsreader files were being pulled in by a web-only import; moved to `lib/webFonts.web.ts` (`lib/webFonts.ts`
+is empty for phones). Packages not referenced anywhere (`date-fns`, two `@expo-google-fonts/*`) are not in the
+bundle, so they cost nothing on the device. The installed size is mostly the React Native / Expo runtime; the real
+number needs a build (not made). The offline copy is text only: tens of kilobytes.
+
+**Wren logo, redrawn (owner picked the Wren direction but disliked the knit texture and the look).**
+New drawing `design/logo/generate-wren.mjs` → `wren-icon.svg` (+ `-dark`, `-cream`, `-tinted`, `wren-glyph`): smooth
+raspberry body lit like a soft vinyl toy (glossy highlight, rim light, shading), chunky ribbed cream collar and hem,
+cream top-stitching instead of the knit pattern, plum stopper, bigger glossy eyes with brows, open smile, a waving
+mitten, stitched heart, soft "warmth" rings and three sparkles on the approved peach.
+Installed in the app (the old files were the ATOSSA crest): `assets/icon.png`, new `assets/icon-dark.png` and
+`assets/icon-tinted.png` (`ios.icon` in `app.config.ts`), `splash-icon.png` (the icon as a rounded tile),
+`favicon.png`, Android foreground + monochrome (background colour `#FFB58D`). Deleted `assets/Zeeba-logo.png` (the
+old crest, unused; still in git history). Board updated: https://claude.ai/artifact/3vAPvnraoWabqvWTNuxeMY
+**Eight variations (owner: "give me different variations of Wren").** `design/logo/variations/` (SVG + 640 px PNG),
+all from `generate-wren.mjs` options: 1 Wave (the installed icon), 2 Hug (holding a heart, blush ground), 3 Close-up
+(face only, wink), 4 Peach Wren (peach body on raspberry), 5 Cosy night (wine body, closed eyes, moon), 6 Classic
+with bow (squarer bottle, cream ground), 7 Bobble cheer (rounder, pom-pom, both mittens up), 8 Flat (two-tone, no
+shading). On the board as a fourth frame. The app icon is unchanged until the owner picks.
+Not done: the Wren INSIDE the app (`components/zeeba/Wren.tsx`) and on the website is still the knitted v3; port
+the new look there once the owner approves it (no blur filters in react-native-svg, so it needs gradient-only
+shading). `design/BRAND.md` §4 still describes v3.
+Verified: `npx tsc --noEmit` clean; `npx expo export --platform ios` builds; `expo config` resolves the three iOS
+icons. Not verified: offline behaviour on a real phone; how the icons look on a device; the board page itself.
+
+## 2026-11-11 (evening) — Logo directions, junk research row deleted, sign-up error traced to the network
+
+**Logo (proposal only; nothing in the app was changed).** The owner asked for a logo. Found first: `assets/icon.png`,
+`assets/Zeeba-logo.png`, the splash and the Android icons are all still the OLD ATOSSA crest (a queen's profile with
+the word ATOSSA). Any build made today would ship the old name on the Home Screen.
+Research: pulled the UK App Store search shelf for six terms (endometriosis, symptom tracker, period tracker, pain
+diary, menopause, pcos), 49 different apps, and tallied each icon's main colour: white 19, blue 8, red 7, teal 5,
+pink 5, purple 2, grey 2, yellow 1, orange 0. Common pictures: flowers, feathers, petals, women's profiles, single
+letters. Character icons (Bearable's bear, Daylio, Duolingo, Finch) read best at small sizes. Nobody uses a knitted
+object, a hot-water bottle, or peach/orange.
+Three directions drawn as 1024 px masters in `design/logo/` (SVG + PNG):
+- **A · Wren** (recommended): Wren's face on the approved peach; `wren-icon` + `-dark` (midnight, peach glow),
+  `-tinted` (one colour), `-cream` (alternative ground), `wren-glyph` (one-colour mark).
+- **B · Heard**: a speech bubble holding three rising bars; `heard-icon` (raspberry) + `-dark`.
+- **C · On the record**: a bold Z followed by a peach record dot; `record-icon` (midnight) + `-raspberry`.
+Wordmark shown in Fraunces SemiBold (alternative Figtree Bold); both are open-licence. SF Pro cannot be used for a
+logo outside Apple's own platforms. The PNGs use soft blurred shadows (SVG filters), fine for static icon files;
+do not paste these SVGs into react-native-svg.
+Board for the owner: https://claude.ai/artifact/3vAPvnraoWabqvWTNuxeMY (private). Awaiting the owner's pick; only
+then replace the files in `assets/` and add the logo to `design/BRAND.md`.
+
+**Junk research row.** Owner said yes: deleted `research_responses` id 2 (11:41 UTC, source `direct`). Checked
+before and after; it was the only row from 11 Nov.
+
+**"We couldn't create your account. Check your connection and try again."** Not a code fault. The Wi-Fi the Mac
+was on runs a Fortinet web filter that intercepts `api.zeebahealth.com` and `zeebahealth.com` (the certificate
+presented for our address is issued by Fortinet, not our host). The server was up: the direct Render address
+`https://atossa-backend.onrender.com/warmup` answered 200 and allows browser requests. Same block as 10 Nov.
+For testing on that network: `EXPO_PUBLIC_API_URL=https://atossa-backend.onrender.com npx expo start` (never in
+`.env` or EAS), or use mobile data. Not verified: that sign-up then succeeds on the owner's phone.
+
+## 2026-11-11 (later) — "Wren guides you": new Wren, motion, guided onboarding, light gamification, website motion
+
+Owner, 11 Nov: "change the onboarding, change the whole UI, I hate it… very fun, interactive, professional… look at
+what other health apps and gaming apps are doing… not fully gamify… make Wren much more beautiful and 3D looking
+while it should be SVG… it shows people how to do step by step… my customers are not technical." Branch
+**`design/wren-guide`** (off `design/native-midnight`). Nothing committed, pushed or deployed. Web preview only: not yet
+on a real iPhone.
+
+**Research first** (three agents; sources in the notes): health-app onboarding (Flo, Clue, Finch, Headspace, Gentler
+Streak, Duolingo, Apple HIG, NHS and NN/g guidance), gamification and mascots, and what react-native-svg and the
+built-in `Animated` can do. Decisions taken from it:
+- No streaks. One total that only goes up ("N days on your record"); gaps are never shown as failures.
+- Wren reacts to the act of recording, never the pain number. 8/10 or worse gets comfort, never confetti.
+- Milestones celebrated once each: first entry, 3, 7, 14, 28 days, first report shared (`lib/milestones.ts`,
+  AsyncStorage `zeeba.milestones`). A hard-day entry holds the celebration until a later, easier entry.
+- One action per step when Wren teaches; bubbles of eight words or fewer.
+- Account → verify email → consent → questions stays the legal order; a short tap-through intro comes before
+  sign-up; the reminder question comes last.
+- No new packages: `Animated` + `react-native-svg` only (Reanimated would force a new build and adds nothing here).
+
+**Built:**
+- `components/zeeba/Wren.tsx` v3: redrawn with 3D lighting, cream mittens, feet, blinking eyes; moods idle, happy,
+  wave, proud, point (left/right/up/down), listening, thinking, comfort, sleepy. Stacked `Svg` layers inside
+  `Animated.View`s, so all movement is view transforms. `size` is still the width; height is `size * WREN_ASPECT`.
+- `components/zeeba/motion.tsx`: Pop, Rise, PressScale, Confetti, CountUp, ProgressSteps, Pulse, WrenSays.
+- `components/zeeba/art/ClayIcon.tsx`: twelve soft 3D vector icons.
+- First run (`app/(auth)/**`, `components/auth/**`, `components/zeeba/onboarding/**`): Welcome (Wren waving, "Get
+  started" / "I already have an account") → `/intro` (three tap-through pages) → Create account (Continue with Apple,
+  Google, email) → verify → consent (**wording unchanged**, new layout) → Wren's hello → name, focus, last period,
+  reminder (one question a screen, big cards, pinned Continue) → "making your record" → "You're all set".
+  Email sign-up is now email + password only (no name field, no repeat-password field; Wren asks the name next).
+- Signed in (`app/(tabs)/**`, `components/zeeba/capture|guide|dash|timeline|records/**`, `kit-parts/**`): Today rebuilt
+  around one check-in card (plus/minus, tap a digit or slide; "Done for today" afterwards), Wren's greeting, "N days on
+  your record" with a knitted strip (one stitch per recorded day), the save moment (chip flies to the Doctor tab,
+  toast with Wren), milestone celebrations, a four-step first-run tour (`lib/tour.ts`, `zeeba.tour.v1`, replay from
+  Profile → "Show me around again"), livelier tab bar, Evidence numbers and bars that animate in, Profile with a clear
+  Settings section (avatar top right, gear badge). Doctor tab: motion only, no mascot.
+- Launch and not-found screens use Wren. Preview-only galleries: `/wren-lab`, `/art-lab`.
+- Preview-only switches (behind `IS_PREVIEW`): `/today?tour=1`, `/today?milestone=first|days3|days7|days14|days28|shared`,
+  `?seed=empty`.
+- Website (`~/projects/zeebahealth-site/index.html`, one file, about 130 KB; backup in
+  `~/projects/_archive-zeeba/zeeba-site-archive/2026-11-11-before-motion/`): the new Wren (alive: blinks, waves, eyes
+  follow the pointer), a hero report that assembles itself, a sticky Record · Prove · Reach scroll story with a phone
+  mock, a "Try it" slider, Wren guiding the report flow. Consent text, Supabase calls, PDF and storage keys unchanged
+  (compared against the backup). **Not deployed.**
+
+**Things to know:**
+- The web design preview talks to the LIVE server (`.env` `EXPO_PUBLIC_API_URL`). Submitting the sign-up form in the
+  preview creates a real account. Look, don't submit.
+- During website testing one junk row was written to the live `research_responses` table (about 11:41 UK, 11 Nov,
+  source `direct`, consent version `web-2026-11-10`, no email). Not deleted; owner to decide.
+- "N days on your record" counts any day with a symptom entry or a period log.
+- The page under the avatar is still titled "Profile" because the consent wording says "Profile, then Delete account".
+- Tooling used to check screens: a headless-Chrome script driving the preview at iPhone size in real time (animations
+  really run). `--force-prefers-reduced-motion` style virtual-time screenshots do NOT advance `Animated` springs.
+- The Mac ran down to about 240 MB free: macOS added a 1 GB swap file under memory pressure from several agents and
+  headless browsers at once. Run fewer in parallel next time.
+
+**Review pass (a fresh-eyes agent walking it as a non-technical user, at 754 and 667 pt usable heights):** fixed an
+escape answer hidden below the fold on the focus and last-period questions (now a plain button pinned under
+Continue), `useUsableHeight()` for short-phone layouts, a wrong calendar key in dark mode, sideways-swipe chip rows
+(now wrap), icon-only buttons (now carry a word), small switch targets in Settings, the Doctor tab opening on a form
+("Read my report" now first), and jargon ("summary" → "report", "AT 7+ / 10" → "7/10 or worse", "Log" → "Add").
+Kit sizes are now 56 pt main buttons, 48 pt others, 44 pt chips.
+
+**Left open for the owner:** tour step 1 has Wren standing over part of the dimmed card; Settings has two switches
+("Notifications", "Daily reminder") that can contradict each other; "My details" still asks cycle and period length,
+which reads like a cycle tracker; card radius is 24 in first run and 20 in the main app; "logged" remains in
+report-derived text from `lib/records`.
+
+**Verified:** `npx tsc --noEmit` clean; `npx expo export --platform ios` builds (4.7 MB bundle); every screen checked
+by screenshot in the web preview, light and dark; consent strings identical to before (diffed).
+**Not verified:** anything on a real iPhone (native Apple button at 56 pt, keyboard avoidance, haptics, blur, safe-area
+insets, the tour's measured positions inside a Modal, shadows); Safari and Firefox for the website.
+
 ---
 
 ## 2026-11-11 — Security and scale audit; account-takeover fix and table hardening (local, not deployed)

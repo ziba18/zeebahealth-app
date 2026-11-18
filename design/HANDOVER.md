@@ -1,5 +1,13 @@
 # Zeeba Health — Engineering & Design Handover
 
+> **Update, 11 Nov 2026 (later):** the owner rejected this build's onboarding and UI the same week ("I hate it")
+> and asked for a fun, guided, lightly gamified app with a 3D-looking Wren. That work is on branch
+> **`design/wren-guide`** (off `design/native-midnight`, uncommitted, not yet on a device). It keeps everything in §3
+> (colour tokens, type, `useColors()` rule) and §5 (sign-in facts), and changes §2 items 2–3 (Wren was redrawn and
+> now guides; see `design/BRAND.md` §4–4b) and §4 (new first-run flow and Today; see WORKLOG 2026-11-11, later).
+> Shared pieces to reuse: `components/zeeba/Wren.tsx`, `components/zeeba/motion.tsx`,
+> `components/zeeba/art/ClayIcon.tsx`. Preview galleries: `/wren-lab`, `/art-lab`.
+
 **As of 9 Nov 2026.** Read this, then `design/BRAND.md` (visual system) and `CLAUDE.md` (project rules).
 Branch with all current app work: **`design/native-midnight`** (not merged, not pushed as of writing).
 

@@ -1,10 +1,13 @@
+// Question: the first day of her last period. Optional: "I'm not sure, or it doesn't apply" sits under Continue,
+// always in view (the same place as "I'm not sure yet" and "Not now" on the other questions), and moves on.
 import React, { useState } from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { colors, space } from '../../../constants/zeebaUI';
-import { Button, Card, DayChooser, InlineError, Txt } from '../../../components/zeeba/kit';
+import { DayChooser, InlineError } from '../../../components/zeeba/kit';
+import { Rise } from '../../../components/zeeba/motion';
 import { OnboardingScreen } from '../../../components/auth/OnboardingScreen';
-import { api } from '../../../lib/api';
+import { BigButton } from '../../../components/zeeba/onboarding/Scaffold';
 import { useRecordsStore } from '../../../stores/recordsStore';
 import { isFuture } from '../../../lib/records/dates';
 import { formatDay } from '../../../lib/records/format';
@@ -20,6 +23,12 @@ export default function OnboardingLastPeriod() {
   const choose = (key: string) => {
     setError(isFuture(key) ? 'Choose today or a day before today.' : '');
     setSelected(isFuture(key) ? null : key);
+  };
+
+  // Nothing is saved for "not sure": the step is simply left.
+  const skip = () => {
+    track('Onboarding Step Completed', { step: 'last_period', skipped: true });
+    router.push('/(auth)/onboarding/reminders');
   };
 
   const handleNext = async () => {
@@ -39,28 +48,38 @@ export default function OnboardingLastPeriod() {
     }
   };
 
+  const answered = !!selected;
   return (
     <OnboardingScreen
-      step={3}
-      back={{ label: 'Back' }}
-      title="When did your last period start?"
-      helper="Choose the first day. If you’re not sure, that’s fine."
+      question="period"
+      ask="When did your last period start?"
+      hint={
+        selected ? `First day: ${formatDay(selected, 'always')}.`
+        : 'Tap the first day. A guess is fine.'
+      }
+      mood={answered ? 'happy' : 'thinking'}
+      footer={
+        <>
+          <InlineError message={error} />
+          <BigButton label={loading ? 'Saving…' : 'Continue'} loading={loading} disabled={!answered || loading} onPress={handleNext} />
+          <BigButton label="I’m not sure, or it doesn’t apply" variant="text" disabled={loading} onPress={skip} />
+        </>
+      }
     >
-      <Card>
-        <DayChooser value={selected ?? ''} onChange={choose} />
-      </Card>
-      <Txt variant="body" color={selected ? colors.ink : colors.ink2} style={{ marginTop: space.md }} accessibilityLiveRegion="polite">
-        {selected ? `First day: ${formatDay(selected, 'always')}` : 'No day chosen yet'}
-      </Txt>
-
-      <View style={{ marginTop: space.xxl, gap: space.xs }}>
-        <InlineError message={error} style={{ marginBottom: space.xs }} />
-        <Button label={loading ? 'Saving…' : 'Next'} loading={loading} disabled={!selected} onPress={handleNext} />
-        <Button label="I’m not sure" variant="text" disabled={loading} onPress={() => {
-          track('Onboarding Step Completed', { step: 'last_period', skipped: true });
-          router.push('/(auth)/onboarding/reminders');
-        }} />
-      </View>
+      <Rise index={1}>
+        <View style={[styles.calendar, !!selected && styles.calendarOn]}>
+          <DayChooser value={selected ?? ''} onChange={choose} />
+        </View>
+      </Rise>
     </OnboardingScreen>
   );
 }
+
+const styles = StyleSheet.create({
+  calendar: {
+    backgroundColor: colors.surface, borderRadius: 24, borderWidth: 2, borderColor: colors.cardBorder,
+    paddingHorizontal: space.sm, paddingTop: space.xs, paddingBottom: space.sm,
+    boxShadow: '0 1px 2px rgba(0,0,0,0.04), 0 6px 18px rgba(0,0,0,0.05)',
+  },
+  calendarOn: { borderColor: colors.accent },
+});

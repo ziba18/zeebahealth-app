@@ -32,6 +32,8 @@ const config: ExpoConfig = {
   ios: {
     supportsTablet: true,
     bundleIdentifier: 'com.zeebahealth.app',
+    // The Home Screen icon in its three iOS appearances (default, dark, tinted).
+    icon: { light: './assets/icon.png', dark: './assets/icon-dark.png', tinted: './assets/icon-tinted.png' },
     // Apple's required-reason API declaration for the app's own use (UserDefaults, via local
     // storage). Reason CA92.1 = app-only data, per https://docs.expo.dev/guides/apple-privacy/.
     privacyManifests: {
@@ -50,7 +52,7 @@ const config: ExpoConfig = {
     adaptiveIcon: {
       foregroundImage: './assets/android-icon-foreground.png',
       monochromeImage: './assets/android-icon-monochrome.png',
-      backgroundColor: '#FFFFFF',
+      backgroundColor: '#FFB58D',
     },
     package: 'com.zeebahealth.app',
     allowBackup: false,

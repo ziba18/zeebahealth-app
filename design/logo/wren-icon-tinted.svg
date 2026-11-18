@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024"><defs>
+<linearGradient id="mbg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#313135"/><stop offset="1" stop-color="#141416"/></linearGradient>
+<linearGradient id="mfg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#C4C4CA"/></linearGradient></defs>
+<rect width="1024" height="1024" fill="url(#mbg)"/>
+<g transform="translate(512 512) scale(1) translate(-512 -512) translate(0 -22) rotate(-5 512 760)">
+  <path d="M830 660 C880 620 904 566 914 506" fill="none" stroke="url(#mfg)" stroke-width="88" stroke-linecap="round"/>
+  <g transform="translate(930 402) rotate(14)"><ellipse cx="-56" cy="14" rx="30" ry="40" transform="rotate(-28 -56 14)" fill="url(#mfg)"/><ellipse cx="0" cy="0" rx="72" ry="78" fill="url(#mfg)"/></g>
+  <path d="M872 498 L956 518" stroke="#1b1b1d" stroke-width="12" stroke-linecap="round"/>
+  <rect x="472" y="190" width="80" height="70" rx="14" fill="url(#mfg)"/><rect x="440" y="142" width="144" height="72" rx="34" fill="url(#mfg)"/>
+  <path d="M410 322 C410 370 366 396 312 420 C226 458 176 540 162 650 C150 740 132 840 132 930 C132 1030 205 1090 320 1090 L704 1090 C819 1090 892 1030 892 930 C892 840 874 740 862 650 C848 540 798 458 712 420 C658 396 614 370 614 322 Z" fill="url(#mfg)"/>
+  <path d="M410 322 C410 370 366 396 312 420 C226 458 176 540 162 650 C150 740 132 840 132 930 C132 1030 205 1090 320 1090 L704 1090 C819 1090 892 1030 892 930 C892 840 874 740 862 650 C848 540 798 458 712 420 C658 396 614 370 614 322 Z" fill="none" stroke="#1b1b1d" stroke-width="14"/>
+  <rect x="368" y="232" width="288" height="112" rx="54" fill="url(#mfg)" stroke="#1b1b1d" stroke-width="14"/>
+  <ellipse cx="392" cy="652" rx="44" ry="56" fill="#1b1b1d"/><ellipse cx="632" cy="652" rx="44" ry="56" fill="#1b1b1d"/>
+  <circle cx="378" cy="629" r="17" fill="url(#mfg)"/><circle cx="618" cy="629" r="17" fill="url(#mfg)"/>
+  <path d="M462 716 Q512 738 562 716 Q556 786 512 786 Q468 786 462 716 Z" fill="#1b1b1d" stroke="#1b1b1d" stroke-width="9" stroke-linejoin="round"/>
+  <g transform="translate(742 872) rotate(12) scale(1.5)"><path d="M0 34 C-30 10 -46 -8 -34 -28 C-24 -44 -6 -38 0 -24 C6 -38 24 -44 34 -28 C46 -8 30 10 0 34 Z" fill="#1b1b1d"/></g>
+  <clipPath id="mclip"><path d="M410 322 C410 370 366 396 312 420 C226 458 176 540 162 650 C150 740 132 840 132 930 C132 1030 205 1090 320 1090 L704 1090 C819 1090 892 1030 892 930 C892 840 874 740 862 650 C848 540 798 458 712 420 C658 396 614 370 614 322 Z"/></clipPath><rect x="100" y="946" width="824" height="12" fill="#1b1b1d" clip-path="url(#mclip)"/>
+</g></svg>

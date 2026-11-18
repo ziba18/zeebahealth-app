@@ -15,8 +15,7 @@ import { PrivacyCover } from '../components/zeeba/PrivacyCover';
 import { useFonts } from 'expo-font';
 // iOS uses Apple's own faces (SF Pro, SF Rounded, New York) — nothing to load. Newsreader is only the
 // web preview's stand-in for New York, which desktop Chrome can't reach.
-import { Newsreader_400Regular } from '@expo-google-fonts/newsreader/400Regular';
-import { Newsreader_400Regular_Italic } from '@expo-google-fonts/newsreader/400Regular_Italic';
+import { WEB_FONTS } from '../lib/webFonts';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useSyncExternalStore } from 'react';
 
@@ -63,7 +62,7 @@ function AppShell() {
   }, [router]);
 
   const scheme = useScheme();
-  const [fontsLoaded] = useFonts(Platform.OS === 'web' ? { Newsreader_400Regular, Newsreader_400Regular_Italic } : {});
+  const [fontsLoaded] = useFonts(WEB_FONTS);
 
   // Hide the splash as soon as the fonts are ready. The auth session continues
   // resolving in the background — `app/index.tsx` shows a loading screen until
@@ -88,6 +87,7 @@ function AppShell() {
               <Stack.Screen name="(auth)" />
               <Stack.Screen name="(tabs)" />
               <Stack.Screen name="clinic-mock" />
+              <Stack.Screen name="wren-lab" />
               <Stack.Screen name="+not-found" />
             </Stack>
           </View>
@@ -98,6 +98,7 @@ function AppShell() {
           <Stack.Screen name="(auth)" />
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="clinic-mock" />
+          <Stack.Screen name="wren-lab" />
           <Stack.Screen name="+not-found" />
         </Stack>
       )}

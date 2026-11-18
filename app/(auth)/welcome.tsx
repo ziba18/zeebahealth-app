@@ -1,80 +1,54 @@
-// Welcome: Apple's "Welcome to …" pattern. Wren + the promise, three feature rows (Record · Prove ·
-// Reach), then sign-up anchored low: Sign in with Apple first (HIG), Google, email; then sign in.
+// Welcome: one character, one line, two buttons (the pattern Duolingo, Finch and Noom share).
+// Wren waves in the middle of a calm, slowly drifting glow; the wordmark and the promise sit under it;
+// "Get started" and "I already have an account" are stacked at the bottom. Nothing else competes.
 import React, { useEffect } from 'react';
-import { ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
-import { colors, font, layout, radii, space, useColors } from '../../constants/zeebaUI';
-import { Button, Txt } from '../../components/zeeba/kit';
-import { SocialAuthButtons } from '../../components/auth/SocialAuthButtons';
-import { Wren } from '../../components/zeeba/Wren';
-import { Icon, type IconName } from '../../components/ui/Icon';
+import { colors, font, space } from '../../constants/zeebaUI';
+import { Txt } from '../../components/zeeba/kit';
+import { Pop, Rise } from '../../components/zeeba/motion';
+import { Wren, WREN_ASPECT } from '../../components/zeeba/Wren';
+import { Halo } from '../../components/zeeba/onboarding/Backdrop';
+import { BigButton, FlowScreen, useUsableHeight } from '../../components/zeeba/onboarding/Scaffold';
 import { track } from '../../lib/analytics';
-
-const FEATURES: { icon: IconName; title: string; line: string }[] = [
-  { icon: 'mic', title: 'Record it', line: 'Say or type what happened, in your words. Every note is dated.' },
-  { icon: 'bar-chart', title: 'Prove it', line: 'See how often and how bad, as clear counts and charts.' },
-  { icon: 'file-text', title: 'Take it to your doctor', line: 'One page of evidence, ready for your appointment.' },
-];
 
 export default function WelcomeScreen() {
   const router = useRouter();
-  const c = useColors();
-  const win = useWindowDimensions();
-  const short = win.height < 720;
+  const height = useUsableHeight();
+  const wren = height < 700 ? 176 : height < 800 ? 208 : 236;
   useEffect(() => track('Welcome Viewed'), []);
 
   return (
-    <SafeAreaView role="main" edges={['top', 'bottom']} style={styles.screen}>
-      <LinearGradient
-        colors={[c.glow, 'rgba(0,0,0,0)']}
-        start={{ x: 0.5, y: 0 }}
-        end={{ x: 0.5, y: 0.45 }}
-        style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]}
-      />
-      <ScrollView contentContainerStyle={styles.column} showsVerticalScrollIndicator={false}>
-        <View style={styles.hero}>
-          <Wren mood="happy" size={short ? 84 : 112} />
-          <Txt style={styles.kicker} accessibilityRole="header" accessibilityLabel="Zeeba Health">Zeeba Health</Txt>
-          <Txt variant="largeTitle" style={styles.center}>Your symptoms,{'\n'}on the record.</Txt>
-        </View>
-
-        <View style={styles.features}>
-          {FEATURES.map((f) => (
-            <View key={f.title} style={styles.feature} accessible accessibilityLabel={`${f.title}. ${f.line}`}>
-              <View style={styles.featureIcon}><Icon name={f.icon} size={22} color={colors.accent} /></View>
-              <View style={{ flex: 1, minWidth: 0 }}>
-                <Txt variant="headline">{f.title}</Txt>
-                <Txt variant="secondary">{f.line}</Txt>
-              </View>
-            </View>
-          ))}
-        </View>
-
-        <View style={styles.actions}>
-          <SocialAuthButtons mode="signup" onEmail={() => router.push('/(auth)/register')} emailLabel="Sign up with email" />
-          <Button label="I already have an account" variant="text" onPress={() => router.push('/(auth)/login')} />
-          <Txt variant="caption" style={styles.center}>
-            Evidence, never a diagnosis. Your notes stay private to your account.
-          </Txt>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    <FlowScreen
+      glow="full"
+      scroll={false}
+      role="main"
+      footer={
+        <Rise delay={420} style={styles.actions}>
+          <BigButton label="Get started" onPress={() => router.push('/(auth)/intro' as any)} />
+          <BigButton label="I already have an account" variant="text" onPress={() => router.push('/(auth)/login')} />
+        </Rise>
+      }
+    >
+      <View style={styles.middle}>
+        <Pop style={[styles.hero, { height: wren * WREN_ASPECT }]}>
+          <Halo size={wren * 1.75} />
+          <Wren mood="wave" size={wren} interactive />
+        </Pop>
+        <Rise delay={180} style={styles.words}>
+          <Txt style={styles.wordmark} accessibilityRole="header" accessibilityLabel="Zeeba Health">Zeeba Health</Txt>
+          <Txt style={styles.headline}>Your symptoms,{'\n'}on the record.</Txt>
+        </Rise>
+      </View>
+    </FlowScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.canvas },
-  column: {
-    flexGrow: 1, width: '100%', maxWidth: layout.maxContentWidth, alignSelf: 'center',
-    paddingHorizontal: layout.gutter + space.xs, paddingTop: space.xl, paddingBottom: space.lg, gap: space.xl,
-  },
-  hero: { alignItems: 'center', gap: space.xs },
-  kicker: { ...font.semibold, fontSize: 15, letterSpacing: 0.2, color: colors.accent, marginTop: space.xs },
-  center: { textAlign: 'center' },
-  features: { gap: space.lg, paddingHorizontal: space.xxs },
-  feature: { flexDirection: 'row', alignItems: 'flex-start', gap: space.md },
-  featureIcon: { width: 44, height: 44, borderRadius: radii.row, backgroundColor: colors.accentTint, alignItems: 'center', justifyContent: 'center' },
-  actions: { marginTop: 'auto', gap: space.xs },
+  middle: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: space.xl, paddingBottom: space.md },
+  hero: { alignItems: 'center', justifyContent: 'center' },
+  words: { alignItems: 'center', gap: space.xs },
+  wordmark: { ...font.bold, fontSize: 17, lineHeight: 22, letterSpacing: 0.3, color: colors.accent },
+  headline: { ...font.bold, fontSize: 38, lineHeight: 44, letterSpacing: -0.8, color: colors.ink, textAlign: 'center' },
+  actions: { gap: space.xxs },
 });

@@ -32,14 +32,14 @@ export function DaySheet({
     <Sheet visible={day != null} onClose={onClose} title={key ? formatDay(key) : ''}>
       <View style={{ gap: space.sm }}>
         {items.length === 0 ? (
-          <Txt variant="secondary">Nothing logged on this day.</Txt>
+          <Txt variant="secondary">Nothing recorded on this day.</Txt>
         ) : (
           items.map((item) => <EntryCard key={item.key} item={item} hideDate onPress={() => onOpenItem(item)} />)
         )}
         {key && !future ? (
-          <View style={{ marginTop: space.xs, gap: space.sm }}>
-            <Button variant="text" label="Add a note for this day" onPress={() => onAddNote(key)} />
-            <Button variant="text" label={bleedingLogged ? 'Edit bleeding' : 'Log bleeding'} onPress={() => onLogBleeding(key)} />
+          <View style={{ marginTop: space.xs, gap: space.xs }}>
+            <Button variant="secondary" icon="pencil" label="Add a note for this day" onPress={() => onAddNote(key)} />
+            <Button variant="secondary" icon="droplet" label={bleedingLogged ? 'Edit bleeding' : 'Add bleeding'} onPress={() => onLogBleeding(key)} />
           </View>
         ) : null}
       </View>

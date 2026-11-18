@@ -1,5 +1,52 @@
 # Zeeba Health — Claude Code Project Notes
 
+## NEWEST (2026-11-15): mission line, goals and the word "Pain" (owner-approved)
+- **Mission line:** "Zeeba Health turns dismissed pain and symptoms into dated evidence a doctor takes seriously."
+  No gender word in the purpose sentence (room to expand later); campaigns and the launch audience stay about women.
+- **"Pain"** is a key word: say it plainly and often in the app and campaigns (period pain, pelvic pain, IUD pain);
+  never soften it to "discomfort" or "cramps". Factual claims about pain in campaigns still need a verified source.
+- The 4 Nov fixed purpose stays as the App Store purpose; endometriosis + PCOS is the **launch focus**, not a new purpose.
+- Launch Q1 2027. First-sale goal is now "within 30 days of launch" (replaces 26 Nov 2026).
+
+## NEWEST (2026-11-13, evening): UI/UX sprint for endometriosis + PCOS, in `design/uiux-2026-11-13/` (untracked; nothing built into the app)
+The owner narrowed the audience ("women with PCOS and endometriosis", "only for women", "McDonald's for women") and
+asked for a two-hour agent-run research and design sprint while away. Output: `00-PRODUCT-SPEC.md` (start there),
+`research/` (clinical, UK law, 95 competitor apps with real store screenshots in `refs/`, UX evidence + a 100-point
+scorecard), `mockups/` (12 directions, the recommended `13-zeeba-flagship.html` in the house look, and its companion
+sheets 13b–13g and prototype 13p), three reviewer reports, and a gallery for the owner:
+https://claude.ai/artifact/Qj4f5HLNwqUzcvgVvdgEP9 . See WORKLOG 2026-11-13 (evening). Rules that came out of it:
+- **No PCOS / endometriosis score, likelihood, "match" or automatic flag.** MHRA guidance names a personal risk score
+  as a medical device. Lawful instead: counts of her own entries, "Record strength" (how complete her record is,
+  "5 of 7 parts", never a percentage), a fixed reading page of published criteria kept apart from her data, and the
+  same GP questions for everyone. This is a reading of the sources, not legal advice.
+- The NHS now calls PCOS "PMOS" (June 2026). Write "PCOS (now also called PMOS)".
+- Blood and hormone results are a new kind of data: consent wording, privacy page, DPIA and `CONSENT_VERSION` first.
+- Free-stock photographs of recognisable women cannot ship near condition names (Pexels terms). Mock-ups only.
+- `design/uiux-2026-11-13/refs/` holds other companies' store screenshots: it is git-ignored; never commit it.
+- **Direction chosen (owner, 15 Nov):** only direction 1, "Apple Health native" (`mockups/01-apple-native.html`). All
+  others, the flagship included, were rejected as "too much text and look bad"; the gallery now shows only direction 1.
+- **Not yet confirmed by the owner:** 18+ (the audience question was settled on 15 Nov, see above),
+  and everything else in the gallery's "Decisions that are yours". Show it and ask before building any of it.
+
+## NEWEST (2026-11-11, later): "Wren guides you" redesign on branch `design/wren-guide` (uncommitted, not on a device yet)
+The owner said of the Native/Midnight build: "change the onboarding, change the whole UI, I hate it", and asked for a
+fun, interactive, lightly gamified, Apple-like app with a 3D-looking Wren who guides non-technical users. Built that
+day: Wren v3 (`components/zeeba/Wren.tsx`), the motion kit (`components/zeeba/motion.tsx`), clay icons
+(`components/zeeba/art/ClayIcon.tsx`), a new first-run flow (welcome → intro → sign-up → consent → Wren-guided
+questions), a rebuilt Today, milestones, a first-run tour, and website motion. Read WORKLOG 2026-11-11 (later) and
+`design/BRAND.md` §4–4b before touching UI. Rules that now hold: **no streaks** (a total that only goes up), Wren
+reacts to recording and never to the pain number, no confetti on a symptom entry, Wren never on the Doctor tab or
+PDF, consent wording unchanged, no animation packages. The palette and Apple system type below are unchanged.
+The owner has not yet seen or approved this build: show it and ask before building further on it.
+**The web design preview talks to the live server: never submit its sign-up, sign-in or consent forms.**
+**Offline (11 Nov, night):** the app keeps a copy of her account details and records on the phone
+(`lib/offlineCache.ts`) and opens from it when the server cannot be reached; a failed launch check no longer signs her
+out unless the server itself refuses the session. Clear the copy wherever the outbox is cleared. The privacy page line
+about it is in `legal.py` but not deployed.
+**Logo (11 Nov, night):** owner chose Wren. Redrawn masters in `design/logo/` (smooth, no knit pattern), installed as
+the app icon, splash and Android icons. The in-app Wren (`Wren.tsx`) and the website still use the knitted v3 until
+the owner approves the new look.
+
 ## START HERE (2026-11-09): `design/HANDOVER.md` + `design/BRAND.md`
 Current app work is on branch **`design/native-midnight`**: owner-approved design **Native (light) + Midnight (dark)**,
 Apple system type, Wren mascot, glass tab bar, tabs Today · Evidence · Doctor, new onboarding. The handover doc has the

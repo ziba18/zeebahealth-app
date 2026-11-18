@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { api } from '../lib/api';
+import { clearCachedRecords, readCachedRecords, writeCachedRecords } from '../lib/offlineCache';
 import { PENDING_PREFIX, clearOutbox, dequeue, enqueue, isOfflineError, newClientId, readOutbox } from '../lib/outbox';
 import { IS_PREVIEW } from '../lib/preview/flag';
 import { sampleBuckets } from '../lib/preview/seed';
@@ -17,13 +18,20 @@ type Buckets = { [K in RecordKind]: Rec<DataMap[K]>[] };
 const emptyBuckets = (): Buckets => ({
   symptom: [], appointment: [], medicine: [], history: [], period_day: [], doctor_note: [],
 });
+const KINDS = Object.keys(emptyBuckets()) as RecordKind[];
+
+/** The copy kept on the phone holds only what the server has confirmed; notes still waiting live in the outbox. */
+const withoutPending = (b: Buckets): Buckets => ({ ...b, symptom: b.symptom.filter((r) => !r.pending) });
 
 interface RecordsState {
   records: Buckets;
   loadedFor: string | null; // user id the data belongs to
   loading: boolean;
   error: string;
-  load: (userId: string) => Promise<void>;
+  /** True while the screen shows the copy kept on this phone because the server could not be reached. */
+  stale: boolean;
+  /** `quiet` refreshes in the background: no loading state, and a failure leaves what is on screen alone. */
+  load: (userId: string, opts?: { quiet?: boolean }) => Promise<void>;
   reset: () => void;
   /** Send notes saved while offline; safe to call any time (one run at a time, each note once). */
   flushOutbox: () => Promise<void>;
@@ -114,9 +122,19 @@ export const useRecordsStore = create<RecordsState>((set, get) => ({
   loadedFor: null,
   loading: false,
   error: '',
+  stale: false,
 
-  load: async (userId) => {
-    set({ loading: true, error: '' });
+  load: async (userId, opts) => {
+    const quiet = !!opts?.quiet && get().loadedFor === userId;
+    if (!quiet) set({ loading: true, error: '' });
+    // Notes still waiting in the outbox stay on screen, marked pending, until they are sent.
+    const addWaiting = async (buckets: Buckets) => {
+      const waiting = (await readOutbox()).filter((i) => i.userId === userId);
+      for (const i of waiting) {
+        buckets.symptom.push({ id: PENDING_PREFIX + i.clientId, data: i.data, createdAt: i.queuedAt, pending: true });
+      }
+      return waiting.length;
+    };
     try {
       const listed = await backend.list();
       let buckets: Buckets;
@@ -126,14 +144,19 @@ export const useRecordsStore = create<RecordsState>((set, get) => ({
       } else {
         buckets = listed;
       }
-      // Notes still waiting in the outbox stay on screen, marked pending, until they are sent.
-      const waiting = (await readOutbox()).filter((i) => i.userId === userId);
-      for (const i of waiting) {
-        buckets.symptom.push({ id: PENDING_PREFIX + i.clientId, data: i.data, createdAt: i.queuedAt, pending: true });
+      if (!IS_PREVIEW) void writeCachedRecords(userId, buckets); // before the waiting notes are added
+      const waiting = await addWaiting(buckets);
+      set({ records: buckets, loadedFor: userId, loading: false, stale: false });
+      if (waiting) void get().flushOutbox();
+    } catch (e) {
+      if (quiet) return; // background refresh: keep what is on screen
+      // No connection (or the server is down): show the copy kept on this phone, if there is one.
+      const saved = !IS_PREVIEW && isOfflineError(e) ? await readCachedRecords<Buckets>(userId, KINDS) : null;
+      if (saved) {
+        await addWaiting(saved);
+        set({ records: saved, loadedFor: userId, loading: false, stale: true });
+        return;
       }
-      set({ records: buckets, loadedFor: userId, loading: false });
-      if (waiting.length) void get().flushOutbox();
-    } catch {
       set({ loading: false, error: "We couldn't load your information. Check your connection and try again." });
     }
   },
@@ -141,8 +164,8 @@ export const useRecordsStore = create<RecordsState>((set, get) => ({
   reset: () => {
     // Sign-out / account switch: queued notes belong to the old account. Not on a cold start (nothing loaded yet),
     // where the tabs layout also calls reset() before the session has restored.
-    if (get().loadedFor) void clearOutbox();
-    set({ records: emptyBuckets(), loadedFor: null, loading: false, error: '' });
+    if (get().loadedFor) { void clearOutbox(); void clearCachedRecords(); }
+    set({ records: emptyBuckets(), loadedFor: null, loading: false, error: '', stale: false });
   },
 
   flushOutbox: async () => {
@@ -260,3 +283,16 @@ export const useRecordsStore = create<RecordsState>((set, get) => ({
     set({ records: sampleBuckets() });
   },
 }));
+
+// Keep the phone's copy in step with every change she makes (add, edit, delete), so an offline start shows them.
+if (!IS_PREVIEW) {
+  let timer: ReturnType<typeof setTimeout> | null = null;
+  useRecordsStore.subscribe((s, prev) => {
+    if (!s.loadedFor || s.records === prev.records) return;
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(() => {
+      const now = useRecordsStore.getState();
+      if (now.loadedFor) void writeCachedRecords(now.loadedFor, withoutPending(now.records));
+    }, 400);
+  });
+}

@@ -105,27 +105,43 @@ export class ApiError extends Error {
 
 const SIGN_IN_PATHS = new Set(['/auth/login', '/auth/apple', '/auth/google']);
 
+// Long enough for the server to wake from sleep (about 35 s), short enough that nothing waits for ever.
+const DEFAULT_TIMEOUT_MS = 60000;
+
 async function request<T>(
   method: string,
   path: string,
   body?: unknown,
   _retry = true,
+  timeoutMs = DEFAULT_TIMEOUT_MS,
 ): Promise<T> {
   const token = await tokenStore.getItemAsync(ACCESS_KEY);
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
   if (token) headers.Authorization = `Bearer ${token}`;
 
-  const res = await fetch(`${Config.apiUrl}${path}`, {
-    method,
-    headers,
-    body: body !== undefined ? JSON.stringify(body) : undefined,
-  });
+  // A server that does not answer in time counts as no connection (status 0), the same as being offline.
+  const abort = new AbortController();
+  const timer = setTimeout(() => abort.abort(), timeoutMs);
+  let res: Response;
+  try {
+    res = await fetch(`${Config.apiUrl}${path}`, {
+      method,
+      headers,
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+      signal: abort.signal,
+    });
+  } catch (e) {
+    if (abort.signal.aborted) throw new ApiError(0, 'No connection. Please try again.');
+    throw e;
+  } finally {
+    clearTimeout(timer);
+  }
 
   // A 401 from a sign-in call means the credentials were rejected, not that a
   // session expired — fall through so the server's reason reaches the user.
   if (res.status === 401 && _retry && !SIGN_IN_PATHS.has(path)) {
     const refreshed = await attemptRefresh();
-    if (refreshed.token) return request<T>(method, path, body, false);
+    if (refreshed.token) return request<T>(method, path, body, false, timeoutMs);
     if ('network' in refreshed && refreshed.network) throw new ApiError(0, 'No connection. Please try again.');
     _onSessionExpired?.();
     throw new ApiError(401, 'Session expired. Please log in again.');
@@ -145,7 +161,7 @@ async function request<T>(
 }
 
 export const api = {
-  get:    <T>(path: string)                 => request<T>('GET', path),
+  get:    <T>(path: string, timeoutMs?: number) => request<T>('GET', path, undefined, true, timeoutMs),
   post:   <T>(path: string, body?: unknown) => request<T>('POST', path, body),
   put:    <T>(path: string, body: unknown)  => request<T>('PUT', path, body),
   patch:  <T>(path: string, body: unknown)  => request<T>('PATCH', path, body),

@@ -1,12 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ScrollView, View, type ScrollViewInstance } from 'react-native';
+import { StyleSheet, View, type ScrollViewInstance } from 'react-native';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
-import { space } from '../../../constants/zeebaUI';
+import { colors, font, radii, space } from '../../../constants/zeebaUI';
 import { DATA_LINES } from '../../../constants/dataLocation';
 import {
   Button, Card, ConfirmCard, SafetyLine, ScreenLarge, Txt, showToast,
 } from '../../../components/zeeba/kit';
-import type { IconName } from '../../../components/ui/Icon';
+import { Icon, type IconName } from '../../../components/ui/Icon';
+import { PressScale, Rise } from '../../../components/zeeba/motion';
+import { replayTour } from '../../../lib/tour';
+import { REMINDER_TIMES } from '../../../lib/reminderTimes';
 import { Group, GroupHeading, GroupRow, GroupSwitchRow } from '../../../components/zeeba/records/GroupedRows';
 import { savedLabel } from '../../../components/zeeba/records/RecordsList';
 import { KIND_INFO, firstParam, type RecordDataKind } from '../../../components/zeeba/records/recordKinds';
@@ -100,91 +103,131 @@ export default function ProfileScreen() {
     }
   };
 
+  // Settings → "Show me around again": back to Today, where Wren's tour starts by itself.
+  const showAround = () => {
+    replayTour();
+    const tabs = navigation.getParent();
+    if (tabs) (tabs as any).navigate('today');
+    else router.navigate('/(tabs)/today' as any);
+  };
+
   // Scrolls an in-page confirm card into view once it has laid out.
   const scrollToCard = (y: number) =>
     setTimeout(() => scrollRef.current?.scrollTo({ y: Math.max(0, y - space.xxl), animated: true }), 50);
 
+  const reminderOn = profile?.daily_log_reminder_enabled ?? false;
+  const reminderLabel = reminderOn
+    ? (REMINDER_TIMES.find((t) => t.value === profile?.daily_log_reminder_time)?.label.split(' · ')[0] ?? 'On')
+    : 'Off';
+  const initial = ((name || user?.email || 'A')[0] ?? 'A').toUpperCase();
+
   return (
     <ScreenLarge grouped title="Profile" back={{ label: from, onPress: goBack }} scrollRef={scrollRef}>
-      <Group>
-        <GroupRow
-          icon="user"
-          label={name || 'Your details'}
-          detail={user?.email || undefined}
+      {/* Who is signed in: one big, obvious card. */}
+      <Rise index={0}>
+        <PressScale
           onPress={() => router.push('/(tabs)/profile/edit-profile' as any)}
-          accessibilityLabel={`${name || 'Your details'}. Edit your details`}
-        />
-      </Group>
+          haptic="selection"
+          to={0.98}
+          accessibilityLabel={`${name || 'Your details'}${user?.email ? `, ${user.email}` : ''}. Edit your details`}
+          style={styles.me}
+        >
+          <View style={styles.meAvatar} aria-hidden><Txt style={styles.meInitial}>{initial}</Txt></View>
+          <View style={{ flex: 1, minWidth: 0 }}>
+            <Txt variant="title" numberOfLines={1}>{name || 'Your details'}</Txt>
+            {user?.email ? <Txt variant="secondary" numberOfLines={1}>{user.email}</Txt> : null}
+            <Txt variant="secondary" color={colors.accent} style={{ fontWeight: '600', marginTop: 2 }}>Edit my details</Txt>
+          </View>
+          <Icon name="chevron-right" size={20} color={colors.ink3} />
+        </PressScale>
+      </Rise>
 
-      <GroupHeading title="Records" style={{ marginTop: space.xxl }} />
-      <Group>
-        {RECORD_KINDS.map((kind) => (
+      {/* Settings: where every other app keeps them, named and marked with the gear. */}
+      <Rise index={1}>
+        <GroupHeading icon="settings" title="Settings" style={{ marginTop: space.xl }} />
+        <Group>
           <GroupRow
-            key={kind}
-            icon={RECORD_ICONS[kind]}
-            label={KIND_INFO[kind].listTitle}
-            value={counts[kind] ? String(counts[kind]) : 'None'}
-            onPress={() => openList(kind)}
-            accessibilityLabel={`${KIND_INFO[kind].listTitle}. ${savedLabel(counts[kind])}`}
+            icon="bell"
+            label="Reminders"
+            value={reminderLabel}
+            onPress={() => router.push('/(tabs)/profile/settings' as any)}
+            accessibilityLabel={`Reminders and notifications. ${reminderOn ? `On, ${reminderLabel}` : 'Off'}`}
           />
-        ))}
-      </Group>
-
-      <GroupHeading title="Settings" style={{ marginTop: space.xxl }} />
-      <Group>
-        <GroupRow
-          icon="bell"
-          label="Reminders and notifications"
-          onPress={() => router.push('/(tabs)/profile/settings' as any)}
-        />
-        {FRIENDS_ENABLED ? (
+          {lockAvailable ? (
+            <GroupSwitchRow
+              icon="lock"
+              label="App lock"
+              detail="Ask for Face ID, Touch ID or your passcode when Zeeba Health opens"
+              value={lockOn}
+              onChange={async (v) => { setLockOn(await setAppLock(v)); }}
+            />
+          ) : null}
+          {FRIENDS_ENABLED ? (
+            <GroupRow
+              icon="users"
+              label="Friends"
+              detail="Share only your cycle phase with people you invite"
+              onPress={() => router.push('/(tabs)/profile/friends' as any)}
+            />
+          ) : null}
           <GroupRow
-            icon="users"
-            label="Friends"
-            detail="Share only your cycle phase with people you invite"
-            onPress={() => router.push('/(tabs)/profile/friends' as any)}
-          />
-        ) : null}
-        {lockAvailable ? (
-          <GroupSwitchRow
-            label="App lock"
-            detail="Ask for Face ID, Touch ID or your passcode when Zeeba Health opens"
-            value={lockOn}
-            onChange={async (v) => { setLockOn(await setAppLock(v)); }}
-          />
-        ) : null}
-      </Group>
-
-      <GroupHeading title="Where your notes are kept" style={{ marginTop: space.xxl }} />
-      <Group>
-        <View style={{ gap: space.sm, padding: space.md }}>
-          {DATA_LINES.map((line) => <Txt key={line} variant="secondary">{line}</Txt>)}
-        </View>
-      </Group>
-
-      <GroupHeading title="About" style={{ marginTop: space.xxl }} />
-      <Group>
-        <GroupRow icon="file-text" label="Privacy policy" onPress={() => openLegal('privacy')} />
-        <GroupRow icon="file-text" label="Terms of use" onPress={() => openLegal('terms')} />
-      </Group>
-
-      <GroupHeading title="Account" style={{ marginTop: space.xxl }} />
-      <Group>
-        <GroupRow
-          icon="log-out"
-          label="Sign out"
-          chevron={false}
-          onPress={() => { setConfirmingDelete(false); setConfirmingSignOut(true); }}
-        />
-        {IS_PREVIEW ? null : (
-          <GroupRow
-            icon="trash-2"
-            label="Delete account"
+            icon="play"
+            label="Show me around again"
+            detail="Wren points out where things are"
             chevron={false}
-            onPress={() => { setConfirmingSignOut(false); setConfirmingDelete(true); }}
+            onPress={showAround}
           />
-        )}
-      </Group>
+        </Group>
+      </Rise>
+
+      <Rise index={2}>
+        <GroupHeading icon="clipboard-list" title="My records" style={{ marginTop: space.xl }} />
+        <Group>
+          {RECORD_KINDS.map((kind) => (
+            <GroupRow
+              key={kind}
+              icon={RECORD_ICONS[kind]}
+              label={KIND_INFO[kind].listTitle}
+              value={counts[kind] ? String(counts[kind]) : 'None'}
+              onPress={() => openList(kind)}
+              accessibilityLabel={`${KIND_INFO[kind].listTitle}. ${savedLabel(counts[kind])}`}
+            />
+          ))}
+        </Group>
+      </Rise>
+
+      <Rise index={3}>
+        <GroupHeading icon="shield" title="Privacy" style={{ marginTop: space.xl }} />
+        <Group>
+          <View style={{ gap: space.xs, padding: space.md }}>
+            <Txt variant="headline">Where your notes are kept</Txt>
+            {DATA_LINES.map((line) => <Txt key={line} variant="secondary">{line}</Txt>)}
+          </View>
+          <GroupRow icon="file-text" label="Privacy policy" onPress={() => openLegal('privacy')} />
+          <GroupRow icon="file-text" label="Terms of use" onPress={() => openLegal('terms')} />
+        </Group>
+      </Rise>
+
+      <Rise index={4}>
+        <GroupHeading icon="user" title="Account" style={{ marginTop: space.xl }} />
+        <Group>
+          <GroupRow
+            icon="log-out"
+            label="Sign out"
+            chevron={false}
+            onPress={() => { setConfirmingDelete(false); setConfirmingSignOut(true); }}
+          />
+          {IS_PREVIEW ? null : (
+            <GroupRow
+              icon="trash-2"
+              tone="danger"
+              label="Delete account"
+              chevron={false}
+              onPress={() => { setConfirmingSignOut(false); setConfirmingDelete(true); }}
+            />
+          )}
+        </Group>
+      </Rise>
 
       {confirmingSignOut ? (
         <ConfirmCard
@@ -229,3 +272,13 @@ export default function ProfileScreen() {
     </ScreenLarge>
   );
 }
+
+const styles = StyleSheet.create({
+  me: {
+    flexDirection: 'row', alignItems: 'center', gap: space.md, padding: space.md, backgroundColor: colors.surface,
+    borderRadius: radii.card, borderWidth: 1, borderColor: colors.cardBorder,
+    boxShadow: '0 1px 2px rgba(16,18,40,0.04), 0 6px 18px rgba(16,18,40,0.06)',
+  },
+  meAvatar: { width: 64, height: 64, borderRadius: 32, backgroundColor: colors.accentTint, alignItems: 'center', justifyContent: 'center' },
+  meInitial: { ...font.roundedBold, fontSize: 28, lineHeight: 34, color: colors.accent },
+});

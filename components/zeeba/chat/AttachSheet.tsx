@@ -84,7 +84,7 @@ export function AttachSheet({ visible, onClose, room, onPicked, onError, onLogBl
         ) : null}
         <Row icon="paperclip" label="File" hint="A PDF, letter or test result" disabled={full} onPress={() => run(fromFiles)} />
         <Txt variant="caption" style={{ marginHorizontal: space.xs, marginBottom: space.xs }}>Photos and files stay on this phone.</Txt>
-        <Row icon="droplet" iconColor={colors.clay} label="Log bleeding" onPress={() => after(onLogBleeding)} />
+        <Row icon="droplet" iconColor={colors.clay} label="Add bleeding" onPress={() => after(onLogBleeding)} />
         <Row icon="pen-line" label="Make a full note for my doctor" onPress={() => after(onFullNote)} />
       </View>
     </Sheet>

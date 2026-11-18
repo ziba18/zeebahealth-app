@@ -52,3 +52,8 @@ google-play-service-account.json
 
 # Supabase CLI local state
 supabase/.temp
+
+# Other companies' App Store screenshots gathered for research (13 Nov 2026); never commit
+design/uiux-2026-11-13/refs/
+design/uiux-2026-11-13/gallery/
+design/uiux-2026-11-13/mockups/shots/

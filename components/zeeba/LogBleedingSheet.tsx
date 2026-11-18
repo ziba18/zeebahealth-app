@@ -89,7 +89,7 @@ export function LogBleedingSheet({
     <Sheet
       visible={visible}
       onClose={onClose}
-      title="Log bleeding"
+      title="Add bleeding"
       titleIcon={{ name: 'droplet', color: colors.clay }}
       header={<DatePill value={date} onPress={() => setChoosingDate((v) => !v)} />}
       footer={<Button label="Save" onPress={save} disabled={!status} loading={saving} />}

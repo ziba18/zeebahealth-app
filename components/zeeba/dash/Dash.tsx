@@ -7,12 +7,16 @@ import Svg, { Path } from 'react-native-svg';
 import { colors, radii, space, type as typeScale, useColors } from '../../../constants/zeebaUI';
 import { Txt } from '../kit';
 import { Icon } from '../../ui/Icon';
+import { CountUp, PressScale } from '../motion';
 
 export function Tile({
-  label, value, unit, note, children, onPress, style, accessibilityLabel,
+  label, value, unit, note, children, onPress, style, accessibilityLabel, count, countFrom,
 }: {
   label: string;
   value: string;
+  /** The same number as `value`, as a number: it then counts up (from `countFrom`, default 0) instead of just appearing. */
+  count?: number;
+  countFrom?: number;
   unit?: string;
   /** One short line under the number (accent-coloured fact, e.g. "4 missed work"). */
   note?: string;
@@ -29,7 +33,7 @@ export function Tile({
         {onPress ? <Icon name="chevron-right" size={14} color={colors.ink3} /> : null}
       </View>
       <Txt style={typeScale.metric} accessible={false}>
-        {value}
+        {count != null ? <CountUp value={count} from={countFrom ?? 0} duration={800} variant="metric" /> : value}
         {unit ? <Txt style={styles.unit}>{unit}</Txt> : null}
       </Txt>
       {note ? <Txt variant="caption" color={colors.accent} style={styles.note}>{note}</Txt> : null}
@@ -39,14 +43,9 @@ export function Tile({
   const a11y = accessibilityLabel ?? `${label}: ${value}${unit ? ` ${unit.trim()}` : ''}${note ? `. ${note}` : ''}`;
   if (onPress) {
     return (
-      <Pressable
-        onPress={onPress}
-        accessibilityRole="button"
-        accessibilityLabel={a11y}
-        style={({ pressed }) => [styles.tile, !tall && styles.short, style, pressed && { opacity: 0.7, transform: [{ scale: 0.98 }] }]}
-      >
+      <PressScale onPress={onPress} haptic="selection" accessibilityLabel={a11y} style={[styles.tile, !tall && styles.short, style]}>
         {body}
-      </Pressable>
+      </PressScale>
     );
   }
   return <View style={[styles.tile, !tall && styles.short, style]} accessible accessibilityLabel={a11y}>{body}</View>;
@@ -122,6 +121,8 @@ const styles = StyleSheet.create({
   tile: {
     flex: 1, minHeight: 132, backgroundColor: colors.raised, borderRadius: radii.tile,
     borderWidth: 1, borderColor: colors.cardBorder, padding: space.md, gap: space.xxs,
+    // Same depth as kit Card: a soft two-layer shadow in light; the 1 px edge carries it on Midnight.
+    boxShadow: '0 1px 2px rgba(16,18,40,0.04), 0 6px 18px rgba(16,18,40,0.06)',
   },
   short: { minHeight: 0 },
   head: { flexDirection: 'row', alignItems: 'center', gap: space.xxs },
