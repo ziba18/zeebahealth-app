@@ -19,7 +19,7 @@ import {
   labelEscape, noteCount, noteSortTime, peakOf,
   realImpacts, typicalOf, worstOf,
 } from './format';
-import { BODY_ZONE_LABELS } from './fields';
+import { BODY_ZONE_LABELS, OUTCOME_OPTIONS } from './fields';
 import { daysWith, impactDays, inRange as inRangeOf, MAX_ZONE_ROWS, nOfN, strengthRange, zoneDays } from './counts';
 
 // ---- cycles (kept for other callers) --------------------------------------------------------
@@ -80,20 +80,20 @@ export const AUDIENCE_LABEL: Record<Audience, string> = { gp: 'GP', gynae: 'Gyna
 const AUDIENCE_META: Record<Audience, string> = { gp: 'For a GP appointment', gynae: 'For a gynaecology appointment' };
 
 /** Section titles, in document order. Sensitive ones are off unless switched on per summary. */
-// Order = app-blueprint §3.7a page 1: (agenda) · main symptoms pattern · periods · associated
-// (the sensitive ones sit here) · impact · tried · history/medicines · in my words. Appointments
-// follow history (§3.7a lists none; kept for the visit write-ups).
+// Order (evidence pack, 18 Nov 2026): (agenda) · at a glance · treatments tried · appointments — her case on
+// page 1 — then app-blueprint §3.7a: main symptoms pattern · periods · associated (the sensitive ones sit here)
+// · impact · history · in my words.
 export const SECTION_META: { id: SectionId; title: string; sensitive: boolean }[] = [
+  { id: 'tried', title: 'Treatments tried', sensitive: false },
+  { id: 'appointments', title: 'Appointments', sensitive: false },
   { id: 'frequency', title: 'How often and how strong', sensitive: false },
   { id: 'periods', title: 'Periods logged', sensitive: false },
   { id: 'bowelBladder', title: 'Bowel and bladder', sensitive: false },
   { id: 'sex', title: 'Sex & intimacy', sensitive: true },
   { id: 'mood', title: 'Mood', sensitive: true },
   { id: 'eating', title: 'Eating', sensitive: true },
-  { id: 'impacts', title: 'What it got in the way of', sensitive: false },
-  { id: 'tried', title: 'What I’ve tried', sensitive: false },
+  { id: 'impacts', title: 'What it affected', sensitive: false },
   { id: 'history', title: 'Health history', sensitive: false },
-  { id: 'appointments', title: 'Appointments', sensitive: false },
   { id: 'words', title: 'Symptoms in my words', sensitive: false },
 ];
 
@@ -114,7 +114,7 @@ export const DOMAINS: { id: DomainId; heading: string; section?: SectionId }[] =
   { id: 'mood', heading: 'Mood', section: 'mood' },
   { id: 'skinHair', heading: 'Skin and hair' },
   { id: 'eating', heading: 'Weight and eating', section: 'eating' },
-  { id: 'impact', heading: 'What it got in the way of' },
+  { id: 'impact', heading: 'What it affected' },
   { id: 'tried', heading: 'What I’ve tried' },
   { id: 'history', heading: 'Health history' },
   { id: 'fertility', heading: 'Plans for pregnancy' },
@@ -141,9 +141,9 @@ export interface Onset { month?: number; year?: number; notSure?: boolean }
 export const FERTILITY_OPTIONS = ['Trying to get pregnant', 'Not now', 'Not sure', 'Prefer not to say'] as const;
 export type FertilityWish = (typeof FERTILITY_OPTIONS)[number];
 
-/** Gynaecology order: bleeding first, then the questions a gynaecology history asks next. */
+/** Gynaecology order: the evidence pack, then bleeding, then the questions a gynaecology history asks next. */
 const GYNAE_ORDER: SectionId[] = [
-  'periods', 'frequency', 'sex', 'bowelBladder', 'impacts', 'tried', 'history', 'appointments', 'mood', 'eating', 'words',
+  'tried', 'appointments', 'periods', 'frequency', 'sex', 'bowelBladder', 'impacts', 'history', 'mood', 'eating', 'words',
 ];
 /** Section ids in document order for this audience. */
 export function sectionOrder(audience: Audience = 'gp'): SectionId[] {
@@ -239,7 +239,7 @@ export interface PeriodRun { range: string; days: number; flows: string; notes: 
  * gave — never an average, a score or a trend.
  */
 export interface GlanceStat {
-  id: 'days' | 'peak' | 'impact' | 'periods';
+  id: 'days' | 'peak' | 'impact' | 'periods' | 'missed' | 'leftEarly' | 'cancelled' | 'sleep';
   label: string;
   value: string;
   /** "/ 91 days", "/10". */
@@ -249,12 +249,20 @@ export interface GlanceStat {
 export interface CountItem { label: string; days: number }
 export interface TriedItem {
   title: string; dates: string; noticed: string;
+  /** Her category in lower case ("the pill"); '' for older records. */
+  kind: string;
+  /** Her answer alone ("A little"); '' when not answered. */
+  helpedAnswer: string;
   /** "Did it help? A little" — her answer; '' when not answered. */
   helped: string;
   /** Side effects in her words; '' when none given. */
   sideEffects: string;
 }
-export interface DatedItem { date: string; title: string; lines: DocLine[] }
+export interface DatedItem {
+  date: string; title: string; lines: DocLine[];
+  /** Appointments: "What happened next" as she ticked it (or her own words), for the page-1 table. */
+  outcome?: string;
+}
 
 export type DocSection =
   | { id: 'words'; title: string; quotes: DocQuote[]; more: string }
@@ -265,7 +273,13 @@ export type DocSection =
   | { id: 'tried'; title: string; items: TriedItem[]; quotes: DocQuote[] }
   | { id: 'history'; title: string; items: DatedItem[]; more: string; family: string }
   /** `upcoming` = today's appointment and later ones — never shown as past. */
-  | { id: 'appointments'; title: string; items: DatedItem[]; more: string; upcoming: DatedItem[] };
+  | {
+    id: 'appointments'; title: string; items: DatedItem[]; more: string; upcoming: DatedItem[];
+    /** "6 since March 2024" — past appointments she saved; '' when none. */
+    since: string;
+    /** Counts of her own "What happened next" ticks, most first ("New prescription 3 · Nothing offered 2"). Never zeros. */
+    outcomes: string;
+  };
 
 export interface DoctorDoc {
   title: string;
@@ -363,7 +377,10 @@ export const agendaTitleFor = (appointmentToday?: boolean) =>
 
 const STRIP_MAX_DAYS = 93; // three rows of 31 on the A4 page
 const MAX_QUOTES = 5;
-const MAX_LISTED = 3; // appointments / history items on the page; the rest are counted ("N earlier …")
+const MAX_LISTED = 3; // history items on the page; the rest are counted ("N earlier …")
+/** Ties in the outcome counts follow the form's order; her own other words sort last. */
+const outcomeRank = (o: string) => { const i = (OUTCOME_OPTIONS as readonly string[]).indexOf(o); return i < 0 ? 99 : i; };
+const PACK_LISTED = 6; // past appointments in the evidence pack table (18 Nov 2026)
 const ESCAPES = new Set(['Not sure', 'Skip', 'It varies']);
 
 const clean = (s: string | undefined | null) => (s ?? '').trim();
@@ -766,20 +783,22 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
   }
   const stoppedQuotes = notes.filter((s) => clean(s.stoppedWords)).slice(0, 3).map((s) => quoteOf(s, clean(s.stoppedWords), false));
   if (impactItems.length || stoppedQuotes.length) {
-    all.push({ id: 'impacts', title: 'What it got in the way of', items: impactItems, quotes: stoppedQuotes });
+    all.push({ id: 'impacts', title: 'What it affected', items: impactItems, quotes: stoppedQuotes });
   }
 
   // 5. What I've tried — medicines (all) + "tried" words from notes in range.
   const meds = [...input.medicines.map((r) => r.data)].sort((a, b) => b.started.localeCompare(a.started));
   const tried: TriedItem[] = meds.filter((m) => clean(m.name)).map((m) => ({
     title: joinFacts(clean(m.name), clean(m.dose)),
-    dates: docRange(m.started, m.startedPrecision, m.stopped, m.stoppedPrecision),
+    kind: m.category && m.category !== 'Something else' ? m.category.charAt(0).toLowerCase() + m.category.slice(1) : '',
+    dates: docRange(m.started, m.startedPrecision, m.stopped, m.stoppedPrecision, 'now'),
     noticed: clean(m.happened),
     helped: m.helped ? `Did it help? ${m.helped}` : '',
+    helpedAnswer: m.helped ?? '',
     sideEffects: clean(m.sideEffects),
   }));
   const triedQuotes = notes.filter((s) => clean(s.tried)).slice(0, 3).map((s) => quoteOf(s, clean(s.tried), false));
-  if (tried.length || triedQuotes.length) all.push({ id: 'tried', title: 'What I’ve tried', items: tried, quotes: triedQuotes });
+  if (tried.length || triedQuotes.length) all.push({ id: 'tried', title: 'Treatments tried', items: tried, quotes: triedQuotes });
 
   // 6. Appointments. One that hasn't happened yet is never written up as past, and today's is the
   //    visit being prepared for (review 3, #5): anything dated today or later is listed under
@@ -793,25 +812,43 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
   const apptDate = (a: AppointmentData) =>
     a.date === today ? 'Today' : (a.datePrecision ?? 'exact') === 'exact' ? formatDay(a.date, 'always') : docDate(a.date, a.datePrecision);
   const afterLines = (a: AppointmentData) => [
-    { label: 'I was told', text: clean(a.told) },
+    { label: 'What I said', text: clean(a.said) },
+    { label: 'What they said', text: clean(a.told) },
     { label: 'Tests or prescriptions', text: clean(a.tests) },
-    { label: 'What happens next', text: clean(a.next) },
+    { label: 'Next steps', text: clean(a.next) },
   ];
+  const apptTitle = (a: AppointmentData) => {
+    const seen = clean(a.seenBy), who = clean(a.who);
+    if (who && (!seen || seen === 'Other' || who.toLowerCase() === seen.toLowerCase())) return seen && seen !== 'Other' ? seen : who;
+    return joinFacts(seen, who) || 'Appointment';
+  };
+  // Page-1 column: her ticks in OUTCOME_OPTIONS order, else her own words for next steps.
+  const outcomeOf = (a: AppointmentData) => (a.outcomes?.length ? a.outcomes.join(' · ') : clean(a.next));
   if (appts.length) {
+    const tally = new Map<string, number>();
+    for (const a of past) for (const o of new Set(a.outcomes ?? [])) tally.set(o, (tally.get(o) ?? 0) + 1);
+    const oldest = past.length ? past[past.length - 1] : undefined;
     all.push({
       id: 'appointments',
       title: 'Appointments',
       upcoming: ahead.map((a) => ({
         date: apptDate(a),
-        title: clean(a.who),
+        title: apptTitle(a),
         lines: [{ label: 'What it’s for', text: clean(a.why) }, ...(a.date === today ? afterLines(a) : [])].filter((l) => l.text),
       })),
-      items: past.slice(0, MAX_LISTED).map((a) => ({
+      items: past.slice(0, PACK_LISTED).map((a) => ({
         date: apptDate(a),
-        title: clean(a.who),
+        title: apptTitle(a),
+        outcome: outcomeOf(a),
         lines: [{ label: 'Why I went', text: clean(a.why) }, ...afterLines(a)].filter((l) => l.text),
       })),
-      more: past.length > MAX_LISTED ? `${plural(past.length - MAX_LISTED, 'earlier appointment')} saved in Zeeba Health.` : '',
+      more: past.length > PACK_LISTED ? `${plural(past.length - PACK_LISTED, 'earlier appointment')} saved in Zeeba Health.` : '',
+      since: oldest?.date
+        ? `${past.length} since ${(oldest.datePrecision ?? 'exact') === 'year' ? parseKey(oldest.date).y : `${MONTH_NAMES[parseKey(oldest.date).m0]} ${parseKey(oldest.date).y}`}`
+        : '',
+      outcomes: [...tally.entries()]
+        .sort((x, y) => y[1] - x[1] || outcomeRank(x[0]) - outcomeRank(y[0]))
+        .map(([o, n]) => `${o} ${n}`).join(' · '),
     });
   }
 
@@ -878,8 +915,24 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
       sub: `given on ${plural([...dayPeaks.values()].filter((v) => v === hi).length, 'day')}`,
     });
   }
+  // What it stopped (evidence pack): days she ticked each, over the same window. Counts only. Older notes'
+  // "got in the way of" values are not relabelled as missed days; they stay in "What it affected".
+  const lifeTiles: GlanceStat[] = [];
+  if (sectionIncluded('impacts', include)) {
+    const daysOf = (v: string) => new Set(gNotes.filter((s) => realImpacts(s).includes(v)).map((s) => s.date)).size;
+    const LIFE: [GlanceStat['id'], string, string, string][] = [
+      ['missed', 'Missed work or study', 'Days off work or study', 'day'],
+      ['leftEarly', 'Left work or study early', 'Left work or study early', 'day'],
+      ['cancelled', 'Cancelled plans', 'Plans cancelled', 'day'],
+      ['sleep', 'Broken sleep', 'Nights of broken sleep', 'night'],
+    ];
+    for (const [id, value, label, unit] of LIFE) {
+      const n = daysOf(value);
+      if (n) lifeTiles.push({ id, label, value: String(n), unit: '', sub: `${n === 1 ? unit : `${unit}s`} ticked, since ${formatShortDate(glanceFrom, 'never')}` });
+    }
+  }
   const inWay = new Set(gNotes.filter((s) => (s.impacts ? realImpacts(s).some((i) => i !== 'Sex') : s.stopped === true)).map((s) => s.date));
-  if (inWay.size) {
+  if (inWay.size && !lifeTiles.length) {
     const top = impactDays(gNotes, (i) => i !== 'Sex')[0];
     glance.push({ id: 'impact', label: 'Got in the way', value: String(inWay.size), unit: ` / ${gTotal}`, sub: top ? `days · most often ${top.label.toLowerCase()}` : 'days noted' });
   }
@@ -889,9 +942,11 @@ export function buildDoctorSummary(input: SummaryInput, options: SummaryOptions)
     const periodsTile: GlanceStat = { id: 'periods', label: 'Periods logged', value: String(starts), unit: '', sub: `${plural(bleedN, 'bleeding day')} in total` };
     if (audience === 'gynae') glance.unshift(periodsTile); else glance.push(periodsTile);
   }
+  glance.push(...lifeTiles);
+  const pack = sections.some((x) => (x.id === 'tried' && x.items.length) || (x.id === 'appointments' && (x.items.length || x.upcoming.length))) || lifeTiles.length > 0;
 
   return {
-    title: name ? `Symptom summary — ${name}` : 'Symptom summary',
+    title: pack ? (name ? `Evidence pack — ${name}` : 'Evidence pack') : name ? `Symptom summary — ${name}` : 'Symptom summary',
     meta: joinFacts(rangeLabel, AUDIENCE_META[audience], options.visitType ?? '', `Made ${formatShortDate(today, 'always')}`),
     audience, glance, wordsHidden, spanDays: gTotal,
     from, to, rangeLabel, agenda, agendaTitle: agendaTitleFor(options.appointmentToday),
@@ -1075,6 +1130,19 @@ function datedTableHtml(items: DatedItem[]): string {
   return `<table class="notes dated"><tbody>${rows}</tbody></table>`;
 }
 
+/** "In my words": what she noticed about each treatment and what was said at each appointment (page 1 lists only the facts). */
+function packWordsHtml(doc: DoctorDoc): string {
+  const tried = doc.sections.find((x) => x.id === 'tried');
+  const appts = doc.sections.find((x) => x.id === 'appointments');
+  const treatRows: DatedItem[] = tried && tried.id === 'tried'
+    ? tried.items.filter((t) => t.noticed).map((t) => ({ date: t.dates, title: t.title, lines: [{ label: 'What I noticed', text: t.noticed }] }))
+    : [];
+  const apptRows = appts && appts.id === 'appointments' ? appts.items.filter((a) => a.lines.length) : [];
+  if (!treatRows.length && !apptRows.length) return '';
+  return `<section><h2>${esc(PACK_WORDS_TITLE)}</h2>${apptRows.length ? `<p class="sub">Appointments</p>${datedTableHtml(apptRows)}` : ''}${treatRows.length ? `<p class="sub">Treatments</p>${datedTableHtml(treatRows)}` : ''}</section>`;
+}
+export const PACK_WORDS_TITLE = 'In my words: appointments and treatments';
+
 function sectionHtml(s: DocSection): string {
   const html = sectionInner(s);
   // The strip block stays whole; other sections may break between items (each item, quote and
@@ -1108,12 +1176,26 @@ function sectionInner(s: DocSection): string {
     case 'impacts': case 'sex': case 'mood': case 'eating': case 'bowelBladder':
       return `<section>${head}${s.items.length ? `<p class="item">${s.items.map((c) => esc(countText(c))).join('<span class="sep"> · </span>')}</p>` : ''}${s.quotes.map(quoteHtml).join('')}</section>`;
     case 'tried': {
-      // One row per treatment: name · dates · what she noticed (her words, serif).
-      const rows = s.items.map((t) => `<tr><td class="strong">${esc(t.title)}</td><td>${esc(t.dates)}</td><td class="serif">${t.noticed ? `“${esc(curly(t.noticed))}”` : '<span class="sep">–</span>'}</td></tr>`).join('');
-      return `<section>${head}${s.items.length ? `<table class="notes dated tried"><tbody>${rows}</tbody></table>` : ''}${s.quotes.map(quoteHtml).join('')}</section>`;
+      // Evidence pack (page 1): one row per treatment — name · kind, dates, her "did it help?", side effects
+      // in her words. What she noticed is printed in full under "In my words" later in the document.
+      const cell = (t: string) => (t ? esc(t) : '<span class="sep">–</span>');
+      const rows = s.items.map((t) => `<tr><td><span class="strong">${esc(t.title)}</span>${t.kind ? `<span class="muted"> · ${esc(t.kind)}</span>` : ''}</td><td>${cell(t.dates)}</td><td>${cell(t.helpedAnswer)}</td><td>${cell(t.sideEffects)}</td></tr>`).join('');
+      const table = s.items.length
+        ? `<table class="notes pack"><thead><tr><th>Treatment</th><th>Dates</th><th>Did it help?</th><th>Side effects, in my words</th></tr></thead><tbody>${rows}</tbody></table>`
+        : '';
+      return `<section>${head}${table}${s.quotes.map(quoteHtml).join('')}</section>`;
     }
-    case 'appointments':
-      return `<section>${head}${s.upcoming.length ? `<p class="sub">${esc(APPT_AHEAD)}</p>${datedTableHtml(s.upcoming)}${s.items.length ? `<p class="sub">${esc(APPT_PAST)}</p>` : ''}` : ''}${datedTableHtml(s.items)}${s.more ? `<p class="meta">${esc(s.more)}</p>` : ''}</section>`;
+    case 'appointments': {
+      // Evidence pack (page 1): date · who · what happened next. What was said at each is printed later.
+      const cell = (t?: string) => (t ? esc(t) : '<span class="sep">–</span>');
+      const rows = s.items.map((a) => `<tr><td>${esc(a.date)}</td><td>${esc(a.title)}</td><td>${cell(a.outcome)}</td></tr>`).join('');
+      const past = s.items.length
+        ? `<table class="notes pack appts"><thead><tr><th>Date</th><th>Seen by</th><th>What happened next</th></tr></thead><tbody>${rows}</tbody></table>`
+        : '';
+      const ahead = s.upcoming.length ? `<p class="sub">${esc(APPT_AHEAD)}</p>${datedTableHtml(s.upcoming)}${s.items.length ? `<p class="sub">${esc(APPT_PAST)}</p>` : ''}` : '';
+      const title = s.since ? `<h2>${esc(s.title)} · ${esc(s.since)}</h2>` : head;
+      return `<section>${title}${ahead}${past}${s.outcomes ? `<p class="meta tally">${esc(s.outcomes)}</p>` : ''}${s.more ? `<p class="meta">${esc(s.more)}</p>` : ''}</section>`;
+    }
     case 'history':
       return `<section>${head}${datedTableHtml(s.items)}${s.more ? `<p class="meta">${esc(s.more)}</p>` : ''}${s.family ? `<p><span class="muted">${esc(FAMILY_HISTORY_LABEL)}:</span> <span class="serif">“${esc(curly(s.family))}”</span></p>` : ''}</section>`;
   }
@@ -1132,13 +1214,23 @@ export function summaryToHtml(doc: DoctorDoc): string {
   const glance = doc.glance.length
     ? `<div class="glance">${doc.glance.map((g) => `<div class="g"><p class="gl">${esc(g.label)}</p><p class="gv">${esc(g.value)}<span class="gu">${esc(g.unit)}</span></p><p class="gs">${esc(g.sub)}</p></div>`).join('')}</div>`
     : '';
+  // Evidence pack: page 1 is the agenda, the glance tiles, treatments and appointments; everything else starts
+  // on page 2. Her full words about each treatment and appointment follow the other sections.
+  const packIds = new Set<SectionId>(['tried', 'appointments']);
+  const packEnd = doc.sections.findIndex((x) => !packIds.has(x.id));
+  const hasPack = packEnd > 0 && packEnd < doc.sections.length;
+  const sectionsHtml = doc.sections.map((x, i) => {
+    const html = sectionHtml(x);
+    return hasPack && i === packEnd - 1 ? html.replace(/^<section( class="keep")?>/, (_m, k) => `<section class="${k ? 'keep ' : ''}pack-end">`) : html;
+  });
   const body = [
     doc.agendaBlock
       ? `<section><h2>${esc(doc.agendaBlock.title)}</h2>${doc.agendaBlock.priority ? `<p class="serif lead">“${esc(curly(doc.agendaBlock.priority))}”</p>` : ''}${
         doc.agendaBlock.questions.length ? `<ul>${doc.agendaBlock.questions.map((q) => `<li class="serif">“${esc(curly(q))}”</li>`).join('')}</ul>` : ''}</section>`
       : '',
     glance,
-    ...doc.sections.map(sectionHtml),
+    ...sectionsHtml,
+    packWordsHtml(doc),
     coverageLine(doc) ? `<p class="meta cover">${esc(coverageLine(doc))}</p>` : '',
   ].join('');
   return `<!doctype html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -1186,8 +1278,13 @@ export function summaryToHtml(doc: DoctorDoc): string {
   .strip { margin: 5pt 0 3pt; }
   .key { display: inline-block; width: 12pt; height: 3pt; background: ${C.clay}; vertical-align: middle; }
   .key.spot { height: 0; background: none; border-top: ${SPOT_STROKE}pt dashed ${C.clay}; }
-  .glance { display: flex; gap: 6pt; padding: 8pt 0 9pt; border-bottom: 0.75pt solid ${C.borderStrong}; break-inside: avoid; }
-  .g { flex: 1; border: 0.75pt solid ${C.borderStrong}; border-radius: 4pt; padding: 5pt 7pt 6pt; }
+  .pack-end { break-after: page; page-break-after: always; border-bottom: 0; }
+  table.notes.pack td { ${pt(T.body)} }
+  table.notes.pack th:nth-child(1) { width: 150pt; } table.notes.pack th:nth-child(2) { width: 118pt; } table.notes.pack th:nth-child(3) { width: 70pt; }
+  table.notes.pack.appts th:nth-child(1) { width: 100pt; } table.notes.pack.appts th:nth-child(2) { width: 150pt; } table.notes.pack.appts th:nth-child(3) { width: auto; }
+  .tally { padding-top: 4pt; }
+  .glance { display: flex; flex-wrap: wrap; gap: 6pt; padding: 8pt 0 9pt; border-bottom: 0.75pt solid ${C.borderStrong}; break-inside: avoid; }
+  .g { flex: 0 0 calc(25% - 4.5pt); border: 0.75pt solid ${C.borderStrong}; border-radius: 4pt; padding: 5pt 7pt 6pt; }
   .gl { color: ${C.ink2}; font-size: 7.5pt; line-height: 10pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3pt; }
   .gv { font-size: 20pt; line-height: 24pt; font-weight: 700; font-variant-numeric: tabular-nums; }
   .gu { font-size: 10pt; font-weight: 600; color: ${C.ink2}; }

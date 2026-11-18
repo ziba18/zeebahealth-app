@@ -91,7 +91,14 @@ export interface SymptomData {
 export interface AppointmentData {
   date: string;
   datePrecision: DatePrecision;
+  /** Free text: the person or place. Older records only have this, not `seenBy`. */
   who: string;
+  /** SEEN_BY_OPTIONS value (evidence pack, 18 Nov 2026). Absent on older records. */
+  seenBy?: string;
+  /** "What I said", in her words. */
+  said?: string;
+  /** "What happened next" as she ticked it: OUTCOME_OPTIONS values. Counted on the evidence pack, never judged. */
+  outcomes?: string[];
   why: string;
   told: string;
   tests: string;
@@ -99,8 +106,11 @@ export interface AppointmentData {
   notes: string;
 }
 
+/** A medicine record is any treatment she has tried (shown as "Treatments tried" since 18 Nov 2026). */
 export interface MedicineData {
   name: string;
+  /** TREATMENT_CATEGORIES value; absent on older records (read as a medicine). */
+  category?: string;
   dose?: string;
   started: string;
   startedPrecision: DatePrecision;

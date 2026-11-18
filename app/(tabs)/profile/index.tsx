@@ -246,7 +246,7 @@ export default function ProfileScreen() {
         <ConfirmCard
           tone="destructive"
           title="Delete your account?"
-          message="This permanently deletes your account and everything you’ve saved in Zeeba Health: symptoms, periods, appointments, medicines, history and friend connections. It can’t be undone."
+          message="This permanently deletes your account and everything you’ve saved in Zeeba Health: symptoms, periods, appointments, treatments, history and friend connections. It can’t be undone."
           style={{ marginTop: space.xl }}
           onLayout={(e) => scrollToCard(e.nativeEvent.layout.y)}
           actions={[

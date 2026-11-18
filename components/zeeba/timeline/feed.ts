@@ -62,7 +62,7 @@ const FILTER_KIND: Record<Exclude<TimelineFilter, 'All' | 'Bowel or bladder' | '
   Symptoms: 'symptom',
   Bleeding: 'bleeding',
   Appointments: 'appointment',
-  Medicines: 'medicine',
+  Treatments: 'medicine',
 };
 
 /**
@@ -122,7 +122,7 @@ export const EMPTY_FILTER_TEXT: Record<Exclude<TimelineFilter, 'All'>, string> =
   Symptoms: 'No symptom notes yet.',
   Bleeding: 'No bleeding logged yet.',
   Appointments: 'No appointments yet.',
-  Medicines: 'No medicines yet.',
+  Treatments: 'No treatments yet.',
   'Bowel or bladder': 'No notes about this yet.',
   Tiredness: 'No notes mention feeling tired yet.',
 };

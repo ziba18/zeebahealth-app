@@ -33,7 +33,7 @@ const ROOTS: Record<string, string> = {
 };
 
 const KNOWN_LABELS = new Set([
-  'Today', 'Evidence', 'Timeline', 'For my doctor', 'Profile', 'Period', 'Spotting', 'Medicines', 'Appointments', 'Health history',
+  'Today', 'Evidence', 'Timeline', 'For my doctor', 'Profile', 'Period', 'Spotting', 'Medicines', 'Treatments tried', 'Appointments', 'Health history',
 ]);
 // "14 Jul", "14–29 Jul", "14 Jul–29 Sep 2026": the date-range titles of period runs.
 const DATE_LABEL = /^\d{1,2}(?: [A-Za-z]{3}(?: \d{4})?)?(?:–\d{1,2} [A-Za-z]{3}(?: \d{4})?)?$/;

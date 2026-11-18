@@ -16,7 +16,7 @@ import { usePageTitle } from '../../lib/usePageTitle';
 
 // THE WORDING ON THIS SCREEN IS VERSIONED (CONSENT_VERSION). Layout and motion may change; the strings may not.
 const POINTS: { icon: ClayIconName; text: string }[] = [
-  { icon: 'heart', text: 'What you record here (symptoms, period days, medicines, health history, notes) is health information.' },
+  { icon: 'heart', text: 'What you record here (symptoms and pain, period days, treatments you have tried, appointments and what was said at them, how it affects your work, plans and sleep, health history, notes) is health information.' },
   { icon: 'reach', text: 'We store it so the app can show it back to you and build the summary for your doctor. Nothing else.' },
   { icon: 'lock', text: 'It is kept in the EU and is private to your account. We never sell it or use it for adverts.' },
   { icon: 'pencil', text: 'You can change your mind at any time: Profile, then Delete account, removes all of it straight away.' },

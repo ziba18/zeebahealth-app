@@ -31,7 +31,7 @@ no profiling, no automated decisions.
 | Data | Whose | Where it lives | Why | Lawful basis | Kept until |
 |---|---|---|---|---|---|
 | Email, name, password hash (bcrypt), sign-in flags | User | Supabase Postgres, EU (Ireland) | Account | Contract, Art. 6(1)(b) | Account deleted |
-| Health records (symptoms, period days, medicines, history, appointments, doctor note) | User | Supabase Postgres, EU (Ireland), table `health_records` | The service she asked for | Explicit consent, Art. 6(1)(a) + 9(2)(a) | Account deleted |
+| Health records (symptoms and pain, period days, treatments tried incl. non-medicine ones, history, appointments incl. what she said, what she was told and what happened next, days her symptoms stopped work, study, plans or sleep, doctor note). Since 2026-11-18 (consent `2026-12`) | User | Supabase Postgres, EU (Ireland), table `health_records` | The service she asked for | Explicit consent, Art. 6(1)(a) + 9(2)(a) | Account deleted |
 | Consent record (time, wording version) | User | Same database, `users` | Proof of consent | Legal obligation / legitimate interests | Account deleted |
 | Settings (cycle length, reminder time, time zone, date of birth if given) | User | Same database, `profiles` | Run the app | Contract | Account deleted |
 | Email codes (hash only, 15 minutes) | User | Same database, `email_codes` | Confirm address, reset password | Contract / security | Used, expired, or account deleted |
@@ -75,6 +75,9 @@ safeguards exist; that sentence is only true once the agreements are accepted.
 | 9 | She believes the app gave medical advice | Low / high | No diagnosis anywhere; urgent-symptom wording points to 999/111; terms and consent screen say it is not a medical service. | Keep marketing claims inside this line (MHRA: a symptom diary is not a device; interpretation can make it one). |
 | 10 | Records lost | Low / medium | Provider backups. | **OWNER: confirm the Supabase plan's backup retention**; the free plan's is limited. |
 | 11 | The service is unavailable when she needs her record | Medium / low | The app opens with no connection and shows the copy of her record kept on the phone; notes written offline are sent later; she can export a PDF in advance. | Render's free plan sleeps when idle. |
+| 12 | The report reveals time off work to someone other than a doctor (an employer, a family member) | Low / high | The report is made for a doctor ("For a GP / gynaecology appointment"); every section, including "What it affected" and its page-1 counts, can be switched off before she shares it; nothing is sent anywhere unless she shares it. | She chooses who receives the PDF. Added 2026-11-18. |
+| 13 | Other people's details in her notes (clinicians she names, what they said) | Medium / low | The form says "You don't need to name anyone"; names are optional; stored under her account only, deleted with it; page 1 of the report lists the role she chose ("GP") before any name. | A named clinician could ask what is held; it is her account of her own care. Added 2026-11-18. |
+| 14 | The report is read as the app's verdict on her care (e.g. "Nothing offered 2") | Low / medium | Counts of her own ticks only, never zeros, never a label such as "dismissed"; footer says it is patient-reported and not clinically verified; no score or flag (MHRA line). | Keep campaign copy from implying the app judges clinicians. Added 2026-11-18. |
 
 ## 6. If something goes wrong
 

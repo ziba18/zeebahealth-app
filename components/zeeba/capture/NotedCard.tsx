@@ -189,10 +189,10 @@ export function NotedCard({
           <NotedRow label="How long" value={draft.duration} addLabel="Add how long" onPress={() => toggle('duration')} />
         )}
 
-        {editing === 'impact' ? editor('Got in the way of', (
+        {editing === 'impact' ? editor('What it affected', (
           <ChipGroup
             mode="multi"
-            accessibilityLabel="What it got in the way of"
+            accessibilityLabel="What it affected"
             options={[...IMPACT_OPTIONS, ...customImpacts, 'Not sure', 'It varies'].map((v) => ({ value: v, label: impactLabel(v, past) }))}
             exclusive={['Nothing today', 'Not sure', 'It varies']}
             value={draft.impacts}
@@ -200,9 +200,9 @@ export function NotedCard({
           />
         )) : (
           <NotedRow
-            label="Got in the way of"
+            label="What it affected"
             value={impactsLabel(draft, past)}
-            addLabel="Add what got in the way"
+            addLabel="Add what it stopped"
             onPress={() => toggle('impact')}
           />
         )}

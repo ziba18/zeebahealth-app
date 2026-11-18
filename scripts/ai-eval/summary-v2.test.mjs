@@ -14,7 +14,7 @@ import { sampleBuckets } from '../../lib/preview/seed.ts';
 const HEADINGS = [
   'Appointments and what I want from them', 'Pain', 'Tiredness and sleep', 'Bleeding and periods',
   'Bowel and bladder', 'Pain with sex', 'Mood', 'Skin and hair', 'Weight and eating',
-  'What it got in the way of', 'What I’ve tried', 'Health history', 'Plans for pregnancy',
+  'What it affected', 'What I’ve tried', 'Health history', 'Plans for pregnancy',
 ];
 const EMPTY = { symptoms: [], periodDays: [], medicines: [], history: [], appointments: [] };
 const RANGE = { from: '2026-06-25', to: '2026-09-24', today: '2026-09-24' };
@@ -57,7 +57,7 @@ test('sections come out in §3.7a order', () => {
   const order = SECTION_META.map((m) => m.id);
   const ids = doc.sections.map((s) => s.id);
   assert.deepEqual(ids, [...ids].sort((a, b) => order.indexOf(a) - order.indexOf(b)));
-  assert.equal(order[0], 'frequency');
+  assert.deepEqual(order.slice(0, 3), ['tried', 'appointments', 'frequency']);
   assert.equal(order.at(-1), 'words');
 });
 
@@ -121,14 +121,14 @@ test('onset AC1/AC3: only what was typed; "Not recorded" for a group with notes 
   assert.doesNotMatch(onsetText({ year: 2015 }), /diagnos|chronic|duration/i); // AC4 words
 });
 
-test('AC6: treatments newest start first, "still taking", did it help + side effects as given', () => {
+test('AC6: treatments newest start first, open end reads "now", did it help + side effects as given', () => {
   const med = (name, started, stopped, extra = {}) => ({ id: name, createdAt: `${started}T00:00:00Z`, data: { name, started, startedPrecision: 'month', stopped, stoppedPrecision: 'month', happened: '', ...extra } });
   const doc = buildDoctorSummary({ ...EMPTY, medicines: [
     med('Old', '2019-03-01', '2019-09-01'), med('New', '2026-01-01', '', { helped: 'A little', sideEffects: 'felt sick' }),
   ] }, RANGE);
   const tried = doc.sections.find((s) => s.id === 'tried');
   assert.deepEqual(tried.items.map((i) => i.title), ['New', 'Old']);
-  assert.match(tried.items[0].dates, /still taking/);
+  assert.match(tried.items[0].dates, / – now$/);
   assert.equal(tried.items[0].helped, 'Did it help? A little');
   assert.equal(tried.items[0].sideEffects, 'felt sick');
   assert.equal(tried.items[1].helped, '');

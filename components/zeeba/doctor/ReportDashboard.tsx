@@ -279,7 +279,7 @@ function SectionBody({ s, total, onHideQuote }: { s: DocSection; total: number; 
         <View style={{ gap: space.sm }}>
           {s.items.map((t, i) => (
             <View key={t.title + t.dates} style={{ gap: 4, paddingTop: i ? space.sm : 0, borderTopWidth: i ? 1 : 0, borderTopColor: colors.hairline }}>
-              <Txt variant="headline">{t.title}</Txt>
+              <Txt variant="headline">{t.kind ? `${t.title} · ${t.kind}` : t.title}</Txt>
               {t.dates ? <Txt variant="caption">{t.dates}</Txt> : null}
               {t.noticed ? <Quote>{t.noticed}</Quote> : null}
               {t.helped || t.sideEffects ? (
@@ -296,7 +296,10 @@ function SectionBody({ s, total, onHideQuote }: { s: DocSection; total: number; 
           {s.upcoming.length ? <Txt variant="groupLabel">{APPT_AHEAD}</Txt> : null}
           {s.upcoming.map((a, i) => <DatedRow key={`u${i}`} item={a} first={i === 0} />)}
           {s.upcoming.length && s.items.length ? <Txt variant="groupLabel" style={{ marginTop: space.xs }}>{APPT_PAST}</Txt> : null}
-          {s.items.map((a, i) => <DatedRow key={`p${i}`} item={a} first={i === 0} />)}
+          {s.items.map((a, i) => (
+            <DatedRow key={`p${i}`} item={a.outcome ? { ...a, lines: [{ label: 'What happened next', text: a.outcome }, ...a.lines] } : a} first={i === 0} />
+          ))}
+          {s.outcomes ? <Txt variant="caption">{s.outcomes}</Txt> : null}
           {s.more ? <Txt variant="caption">{s.more}</Txt> : null}
         </View>
       );

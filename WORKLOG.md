@@ -3,6 +3,53 @@
 Running log for the `mvp-symptom-capture` branch: what changed, what broke,
 what was decided and why. Newest entries at the top.
 
+## 2026-11-18 (later) — Evidence pack built: treatments, appointments and what pain stopped on page 1 of the report
+
+Owner: "Settle and commit the previous uncommitted work, and then do what you need to do ... Do what you just
+recommended." Recommendation was: build the PDF page first (independent of the undecided app UI), with the consent,
+privacy page and DPIA changes in the same change; leave the "Your case" Evidence screens until the app design is
+settled; tagline on website and pitch now, App Store text at submission.
+
+- **Settled:** all pending work on `design/wren-guide` committed as `7c391c5` (secret scan clean, type check
+  clean). `design/uiux-2026-11-13/` and `design/doctor-dashboard-2026-11-13/` left untracked on purpose (stock
+  photos and other apps' screenshots; public repo). New work is on branch **`feature/evidence-pack`**.
+- **Data (no new record kind, no migration):** `MedicineData.category` (TREATMENT_CATEGORIES), shown everywhere as
+  "Treatments tried"; `AppointmentData.seenBy`, `said`, `outcomes[]` (SEEN_BY_OPTIONS, OUTCOME_OPTIONS);
+  IMPACT_OPTIONS now Missed work or study · Left work or study early · Cancelled plans · Broken sleep · Exercise ·
+  Sex · Nothing today. Older values (`Work or study`, `Sleep`, `Plans with people`, LEGACY_IMPACTS) still show
+  and count under their own words, never relabelled as missed. All in `lib/records/fields.ts`, `types/records.ts`.
+- **Forms:** `RecordDetail.tsx` treatment form gets "What kind" chips and the missing "Side effects" field;
+  appointment form gets "Who you saw" chips, optional "Name or place" ("You don't need to name anyone"), "What I
+  said", "What they said", "What happened next" chips. Check-in question now "Did it stop you doing anything
+  today?"; the editor label is "What it affected" everywhere.
+- **Voice/typed pre-fill (`infer.ts`):** work only fills a day she missed ("off work", "called in sick", "took
+  time off") or left early; "couldn't concentrate at work" fills nothing and the question asks her. Sleep → Broken
+  sleep, plans → Cancelled plans. Eval (all v-sets, compared by area in `run.mjs`): 96 correct / 2 wrong of 107
+  (before: 102 / 3); the 6 fewer are "struggled at work" notes that are not missed days.
+- **Report (`lib/records/summary.ts`):** sections now start with Treatments tried and Appointments (both GP and
+  gynae orders); four new glance tiles (days off work or study, left early, plans cancelled, nights of broken
+  sleep) replace "Got in the way" when present; appointments table = date · seen by · what happened next, a title
+  "Appointments · 6 since March 2024" and a line counting her own ticks (most first, ties in form order, never a
+  zero, never "dismissed"); PDF page break after the pack; full words ("What I said / What they said", "What I
+  noticed") in a later "In my words: appointments and treatments" block. Title becomes "Evidence pack — name"
+  when there is a pack. Switching a section off removes it from page 1 too. On-screen DocumentView and
+  ReportDashboard show the same facts. Sample PDF rendered with headless Chrome: page 1 holds agenda, tiles,
+  treatments and appointments.
+- **Tests:** `scripts/ai-eval/*.test.mjs` had been failing to load since `summary.ts` imports `constants/zeebaUI`
+  (react-native). Added a test-only stub (`scripts/ai-eval/rn-stub.mjs`, wired in `ts-resolve-hooks.mjs`). New
+  `evidence-pack.test.mjs` (6 tests). 40/40 app tests, 206 backend tests, `tsc` clean.
+- **Consent etc.:** consent point 1 now "symptoms and pain, period days, treatments you have tried, appointments
+  and what was said at them, how it affects your work, plans and sleep, health history, notes";
+  `CONSENT_VERSION` `2026-11` → `2026-12` (everyone is asked again). Privacy page (`legal.py`, effective date 18 Nov)
+  lists the new data and clinician names; **not deployed** (owner pushes). DPIA §3 row updated, §5 risks 12–14
+  (time off work seen by an employer, clinicians named in notes, counts read as a verdict). Delete-account text
+  says treatments.
+- **Website (`~/projects/zeebahealth-site`, not git):** title "Zeeba Health · Builds your case", og:title and the
+  hero lead start "Other apps track your cycle. Zeeba builds your case." Not deployed (owner runs `vercel deploy
+  --prod` + the alias step). Backup of the old page in this session's scratchpad only.
+- **Not done (as recommended):** "Your case" group on the Evidence tab; App Store text (at submission); show page 1
+  to 2–3 GPs; voice, clinician co-design, wearables.
+
 ## 2026-11-18 — "Builds your case": evidence pack plan for treatments, appointments and life impact (plan and mock-up only; nothing built)
 
 Owner's brief: read `docs/feature-brief-evidence-pack-2026-11-18.md`; check what the app already has for its six

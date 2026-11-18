@@ -16,6 +16,7 @@ import { useScrollRef } from '../timeline/navigation';
 import { UrgentNote, textOf } from '../UrgentNote';
 import { RecordDateField } from './RecordDateField';
 import { HISTORY_TYPES, KIND_INFO, isBeforeAtPrecision, type RecordDataKind } from './recordKinds';
+import { OUTCOME_OPTIONS, SEEN_BY_OPTIONS, TREATMENT_CATEGORIES } from '../../../lib/records/fields';
 
 const HELPED_OPTIONS = ['Helped', 'A little', 'No', 'Not sure'] as const;
 
@@ -46,7 +47,7 @@ function missing(kind: RecordDataKind, d: Draft): string {
   }
   if (kind === 'appointment') {
     const a = d as AppointmentData;
-    const need = [!a.who.trim() && 'who or where', !a.date && 'the date'].filter(Boolean);
+    const need = [!a.who.trim() && !a.seenBy && 'who you saw', !a.date && 'the date'].filter(Boolean);
     return need.length ? `Add ${need.join(' and ')} to save.` : '';
   }
   const h = d as HistoryDraft;
@@ -58,12 +59,12 @@ function missing(kind: RecordDataKind, d: Draft): string {
 function cleaned(kind: RecordDataKind, d: Draft): AnyData {
   if (kind === 'medicine') {
     const m = d as MedicineData;
-    return { ...m, name: m.name.trim(), dose: m.dose?.trim() ?? '', happened: m.happened.trim() };
+    return { ...m, name: m.name.trim(), dose: m.dose?.trim() ?? '', happened: m.happened.trim(), sideEffects: m.sideEffects?.trim() ?? '' };
   }
   if (kind === 'appointment') {
     const a = d as AppointmentData;
     return {
-      ...a, who: a.who.trim(), why: a.why.trim(), told: a.told.trim(), tests: a.tests.trim(),
+      ...a, who: a.who.trim(), why: a.why.trim(), said: a.said?.trim() ?? '', told: a.told.trim(), tests: a.tests.trim(),
       next: a.next.trim(), notes: a.notes.trim(),
     };
   }
@@ -300,7 +301,19 @@ function MedicineFields({ d, set, isNew }: { d: MedicineData; set: SetFn; isNew:
     <>
       <UrgentNote text={textOf(d)} />
       <FieldGroup>
-      <TextField label="Name" value={d.name} onChangeText={(name) => set({ name })} autoCapitalize="sentences" />
+      <View>
+        <FieldLabel label="What kind" optional />
+        <ChipGroup
+          mode="single"
+          options={[...TREATMENT_CATEGORIES]}
+          ghosts={[]}
+          allowDeselect
+          value={d.category ?? null}
+          onChange={(v) => set({ category: v ?? undefined })}
+          accessibilityLabel="What kind of treatment"
+        />
+      </View>
+      <TextField label="Name" hint="For example, naproxen, the pill, physio" value={d.name} onChangeText={(name) => set({ name })} autoCapitalize="sentences" />
       <TextField label="Dose" optional value={d.dose ?? ''} onChangeText={(dose) => set({ dose })} />
       <RecordDateField
         label="Started"
@@ -311,7 +324,7 @@ function MedicineFields({ d, set, isNew }: { d: MedicineData; set: SetFn; isNew:
       <RecordDateField
         label="Stopped"
         optional
-        ongoingLabel="Still taking"
+        ongoingLabel="Still using"
         initiallyOngoing={!isNew && !d.stopped}
         value={d.stopped}
         precision={d.stoppedPrecision}
@@ -329,6 +342,14 @@ function MedicineFields({ d, set, isNew }: { d: MedicineData; set: SetFn; isNew:
           accessibilityLabel="Did it help?"
         />
       </View>
+      <TextField
+        label="Side effects"
+        optional
+        hint="In your own words"
+        multiline
+        value={d.sideEffects ?? ''}
+        onChangeText={(sideEffects) => set({ sideEffects })}
+      />
       <TextField
         label="What I noticed"
         hint="In your own words"
@@ -348,12 +369,31 @@ function MedicineFields({ d, set, isNew }: { d: MedicineData; set: SetFn; isNew:
  */
 function AppointmentFields({ d, set }: { d: AppointmentData; set: SetFn }) {
   const ahead = !d.date || isUpcoming(d);
-  const hasAfter = !!(d.told.trim() || d.tests.trim() || d.next.trim());
+  const hasAfter = !!(d.said?.trim() || d.told.trim() || d.tests.trim() || d.next.trim() || d.outcomes?.length);
   return (
     <>
       <UrgentNote text={textOf(d)} />
       <FieldGroup>
-      <TextField label="Who or where" value={d.who} onChangeText={(who) => set({ who })} autoCapitalize="sentences" />
+      <View>
+        <FieldLabel label="Who you saw" />
+        <ChipGroup
+          mode="single"
+          options={[...SEEN_BY_OPTIONS]}
+          ghosts={[]}
+          allowDeselect
+          value={d.seenBy ?? null}
+          onChange={(v) => set({ seenBy: v ?? undefined })}
+          accessibilityLabel="Who you saw"
+        />
+      </View>
+      <TextField
+        label="Name or place"
+        optional
+        hint="You don't need to name anyone"
+        value={d.who}
+        onChangeText={(who) => set({ who })}
+        autoCapitalize="sentences"
+      />
       <RecordDateField
         label="Date"
         allowFuture
@@ -371,9 +411,22 @@ function AppointmentFields({ d, set }: { d: AppointmentData; set: SetFn }) {
       {!ahead || hasAfter ? (
         <>
           <Txt variant="groupLabel" accessibilityRole="header">After the appointment</Txt>
-          <TextField label="I was told" hint="In your own words" multiline value={d.told} onChangeText={(told) => set({ told })} />
+          <TextField label="What I said" optional hint="In your own words" multiline value={d.said ?? ''} onChangeText={(said) => set({ said })} />
+          <TextField label="What they said" hint="In your own words" multiline value={d.told} onChangeText={(told) => set({ told })} />
+          <View>
+            <FieldLabel label="What happened next" optional />
+            <ChipGroup
+              mode="multi"
+              options={[...OUTCOME_OPTIONS]}
+              ghosts={[]}
+              exclusive={[]}
+              value={d.outcomes ?? []}
+              onChange={(outcomes) => set({ outcomes })}
+              accessibilityLabel="What happened next"
+            />
+          </View>
           <TextField label="Tests or prescriptions" optional multiline value={d.tests} onChangeText={(tests) => set({ tests })} />
-          <TextField label="What happens next" optional multiline value={d.next} onChangeText={(next) => set({ next })} />
+          <TextField label="Next steps, in your words" optional multiline value={d.next} onChangeText={(next) => set({ next })} />
         </>
       ) : null}
       <TextField label="Anything else" optional multiline value={d.notes} onChangeText={(notes) => set({ notes })} />

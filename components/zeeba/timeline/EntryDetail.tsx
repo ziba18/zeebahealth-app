@@ -240,11 +240,12 @@ export function EntryDetail({ id, from }: { id: string; from: string }) {
             : <NotedRow label="How long" value={formatDuration(s) || undefined} onPress={() => start('duration')} addLabel="Add how long" />}
 
           {editing === 'impacts' && draft
-            ? editor('Got in the way of', (
+            ? editor('What it affected', (
               <ChipGroup
                 mode="multi"
-                accessibilityLabel="Got in the way of"
-                options={[...IMPACT_OPTIONS, 'Not sure']}
+                accessibilityLabel="What it affected"
+                // Older notes may hold a value no longer offered ('Work or study'): keep it showing so it can be unticked.
+                options={[...IMPACT_OPTIONS, ...(draft.impacts ?? []).filter((i) => !(IMPACT_OPTIONS as readonly string[]).includes(i) && i !== 'Not sure'), 'Not sure']}
                 exclusive={['Nothing today', 'Not sure']}
                 value={draft.impacts ?? []}
                 onChange={(v) => set({ impacts: v })}
@@ -252,11 +253,11 @@ export function EntryDetail({ id, from }: { id: string; from: string }) {
             ))
             : (
               <NotedRow
-                label="Got in the way of"
+                label="What it affected"
                 quote={s.stoppedWords?.trim() || undefined}
                 value={gotInWayValue(s)}
                 onPress={() => start('impacts')}
-                addLabel="Add what it got in the way of"
+                addLabel="Add what it stopped"
               />
             )}
 

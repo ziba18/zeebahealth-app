@@ -19,7 +19,7 @@ export function questionTitle(q: Question, past: boolean): string {
     case 'strength': return past ? 'How strong was it, usually and at its worst?' : 'How strong is it, usually and at its worst?';
     case 'where': return past ? 'Where did you feel it?' : 'Where do you feel it?';
     case 'when': return 'Is it only around your period, at other times too, or all the time?';
-    case 'impact': return past ? 'Did it get in the way of anything that day?' : 'Did it get in the way of anything today?';
+    case 'impact': return past ? 'Did it stop you doing anything that day?' : 'Did it stop you doing anything today?';
   }
 }
 
@@ -129,7 +129,7 @@ export function FollowUp({
     body = (
       <ChipGroup
         mode="multi"
-        accessibilityLabel="What it got in the way of"
+        accessibilityLabel="What it affected"
         options={[...IMPACT_OPTIONS, ...custom].map((v) => ({ value: v, label: impactLabel(v, past) }))}
         ghosts={[]}
         exclusive={['Nothing today']}

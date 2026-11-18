@@ -17,11 +17,14 @@ const note = (date, extra = {}) => ({ id: `n${date}${Math.random()}`, createdAt:
 const EMPTY = { symptoms: [], periodDays: [], medicines: [], history: [], appointments: [] };
 const REDLINE = /%|percent|score|average|trend|severe|moderate|mild|likely|suggest|diagnos|or more|or worse/i;
 
-test('gynaecology puts periods first; GP keeps the standard order; same sections either way', () => {
+test('evidence pack first, then gynaecology puts periods first; GP keeps the standard order; same sections either way', () => {
   const gp = buildDoctorSummary(sam(), RANGE);
   const gy = buildDoctorSummary(sam(), { ...RANGE, audience: 'gynae' });
-  assert.equal(gy.sections[0].id, 'periods');
-  assert.equal(gp.sections[0].id, 'frequency');
+  // Evidence pack (18 Nov 2026): treatments and appointments lead both orders when she has them.
+  const afterPack = (d) => d.sections.map((x) => x.id).filter((id) => id !== 'tried' && id !== 'appointments');
+  assert.deepEqual(gp.sections.slice(0, 2).map((x) => x.id), ['tried', 'appointments']);
+  assert.equal(afterPack(gy)[0], 'periods');
+  assert.equal(afterPack(gp)[0], 'frequency');
   assert.deepEqual([...gp.sections.map((s) => s.id)].sort(), [...gy.sections.map((s) => s.id)].sort());
   assert.match(gy.meta, /For a gynaecology appointment/);
   assert.match(gp.meta, /For a GP appointment/);

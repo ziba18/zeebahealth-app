@@ -83,6 +83,9 @@ const CLEAR = /\b(no|not|nothing|never|without|fine|ok|okay|good|alright|normal|
 const SLEEP_LOST = /\b(didn'?t|did not|couldn'?t|can'?t|cannot|wasn'?t able to|unable to|barely|hardly|not much|no)\b.*\b(sleep|slept)\b(?! (?:problems?|issues?|trouble))|\b(woke|awake|up all night|kept me up)\b/;
 const SLEEP_OK = /\b(slept|sleeping|sleep)\b.*\b(fine|well|ok|okay|good|great|brilliant)\b|\bslept (?:like a (?:log|baby)|through|soundly)\b|\bno (?:sleep )?(?:problems?|issues?|trouble)\b/;
 
+const LEFT_EARLY = /\b(left early|leave early|(?:went|go|gone|came|come|sent) home|had to leave|left (?:work|uni|school|college|the office|my shift|halfway))\b/;
+const MISSED = /\b(off (?:work|school|uni|college)|(?:take|took|taking|had) (?:some |a bit of )?time off|stopped me (?:from )?\w+ing|(?:not able|unable|couldn'?t|could not|can'?t|cannot) (?:to )?do my (?:job|work|shift)|called in sick|rang in sick|phoned in sick|off sick|sick day|skipped|missed|bail(?:ed)?|(?:didn'?t|did not) (?:go|make it|get (?:in|to))|(?:couldn'?t|could not|can'?t|cannot|wasn'?t able to|unable to) (?:go|get (?:in|to|out)|make it|face|do)|stayed (?:home|off|in bed)|took (?:the day|a day|today) off|day off)\b/;
+
 function impactsFrom(lowerRaw: string): string[] {
   const out = new Set<string>();
   // Speech recognisers often hear "six" as "sex": "it's a sex out of ten" is a score, not the Sex impact.
@@ -92,10 +95,15 @@ function impactsFrom(lowerRaw: string): string[] {
   for (const c of clausesOf(lower)) {
     if (/^(?:i(?:'ve| have)? )?(?:tried|took|used|been taking|been using|trying)\b/.test(c) && !LOST.test(c)) continue; // a remedy, not an impact ("tried yoga")
     const cleared = CLEAR.test(c) && !LOST.test(c);
-    if (/\b(work|study|studying|school(?! run)|uni|college|job|office|shift|lectures?|lessons?|exam|at my desk|called in sick|off sick|sick day)\b/.test(c) && !cleared) out.add('Work or study');
-    if (/\b(sleep|slept|sleeping|woke|awake|kept me up|kip|up half the night)\b/.test(c) && (SLEEP_LOST.test(c) || (!cleared && !SLEEP_OK.test(c)))) out.add('Sleep');
+    // Work or study (18 Nov 2026): only a day she missed or left early is filled in. "Struggled at work" is
+    // neither, so nothing is guessed and the follow-up question asks her.
+    if (/\b(work|study|studying|school(?! run)|uni|college|job|office|shift|lectures?|lessons?|seminars?|exam|at my desk|called in sick|rang in sick|off sick|sick day)\b/.test(c) && !cleared) {
+      if (LEFT_EARLY.test(c)) out.add('Left work or study early');
+      else if (MISSED.test(c)) out.add('Missed work or study');
+    }
+    if (/\b(sleep|slept|sleeping|woke|awake|kept me up|kip|up half the night)\b/.test(c) && (SLEEP_LOST.test(c) || (!cleared && !SLEEP_OK.test(c)))) out.add('Broken sleep');
     if (/\b(exercise|exercising|gym|workout|swim|swimming|yoga|pilates|netball|football|hockey|rugby|jogging|spin class|spinning|zumba|dance class|(?:go|went|going) (?:for a )?run(?:ning)?)\b/.test(c) && !cleared) out.add('Exercise');
-    if (/\b(plans|friends|cancel|cancelled|canceled|didn'?t see (?:anyone|anybody|my \w+)|saw (?:no one|nobody)|stayed in|(?:couldn'?t|could not|didn'?t) leave the house|missed (?:my |a )?(?:\w+['’]s )?(?:birthday|party|wedding|night out))\b/.test(c) && (!cleared || /didn'?t see|saw (?:no one|nobody)/.test(c))) out.add('Plans with people');
+    if (/\b(plans|friends|cancel|cancelled|canceled|didn'?t see (?:anyone|anybody|my \w+)|saw (?:no one|nobody)|stayed in|(?:couldn'?t|could not|didn'?t) leave the house|missed (?:my |a )?(?:\w+['’]s )?(?:birthday|party|wedding|night out))\b/.test(c) && (!cleared || /didn'?t see|saw (?:no one|nobody)/.test(c))) out.add('Cancelled plans');
     if (/\bsex\b/.test(c) && !cleared) out.add('Sex');
   }
   return [...out];

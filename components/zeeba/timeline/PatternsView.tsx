@@ -279,13 +279,13 @@ export function PatternsView({ onOpen, onOpenWeek }: { onOpen: (filter: Timeline
 
       {m.impacts.length ? (
         <FadeIn index={5}>
-          <PressableCard onPress={() => onOpen('Symptoms')} accessibilityLabel={`What it got in the way of. ${m.impacts.map((i) => `${i.label}, ${plural(i.days, 'day')}`).join('; ')}. Opens your notes.`}>
-            <Txt variant="groupLabel" style={{ marginBottom: space.sm }}>What it got in the way of</Txt>
+          <PressableCard onPress={() => onOpen('Symptoms')} accessibilityLabel={`What it affected. ${m.impacts.map((i) => `${i.label}, ${plural(i.days, 'day')}`).join('; ')}. Opens your notes.`}>
+            <Txt variant="groupLabel" style={{ marginBottom: space.sm }}>What it affected</Txt>
             <Bars rows={m.impacts} total={m.totalDays} />
           </PressableCard>
         </FadeIn>
       ) : (
-        <EmptyLine title="What it got in the way of" line="Nothing logged yet. Say what it stopped you doing and it appears here." />
+        <EmptyLine title="What it affected" line="Nothing logged yet. Say what it stopped you doing and it appears here." />
       )}
 
       {m.tried.length ? (

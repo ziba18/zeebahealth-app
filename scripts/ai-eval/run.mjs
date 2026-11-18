@@ -5,13 +5,18 @@ import { prefillFrom } from '../../components/zeeba/capture/infer.ts';
 
 const items = JSON.parse(fs.readFileSync(new URL(process.argv.find((a) => a.endsWith('.json')) ?? './items.v0.json', 'file://' + process.cwd() + '/scripts/ai-eval/'), 'utf8'));
 const FIELDS = ['zones', 'when', 'duration', 'impacts', 'worst', 'tried'];
-const norm = (v) => (v == null ? null : Array.isArray(v) ? (v.length ? [...v].sort().join('|') : null) : String(v).toLowerCase());
+// Impacts are compared by area (18 Nov 2026): the gold sets predate the "missed / left early" split, so
+// 'Work or study' gold matches either new work value, 'Sleep' → 'Broken sleep', 'Plans with people' → 'Cancelled plans'.
+const AREA = { 'Work or study': 'work', 'Missed work or study': 'work', 'Left work or study early': 'work', Sleep: 'sleep', 'Broken sleep': 'sleep', 'Plans with people': 'plans', 'Cancelled plans': 'plans' };
+const area = (v) => (Array.isArray(v) ? [...new Set(v.map((x) => AREA[x] ?? x))] : v);
+const norm0 = (v) => (v == null ? null : Array.isArray(v) ? (v.length ? [...v].sort().join('|') : null) : String(v).toLowerCase());
+const norm = norm0;
 const stats = Object.fromEntries(FIELDS.map((f) => [f, { gold: 0, fills: 0, correct: 0, wrong: 0, miss: 0, spurious: 0, mismatch: 0, missedStated: [], wrongList: [] }]));
 const byStrata = {};
 for (const it of items) {
   const out = prefillFrom(it.text);
   for (const f of FIELDS) {
-    const g = norm(it.gold[f]), p = norm(out[f]), s = stats[f];
+    const g = norm(f === 'impacts' ? area(it.gold[f]) : it.gold[f]), p = norm(f === 'impacts' ? area(out[f]) : out[f]), s = stats[f];
     const st = (byStrata[it.strata] ??= { fills: 0, wrong: 0, gold: 0, correct: 0 });
     if (g) { s.gold++; st.gold++; }
     if (p) { s.fills++; st.fills++; }

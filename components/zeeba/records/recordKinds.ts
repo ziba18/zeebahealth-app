@@ -30,8 +30,9 @@ export const KIND_INFO: Record<RecordDataKind, {
   deleted: string;
 }> = {
   medicine: {
-    slug: 'medicines', listTitle: 'Medicines', title: 'Medicine', newTitle: 'Add a medicine',
-    empty: 'No medicines yet.', addLabel: 'Add a medicine', saved: 'Medicine saved.', deleted: 'Medicine deleted.',
+    // Shown as "Treatments tried" since 18 Nov 2026 (the store kind and route slug stay 'medicine' / 'medicines').
+    slug: 'medicines', listTitle: 'Treatments tried', title: 'Treatment', newTitle: 'Add a treatment',
+    empty: 'No treatments yet.', addLabel: 'Add a treatment', saved: 'Treatment saved.', deleted: 'Treatment deleted.',
   },
   appointment: {
     slug: 'appointments', listTitle: 'Appointments', title: 'Appointment', newTitle: 'Add an appointment',
@@ -75,7 +76,7 @@ export function medicineDates(m: MedicineData): string {
 }
 
 export function recordTitle(kind: RecordDataKind, data: MedicineData | AppointmentData | HistoryData): string {
-  if (kind === 'medicine') return (data as MedicineData).name?.trim() || 'Medicine';
+  if (kind === 'medicine') return (data as MedicineData).name?.trim() || 'Treatment';
   if (kind === 'appointment') return (data as AppointmentData).who?.trim() || 'Appointment';
   return (data as HistoryData).type || 'Health history';
 }

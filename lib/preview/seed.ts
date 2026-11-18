@@ -22,10 +22,10 @@ const symptom = (
 
 const SYMPTOMS: SymptomData[] = [
   symptom('2026-07-08', 'Dull ache low down that would not settle.', 'Lower belly', 4, 'Most of the evening', false, ''),
-  symptom('2026-07-19', 'Sharp pain across my lower belly and my back felt tight.', 'Lower belly and lower back', 6, 'About three hours', true, 'I had to cancel plans.'),
+  symptom('2026-07-19', 'Sharp pain across my lower belly and my back felt tight.', 'Lower belly and lower back', 6, 'About three hours', true, 'I had to cancel plans.', { impacts: ['Cancelled plans'] }),
   symptom('2026-07-25', 'Stinging, dragging pain low down when I passed urine, and I needed to go much more often. It felt sore all day.', 'Lower belly, just above the pubic bone', 5, 'All day, worse each time I went', true, 'I could not concentrate at work.', { urinePain: true }),
   symptom('2026-07-31', 'Tired all day and a heavy feeling low down.', 'Lower belly', 5, 'All day', false, ''),
-  symptom('2026-08-09', 'Squeezing pain that came in waves.', 'Across my lower belly', 7, 'On and off all day', true, 'I left work early.', { mood: 'Low and flat all day, and I cried on the way home.' }),
+  symptom('2026-08-09', 'Squeezing pain that came in waves.', 'Across my lower belly', 7, 'On and off all day', true, 'I left work early.', { impacts: ['Left work or study early'], mood: 'Low and flat all day, and I cried on the way home.' }),
   symptom('2026-08-16', 'Pain down both legs and I felt very worn out.', 'Lower belly and legs', 7, 'From lunchtime until bedtime', true, 'I could not cook.'),
   symptom('2026-08-22', 'It hurt low down when I opened my bowels, a sharp stabbing pain deep inside. It only happens around my period.', 'Lower belly and deep inside', 7, 'A few minutes each time, then an ache for about an hour', true, 'I was late for work because I could not leave the toilet.', { bowelPain: true, zones: ['Lower tummy centre', 'Deep inside', 'Bottom'] }),
   symptom('2026-08-24', 'A dull, heavy pain low down.', 'Lower belly', 5, 'A few hours', false, ''),
@@ -37,7 +37,7 @@ const SYMPTOMS: SymptomData[] = [
   symptom('2026-09-17', 'The pain was sharp and went down my legs. I also felt dizzy and lightheaded.', 'Lower belly and legs', 9, 'About five hours', true, "I couldn't stand up without help."),
   symptom('2026-09-19', 'Squeezing pain across my lower belly and I felt very tired.', 'Across my lower belly', 7, 'On and off all day', true, 'I had to lie down for the afternoon.'),
   symptom('2026-09-21', 'Sharp pain low down that was worse during my period.', 'Lower belly', 8, 'From early morning until evening', true, 'I could not do the shopping or cook.'),
-  symptom('2026-09-23', 'Strong squeezing pain across my lower belly, sometimes running down my legs.', 'Lower belly and legs', 8, 'About six hours', true, 'I had to leave work and go home.'),
+  symptom('2026-09-23', 'Strong squeezing pain across my lower belly, sometimes running down my legs.', 'Lower belly and legs', 8, 'About six hours', true, 'I had to leave work and go home.', { impacts: ['Left work or study early'] }),
   symptom('2026-09-24', 'Very sharp pain across my lower belly. I feel dizzy, lightheaded and very tired.', 'Across my lower belly and down my legs', 9, 'Since early this morning', true, "I couldn't move around or stand without help."),
 ];
 
@@ -56,16 +56,16 @@ const PERIOD_DAYS: PeriodDayData[] = [
 ];
 
 const APPOINTMENTS: AppointmentData[] = [
-  { date: '2015-06-01', datePrecision: 'month', who: 'GP', why: 'Very sharp pain during my periods and heavy bleeding', told: 'The ultrasound showed nothing. Maybe it could be in your mind.', tests: 'Ultrasound. Birth control pills and pain relievers.', next: 'Come back if it continues.', notes: '' },
-  { date: '2018-05-01', datePrecision: 'month', who: 'Different clinic', why: 'The pain was getting worse each month', told: "We didn't find anything on the scan.", tests: 'Another ultrasound. Pain relievers.', next: 'Return if it gets worse.', notes: '' },
-  { date: '2020-03-01', datePrecision: 'month', who: 'Hospital clinic', why: 'Ongoing pain and heavy bleeding', told: 'There are fibroids, and another problem with my bowel.', tests: 'A procedure was arranged for the fibroids.', next: 'Follow up after the procedure.', notes: '' },
-  { date: '2026-09-24', datePrecision: 'exact', who: 'Specialist clinic', why: 'The pain is too much to work or move around', told: '', tests: 'An examination, an ultrasound and an MRI were arranged.', next: '', notes: "I arrived crying and couldn't stand without help." },
+  { date: '2015-06-01', datePrecision: 'month', who: 'GP', seenBy: 'GP', outcomes: ['Scan', 'New prescription'], why: 'Very sharp pain during my periods and heavy bleeding', told: 'The ultrasound showed nothing. Maybe it could be in your mind.', tests: 'Ultrasound. Birth control pills and pain relievers.', next: 'Come back if it continues.', notes: '' },
+  { date: '2018-05-01', datePrecision: 'month', who: 'Different clinic', seenBy: 'Other', outcomes: ['Scan', 'Come back if it gets worse'], why: 'The pain was getting worse each month', told: "We didn't find anything on the scan.", tests: 'Another ultrasound. Pain relievers.', next: 'Return if it gets worse.', notes: '' },
+  { date: '2020-03-01', datePrecision: 'month', who: 'Hospital clinic', seenBy: 'Other specialist', outcomes: ['Something else'], why: 'Ongoing pain and heavy bleeding', told: 'There are fibroids, and another problem with my bowel.', tests: 'A procedure was arranged for the fibroids.', next: 'Follow up after the procedure.', notes: '' },
+  { date: '2026-09-24', datePrecision: 'exact', who: 'Specialist clinic', seenBy: 'Gynaecology', why: 'The pain is too much to work or move around', told: '', tests: 'An examination, an ultrasound and an MRI were arranged.', next: '', notes: "I arrived crying and couldn't stand without help." },
 ];
 
 const MEDICINES: MedicineData[] = [
-  { name: 'Birth control pills', started: '2015-06-01', startedPrecision: 'month', stopped: '2016-06-01', stoppedPrecision: 'month', happened: 'No relief from the pain.', helped: 'No' },
-  { name: 'Pain relievers', started: '2015-06-01', startedPrecision: 'month', stopped: '', stoppedPrecision: 'exact', happened: 'Sometimes helps for a short while, often no relief.', helped: 'A little' },
-  { name: 'Cortisone injections at the emergency department', started: '2019-04-01', startedPrecision: 'month', stopped: '2019-04-01', stoppedPrecision: 'month', happened: 'Gave me a little relief for a few days.', helped: 'A little' },
+  { name: 'Birth control pills', category: 'The pill', started: '2015-06-01', startedPrecision: 'month', stopped: '2016-06-01', stoppedPrecision: 'month', happened: 'No relief from the pain.', helped: 'No' },
+  { name: 'Pain relievers', category: 'Painkiller', started: '2015-06-01', startedPrecision: 'month', stopped: '', stoppedPrecision: 'exact', happened: 'Sometimes helps for a short while, often no relief.', helped: 'A little' },
+  { name: 'Cortisone injections at the emergency department', category: 'Something else', started: '2019-04-01', startedPrecision: 'month', stopped: '2019-04-01', stoppedPrecision: 'month', happened: 'Gave me a little relief for a few days.', helped: 'A little' },
 ];
 
 const HISTORY: HistoryData[] = [

@@ -24,4 +24,5 @@ export const SUPPORT_EMAIL = process.env.EXPO_PUBLIC_SUPPORT_EMAIL ?? 'zamanizib
 // The wording of the health-information consent screen (app/(auth)/consent.tsx). Change this
 // whenever that wording changes in substance: everyone is then asked again, and the server keeps
 // which version each person agreed to.
-export const CONSENT_VERSION = '2026-11';
+// 2026-12 (18 Nov 2026): first point now names treatments, appointments and what was said, and work, plans and sleep.
+export const CONSENT_VERSION = '2026-12';

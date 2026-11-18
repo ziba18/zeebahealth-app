@@ -1,5 +1,14 @@
 # Zeeba Health — Claude Code Project Notes
 
+## NEWEST (2026-11-18): evidence pack built on branch `feature/evidence-pack` (not deployed, not on a device)
+Positioning (owner-approved for the pitch): "Other apps track your cycle. Zeeba builds your case." Page 1 of the
+report is now the evidence pack: glance tiles incl. days off work or study / left early / plans cancelled / nights
+of broken sleep, Treatments tried, Appointments (seen by · what happened next · counts of her own ticks). Rules:
+counts of her ticks only, never zeros, never the word "dismissed", no score; older impact values are never
+relabelled as missed. `CONSENT_VERSION` is now `2026-12`; privacy page change in `legal.py` needs the owner's
+push. The "Your case" Evidence screens wait for the app design decision. See WORKLOG 2026-11-18 (later).
+Earlier pending work was committed on `design/wren-guide` (`7c391c5`); the two design sprint folders stay untracked.
+
 ## NEWEST (2026-11-15): mission line, goals and the word "Pain" (owner-approved)
 - **Mission line:** "Zeeba Health turns dismissed pain and symptoms into dated evidence a doctor takes seriously."
   No gender word in the purpose sentence (room to expand later); campaigns and the launch audience stay about women.

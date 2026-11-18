@@ -265,8 +265,15 @@ function SectionBody({ section, st, contentWidth, variant }: { section: DocSecti
           {section.items.map((t) => (
             <View key={t.title + t.dates} style={{ marginBottom: st.s.item }}>
               <Txt style={st.body}>
-                <Txt style={st.strong}>{t.title}</Txt>{t.dates ? ` · ${keepYear(t.dates, st)}` : ''}
+                <Txt style={st.strong}>{t.title}</Txt>{t.kind ? ` · ${t.kind}` : ''}{t.dates ? ` · ${keepYear(t.dates, st)}` : ''}
               </Txt>
+              {t.helpedAnswer || t.sideEffects ? (
+                <Txt style={st.body}>
+                  {t.helpedAnswer ? <><Txt style={st.muted}>Did it help? </Txt>{t.helpedAnswer}</> : null}
+                  {t.helpedAnswer && t.sideEffects ? ' · ' : ''}
+                  {t.sideEffects ? <><Txt style={st.muted}>Side effects: </Txt>{t.sideEffects}</> : null}
+                </Txt>
+              ) : null}
               {t.noticed ? (
                 <Txt style={st.body}>
                   <Txt style={st.muted}>What I noticed: </Txt>
@@ -290,7 +297,14 @@ function SectionBody({ section, st, contentWidth, variant }: { section: DocSecti
               ) : null}
             </>
           ) : null}
-          {section.items.map((a, i) => <DatedItemBlock key={`${a.date}-${i}`} item={a} st={st} />)}
+          {section.items.map((a, i) => (
+            <DatedItemBlock
+              key={`${a.date}-${i}`}
+              item={a.outcome ? { ...a, lines: [{ label: 'What happened next', text: a.outcome }, ...a.lines] } : a}
+              st={st}
+            />
+          ))}
+          {section.outcomes ? <Txt style={st.meta}>{section.outcomes}</Txt> : null}
           {section.more ? <Txt style={st.meta}>{section.more}</Txt> : null}
         </>
       );
