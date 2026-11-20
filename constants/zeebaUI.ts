@@ -8,6 +8,14 @@ import { DynamicColorIOS, Platform, useColorScheme, type TextStyle, type ViewSty
 
 export type Scheme = 'light' | 'dark';
 
+/**
+ * Light mode only for now (owner, 20 Nov 2026: "keep everything in light mode for now, the dark mode is so ugly
+ * and annoying"). While false, every colour is the light one on every platform, whatever the phone's setting,
+ * and app.config.ts sets userInterfaceStyle 'light'. The dark palettes stay below for a later redesign: to bring
+ * dark mode back, set this to true AND app.config.ts userInterfaceStyle back to 'automatic'.
+ */
+export const DARK_MODE_ENABLED = false;
+
 /** Raw palettes. Contrast-checked (WCAG AA) for text pairs; see design/BRAND.md for the table. */
 export const palettes = {
   light: {
@@ -80,6 +88,10 @@ const pairs = new Map<unknown, Pair>();
 const webVars: [string, Pair][] = [];
 
 function dyn(name: string, pair: Pair): string {
+  if (!DARK_MODE_ENABLED) {
+    pairs.set(pair.light, pair);
+    return pair.light;
+  }
   if (Platform.OS === 'ios') {
     const v = DynamicColorIOS(pair) as unknown as string;
     pairs.set(v, pair);
@@ -138,7 +150,8 @@ export function severityColorLight(n: number): { bg: string; fg: string } {
 
 /** Current appearance ('light' | 'dark'). */
 export function useScheme(): Scheme {
-  return useColorScheme() === 'dark' ? 'dark' : 'light';
+  const phone = useColorScheme();
+  return DARK_MODE_ENABLED && phone === 'dark' ? 'dark' : 'light';
 }
 
 /** Turn a token value (dynamic or plain) into the hex for a scheme. */
@@ -164,6 +177,7 @@ export function useColors() {
 /** CSS custom properties for the web preview (light + dark via prefers-color-scheme). */
 export function webThemeCss(): string {
   const decl = (s: Scheme) => webVars.map(([n, p]) => `--z-${n}:${p[s]};`).join('');
+  if (!DARK_MODE_ENABLED) return `:root{${decl('light')}color-scheme:light}`;
   return `:root{${decl('light')}color-scheme:light}@media (prefers-color-scheme:dark){:root{${decl('dark')}color-scheme:dark}}`;
 }
 

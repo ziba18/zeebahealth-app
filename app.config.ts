@@ -27,7 +27,7 @@ const config: ExpoConfig = {
   orientation: 'portrait',
   icon: './assets/icon.png',
   // Light = Native, Dark = Midnight: follow the phone's appearance (keyboards and system sheets too).
-  userInterfaceStyle: 'automatic',
+  userInterfaceStyle: 'light', // light only for now (owner, 20 Nov 2026); see DARK_MODE_ENABLED in constants/zeebaUI.ts
   scheme: 'zeebahealth',
   ios: {
     supportsTablet: true,

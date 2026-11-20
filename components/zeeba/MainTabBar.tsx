@@ -5,7 +5,7 @@ import type { BottomTabBarProps } from 'expo-router/tabs';
 import { BlurView } from 'expo-blur';
 import { haptics } from '../../lib/haptics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, heights, space, type as typeScale, useColors } from '../../constants/zeebaUI';
+import { DARK_MODE_ENABLED, colors, heights, space, type as typeScale, useColors } from '../../constants/zeebaUI';
 import { useTourTarget, type TourTarget } from '../../lib/tour';
 import { Icon, type IconName } from '../ui/Icon';
 import { Txt, useReduceMotion } from './kit';
@@ -146,7 +146,7 @@ export function MainTabBar({ state, descriptors, emitter, navigateToTab }: Botto
       {/* Content fades out under the floating bar instead of ending on a hard line. */}
       <LinearGradient colors={[`${c.canvas}00`, c.canvas]} style={styles.fade} />
       <View style={[styles.bar, Platform.OS === 'web' && styles.barSolid]} accessibilityRole="tablist" onLayout={(e) => setBarW(e.nativeEvent.layout.width)}>
-        {Platform.OS === 'web' ? null : <BlurView intensity={70} tint="systemChromeMaterial" style={StyleSheet.absoluteFill} />}
+        {Platform.OS === 'web' ? null : <BlurView intensity={70} tint={DARK_MODE_ENABLED ? "systemChromeMaterial" : "systemChromeMaterialLight"} style={StyleSheet.absoluteFill} />}
         {tabW > 0 ? (
           <Animated.View
             aria-hidden

@@ -3,7 +3,7 @@ import { Animated, Platform, Pressable, ScrollView, StyleSheet, View, useWindowD
 import { BlurView } from 'expo-blur';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useSegments } from 'expo-router';
-import { font, colors, fonts, heights, layout, radii, shadows, space } from '../../../constants/zeebaUI';
+import { DARK_MODE_ENABLED, font, colors, fonts, heights, layout, radii, shadows, space } from '../../../constants/zeebaUI';
 import { useAuthStore } from '../../../stores/authStore';
 import { isHumanName } from '../../../lib/humanName';
 import { AnimatedPressable, usePressSpring } from './pressSpring';
@@ -81,7 +81,7 @@ export function ScreenLarge({
       )}
       {scroll ? (
         <Animated.View style={[styles.navBar, Platform.OS === 'web' && { backgroundColor: colors.canvas }, { opacity: barOpacity }]} aria-hidden>
-          {Platform.OS === 'web' ? null : <BlurView intensity={60} tint="systemChromeMaterial" style={StyleSheet.absoluteFill} />}
+          {Platform.OS === 'web' ? null : <BlurView intensity={60} tint={DARK_MODE_ENABLED ? "systemChromeMaterial" : "systemChromeMaterialLight"} style={StyleSheet.absoluteFill} />}
           <Txt variant="headline" numberOfLines={1} style={styles.navTitle}>{title}</Txt>
         </Animated.View>
       ) : null}
