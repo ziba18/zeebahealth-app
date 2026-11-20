@@ -142,7 +142,7 @@ export const LEARN_PAGES: readonly LearnPage[] = [
   },
   {
     id: 'next-steps',
-    title: 'Referrals, second opinions and your options',
+    title: 'Referrals and your options',
     blurb: 'What you can ask for if things are not moving',
     blocks: [
       {

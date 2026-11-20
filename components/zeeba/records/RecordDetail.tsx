@@ -270,10 +270,10 @@ export function RecordDetail({
         // The same link on every saved appointment, whatever she ticked: a fixed reading page, never chosen by her data.
         <PressableCard
           onPress={() => router.push('/(tabs)/doctor/learn/next-steps' as any)}
-          accessibilityLabel="Referrals, second opinions and your options"
+          accessibilityLabel="Referrals and your options"
           style={{ marginTop: space.xl }}
         >
-          <Txt variant="headline">Referrals, second opinions and your options</Txt>
+          <Txt variant="headline">Referrals and your options</Txt>
           <Txt variant="secondary">What you can ask for after an appointment</Txt>
         </PressableCard>
       ) : null}
