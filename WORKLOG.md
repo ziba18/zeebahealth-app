@@ -3,6 +3,44 @@
 Running log for the `mvp-symptom-capture` branch: what changed, what broke,
 what was decided and why. Newest entries at the top.
 
+## 2026-11-20 — Full check, market research, "Before and after your appointment", simpler For my doctor
+Branch `feature/what-next` (from `feature/evidence-pack` `3b0827c`), uncommitted.
+- **Full check:** `tsc` clean, iOS bundle OK, 206 backend tests, AI eval 64/65 fields with 0 wrong fills, live DB at
+  head `e6a8c0d2f4b3`, RLS on every table, no secrets in the repo. `*.zeebahealth.com` "down" = the University of
+  Wolverhampton network filter again (checked OK from 7 countries); use mobile data or zeebahealth.vercel.app.
+- **Security:** Mixpanel removed (`lib/analytics.ts` is now a no-op `track()`); `npm audit fix` cleared the critical
+  (shell-quote) and high (node-forge) issues; 3 moderate remain inside Expo's own build tools (the only "fix" is a
+  downgrade to Expo 52).
+- **Market research** (agent): `research_notes/market-need-score-2026-11-20.md`, 59/100. A GP PDF is no longer rare
+  (Verity Cycle, Flo, Clue …); the edge is the appointments log + treatments tried; the missing piece is "what next".
+- **Owner decisions:** launch January 2027 with the full app and the price wall; free/paid split, PDF title and the
+  Jan design (current look vs Apple-native) still open. Old unconsented data: delete before launch, not now
+  (4 accounts, IDs in memory). Family/guardian sign-up: explained the legal routes; not decided.
+- **Built:** `lib/learn/pages.ts` (fixed reading pages + 10 common GP questions, same for everyone, never chosen by
+  her data), `app/(tabs)/doctor/learn/[page].tsx` (Endometriosis / PMOS (PCOS) / Referrals, second opinions and your
+  options), `app/(tabs)/doctor/questions.tsx` (tick to add to her report questions, max 8). For my doctor: options
+  fold into "Report for … Change"; glance tiles no longer repeated (they are in the paper preview); "Choose from
+  common questions" under her questions; "Before and after your appointment" section. Every saved appointment links
+  to the options page. Test `scripts/ai-eval/learn-pages.test.mjs` (43/43 app tests). Screens checked at 390×844.
+- **Before launch:** NICE NG73 points come from the 13 Nov research (nice.org.uk blocked automated reading): check them
+  at source in a browser; a clinician should read the three pages once. The NHS second-opinion page 404'd, so the
+  page only says "ask for a different GP".
+
+## 2026-11-18 (evening) — Desktop web copy for sharing: https://zeebahealth-preview.vercel.app
+The owner asked for a desktop version to share with a friend. Built from `feature/evidence-pack` (`3b0827c`) with
+`EXPO_PUBLIC_DESIGN_PREVIEW=1 npx expo export --platform web --dev` (preview mode needs a dev bundle): Sam's sample
+data, no login, no network. Deployed as a separate Vercel project `zeebahealth-preview` (the website is untouched),
+with an SPA rewrite in `vercel.json`. Gotcha: Vercel never uploads folders named `node_modules`, so the fonts under
+`assets/node_modules/` 404'd and the app stayed blank waiting for fonts; fixed by renaming to `assets/nm/` and
+rewriting the 15 paths in the bundle. Checked live: Today and For my doctor render. To refresh after app changes,
+repeat the export, the rename and `vercel deploy --prod` from the output folder. No app code changed.
+Same evening, for the friend to comment on: https://claude.ai/artifact/3LtgodBRe84RHPHZbSuSHv (12 real phone screenshots
+taken from the web copy through the Chrome DevTools protocol at 390×844, light mode; claude.ai comments, click any spot).
+Private until the owner shares it from the page's Share menu.
+Made the standard friends' sharing page (owner: keep the same page): source, screenshots, `shoot.mjs` and `refresh.sh`
+in `design/friend-review/` (README there has the steps). Comment mode now ends after sending, on Esc or with "Done
+commenting" (customAnchors).
+
 ## 2026-11-18 (later) — Evidence pack built: treatments, appointments and what pain stopped on page 1 of the report
 
 Owner: "Settle and commit the previous uncommitted work, and then do what you need to do ... Do what you just

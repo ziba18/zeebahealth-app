@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { FieldGroup } from './GroupedRows';
 import { View } from 'react-native';
-import { useNavigation } from 'expo-router';
+import { useNavigation, useRouter } from 'expo-router';
 import { space } from '../../../constants/zeebaUI';
 import type {
   AppointmentData, HistoryData, HistoryType, MedicineData, Rec,
@@ -9,7 +9,7 @@ import type {
 import { useRecordsStore } from '../../../stores/recordsStore';
 import { haptics } from '../../../lib/haptics';
 import {
-  Button, ChipGroup, ConfirmCard, FieldLabel, EmptyState, InlineError, ScreenLarge, SectionTitle, TextField, Txt, showToast,
+  Button, ChipGroup, ConfirmCard, FieldLabel, EmptyState, InlineError, PressableCard, ScreenLarge, SectionTitle, TextField, Txt, showToast,
 } from '../kit';
 import { todayKey } from '../../../lib/records/dates';
 import { useScrollRef } from '../timeline/navigation';
@@ -115,6 +115,7 @@ export function RecordDetail({
   const existing = isNew ? undefined : records.find((r) => r.id === id);
 
   const navigation = useNavigation();
+  const router = useRouter();
 
   const [draft, setDraft] = useState<Draft | null>(() =>
     isNew ? blank(kind) : existing ? normalise(kind, existing.data) : null);
@@ -264,6 +265,18 @@ export function RecordDetail({
           {need ? <Txt variant="secondary" style={{ textAlign: 'center' }}>{need}</Txt> : null}
         </View>
       </View>
+
+      {kind === 'appointment' && !isNew ? (
+        // The same link on every saved appointment, whatever she ticked: a fixed reading page, never chosen by her data.
+        <PressableCard
+          onPress={() => router.push('/(tabs)/doctor/learn/next-steps' as any)}
+          accessibilityLabel="Referrals, second opinions and your options"
+          style={{ marginTop: space.xl }}
+        >
+          <Txt variant="headline">Referrals, second opinions and your options</Txt>
+          <Txt variant="secondary">What you can ask for after an appointment</Txt>
+        </PressableCard>
+      ) : null}
 
       {!isNew && !confirming ? (
         <Button

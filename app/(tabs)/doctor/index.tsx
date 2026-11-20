@@ -3,7 +3,8 @@
 // Show on screen, the plain-text share and the PDF, so they can never say different things.
 //
 // Order (11 Nov 2026 review): the report itself comes first ("Read my report"), so the tab opens on the thing
-// she came for and not on a form; the choices that change it follow.
+// she came for and not on a form. Simplified 20 Nov 2026 (owner): the choices fold into one "Report for … Change"
+// line, then her questions, then "Before and after your appointment" (fixed reading pages, lib/learn/pages.ts).
 // Then (research, 10 Nov 2026 — design/HANDOVER.md §7): who it's for + time span → At a glance
 // (counts first: clinicians read numbers before prose) → her agenda (printed first on the page) →
 // each section as a card she can switch off in place → what the report covers (gaps made visible).
@@ -13,14 +14,14 @@ import { Platform, Pressable, View, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { colors, heights, radii, space } from '../../../constants/zeebaUI';
 import {
-  Button, Card, ChipGroup, EmptyState, HeaderAvatar, InlineError, SafetyLine, ScreenLarge, SegmentedControl, SkeletonCards, Txt, showToast,
+  Button, Card, ChipGroup, EmptyState, HeaderAvatar, InlineError, PressableCard, SafetyLine, ScreenLarge, SegmentedControl, SkeletonCards, Txt, showToast,
 } from '../../../components/zeeba/kit';
 import { SectionHeader } from '../../../components/zeeba/dash/Dash';
 import { Icon, type IconName } from '../../../components/ui/Icon';
 import { openCapture } from '../../../lib/captureStore';
 import { AgendaEditor } from '../../../components/zeeba/doctor/AgendaEditor';
 import { DocumentPreview } from '../../../components/zeeba/doctor/DocumentPreview';
-import { CoverageCard, GlanceTiles, SectionCards, animateLayout } from '../../../components/zeeba/doctor/ReportDashboard';
+import { CoverageCard, SectionCards, animateLayout } from '../../../components/zeeba/doctor/ReportDashboard';
 import { printSummary, shareSummaryPdf } from '../../../components/zeeba/doctor/share';
 import { useDoctorBuilder, useDoctorDoc } from '../../../components/zeeba/doctor/useDoctorDoc';
 import { haptics } from '../../../lib/haptics';
@@ -28,6 +29,7 @@ import { reportShared } from '../../../lib/milestones';
 import { Rise } from '../../../components/zeeba/motion';
 import { formatDay, joinFacts, notesLabel } from '../../../lib/records/format';
 import { todayKey } from '../../../lib/records/dates';
+import { LEARN_PAGES } from '../../../lib/learn/pages';
 import {
   AUDIENCE_LABEL, RANGE_LABEL, VISIT_TYPES, agendaTitleFor, summaryToHtml, type Audience, type RangeChoice, type VisitType,
 } from '../../../lib/records/summary';
@@ -89,6 +91,7 @@ export default function DoctorScreen() {
   const { doc, range, hasLast, rangeNote, upcoming } = useDoctorDoc();
 
   const [busy, setBusy] = useState<'share' | 'print' | null>(null);
+  const [showOptions, setShowOptions] = useState(false);
   const [actionError, setActionError] = useState('');
   const [noteError, setNoteError] = useState('');
   const lastSaved = useRef(savedNote);
@@ -227,29 +230,28 @@ export default function DoctorScreen() {
     </Card>
   );
 
-  const dashboard = nothingYet ? (
-    <Card style={{ marginTop: space.lg }}>
-      <EmptyState
-        message={olderData
-          ? 'Nothing recorded in this time. Choose a longer time above, or add a note.'
-          : 'Your report fills in as you add notes.'}
-        action={{ label: 'Add a note', onPress: () => openCapture() }}
-        style={{ paddingVertical: space.xl }} />
+  // Simpler page (owner, 20 Nov 2026): the report's options fold into one line with "Change"; what the report
+  // contains is already in the paper preview above, so the glance tiles no longer repeat here.
+  const optionsLine = (
+    <Card style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm, paddingVertical: space.sm }}>
+      <View style={{ flex: 1 }}>
+        <Txt variant="caption">Report for</Txt>
+        <Txt variant="body">{joinFacts(AUDIENCE_LABEL[audience], rangeNote || doc.rangeLabel, notesLabel(doc.entries))}</Txt>
+      </View>
+      <Button
+        label={showOptions ? 'Done' : 'Change'}
+        variant="text"
+        small
+        onPress={() => { animateLayout(); setShowOptions((v) => !v); }}
+        accessibilityLabel={showOptions ? 'Close report options' : 'Change who it is for, how far back and what is in it'}
+      />
     </Card>
-  ) : (
+  );
+
+  const options = (
     <>
-      {doc.glance.length ? (
-        <Rise index={3} style={{ marginTop: space.xxl }}>
-          <SectionHeader title="At a glance" />
-          <GlanceTiles doc={doc} />
-        </Rise>
-      ) : null}
-
-      <Rise index={4} style={{ marginTop: space.xxl }}>
-        <AgendaEditor value={agenda} onChange={setAgenda} onCommit={saveAgenda} title={agendaTitle} error={noteError} />
-      </Rise>
-
-      <Rise index={5} style={{ marginTop: space.xxl }}>
+      {settings}
+      <Rise index={3} style={{ marginTop: space.xl }}>
         <SectionHeader title="In the report" />
         <Txt variant="caption" style={{ marginBottom: space.sm, paddingHorizontal: space.xxs }}>
           Switch a section off to leave it out. Your notes stay saved.
@@ -261,11 +263,52 @@ export default function DoctorScreen() {
         ) : null}
         <SectionCards doc={doc} include={include} onToggle={setInclude} onHideQuote={hideQuote} onShowAllQuotes={showAllQuotes} />
       </Rise>
-
-      <Rise index={6} style={{ marginTop: space.lg }}>
+      <Rise index={4} style={{ marginTop: space.lg }}>
         <CoverageCard doc={doc} onAddNote={() => openCapture()} />
       </Rise>
     </>
+  );
+
+  const dashboard = nothingYet ? (
+    <Card style={{ marginTop: space.lg }}>
+      <EmptyState
+        message={olderData
+          ? 'Nothing recorded in this time. Choose a longer time above, or add a note.'
+          : 'Your report fills in as you add notes.'}
+        action={{ label: 'Add a note', onPress: () => openCapture() }}
+        style={{ paddingVertical: space.xl }} />
+    </Card>
+  ) : (
+    <Rise index={3} style={{ marginTop: space.xxl }}>
+      <AgendaEditor value={agenda} onChange={setAgenda} onCommit={saveAgenda} title={agendaTitle} error={noteError} />
+      <Button
+        label="Choose from common questions"
+        variant="text"
+        icon="list"
+        align="start"
+        onPress={() => router.push('/(tabs)/doctor/questions' as any)}
+        style={{ marginTop: space.xxs }}
+      />
+    </Rise>
+  );
+
+  // "Before and after your appointment": the same rows, in the same order, for everyone (lib/learn/pages.ts).
+  const learn = (
+    <Rise index={5} style={{ marginTop: space.xxl }}>
+      <SectionHeader title="Before and after your appointment" />
+      <View style={{ gap: space.xs }}>
+        <PressableCard onPress={() => router.push('/(tabs)/doctor/questions' as any)} accessibilityLabel="Questions to ask your GP">
+          <Txt variant="headline">Questions to ask your GP</Txt>
+          <Txt variant="secondary">Pick the ones that fit and add them to your report</Txt>
+        </PressableCard>
+        {LEARN_PAGES.map((p) => (
+          <PressableCard key={p.id} onPress={() => router.push(`/(tabs)/doctor/learn/${p.id}` as any)} accessibilityLabel={p.title}>
+            <Txt variant="headline">{p.title}</Txt>
+            <Txt variant="secondary">{p.blurb}</Txt>
+          </PressableCard>
+        ))}
+      </View>
+    </Rise>
   );
 
   const appointment = upcoming ? (
@@ -298,9 +341,13 @@ export default function DoctorScreen() {
         </Rise>
       )}
       {nothingYet && !olderData ? null : (
-        <Rise index={2} style={{ marginTop: doc.empty && !upcoming ? space.xl : space.sm }}>{settings}</Rise>
+        <Rise index={2} style={{ marginTop: doc.empty && !upcoming ? space.xl : space.sm }}>
+          {/* With nothing in this time span, the options stay open so she can choose a longer one. */}
+          {nothingYet ? settings : showOptions ? <>{optionsLine}<View style={{ marginTop: space.sm }}>{options}</View></> : optionsLine}
+        </Rise>
       )}
       {dashboard}
+      {learn}
       <SafetyLine style={{ marginTop: space.xxl }} />
     </ScreenLarge>
   );
