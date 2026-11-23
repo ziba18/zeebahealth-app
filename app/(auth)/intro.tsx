@@ -1,9 +1,9 @@
 // Three light pages before sign-up: Record · Prove · Reach. One picture, one line, one big "Next" each.
 // Tapping is all it needs (no swiping); "Skip" is always visible; Back steps back a page.
 import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { colors, font, space } from '../../constants/zeebaUI';
+import { colors, font, radii, space } from '../../constants/zeebaUI';
 import { Txt } from '../../components/zeeba/kit';
 import { Pop, PressScale, Rise } from '../../components/zeeba/motion';
 import { Wren } from '../../components/zeeba/Wren';
@@ -17,6 +17,8 @@ const PAGES: { icon: ClayIconName; word: string; line: string }[] = [
   { icon: 'prove', word: 'Prove', line: 'See how often, and how bad, in clear charts.' },
   { icon: 'reach', word: 'Reach', line: 'Take one clear page to your doctor.' },
 ];
+
+const REACH_PHOTO = require('../../assets/photos/report-waiting-room.jpg');
 
 export default function IntroScreen() {
   const router = useRouter();
@@ -61,7 +63,12 @@ export default function IntroScreen() {
           <View style={styles.pair}>
             {/* Wren stays put and points; only the picture changes with the page. */}
             <Wren mood="point" pointAt="right" size={art * 0.74} decorative style={styles.wren} />
-            <Pop key={page}><ClayIcon name={p.icon} size={art} /></Pop>
+            {/* The last page shows the photograph (owner, 23 Nov 2026) in place of the drawn icon. */}
+            <Pop key={page}>
+              {p.icon === 'reach'
+                ? <Image source={REACH_PHOTO} resizeMode="cover" accessible={false} aria-hidden style={{ width: art * 1.1, height: art * 1.25, borderRadius: radii.card }} />
+                : <ClayIcon name={p.icon} size={art} />}
+            </Pop>
           </View>
         </View>
         <Rise key={`words${page}`} delay={90} style={styles.words}>

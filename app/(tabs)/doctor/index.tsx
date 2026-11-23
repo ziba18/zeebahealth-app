@@ -10,7 +10,7 @@
 // each section as a card she can switch off in place → what the report covers (gaps made visible).
 import { usePageTitle } from '../../../lib/usePageTitle';
 import React, { useEffect, useRef, useState } from 'react';
-import { Platform, Pressable, View, useWindowDimensions } from 'react-native';
+import { Image, Platform, Pressable, View, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { colors, heights, radii, space } from '../../../constants/zeebaUI';
 import {
@@ -332,6 +332,14 @@ export default function DoctorScreen() {
 
   return (
     <ScreenLarge title="For my doctor" right={<HeaderAvatar />} footer={footer}>
+      {/* Photograph (owner, 23 Nov 2026): made in ChatGPT, no face, no real person. Decorative only. */}
+      <Image
+        source={require('../../../assets/photos/report-waiting-room.jpg')}
+        resizeMode="cover"
+        accessible={false}
+        aria-hidden
+        style={{ width: '100%', height: 168, borderRadius: radii.card, marginBottom: space.md }}
+      />
       {/* Motion only on this tab, and never the mascot: sections arrive one after another, the paper slides up. */}
       {appointment ? <Rise index={0}>{appointment}</Rise> : null}
       {/* Nothing recorded at all: the empty state alone, no settings to choose between. */}

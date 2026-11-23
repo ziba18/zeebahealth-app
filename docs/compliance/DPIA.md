@@ -19,7 +19,7 @@ A DPIA is required here because the app stores health information (special categ
 
 ## 2. What the app does and why
 
-Women record symptoms (in their own words, with strength 0–10 and body area), period days, medicines, health
+Women record symptoms (in their own words, with strength 0–10 and body area; since 2026-11-23 the body area can be marked by tapping named parts of a front and back body picture, which stores the part names, for example "Lower tummy", "Left hip"), period days, medicines, health
 history, appointments and notes for a doctor. The app shows these back as charts and a dated summary she can
 print or share as a PDF herself. It never diagnoses, scores risk or suggests treatment.
 
@@ -31,7 +31,7 @@ no profiling, no automated decisions.
 | Data | Whose | Where it lives | Why | Lawful basis | Kept until |
 |---|---|---|---|---|---|
 | Email, name, password hash (bcrypt), sign-in flags | User | Supabase Postgres, EU (Ireland) | Account | Contract, Art. 6(1)(b) | Account deleted |
-| Health records (symptoms and pain, period days, treatments tried incl. non-medicine ones, history, appointments incl. what she said, what she was told and what happened next, days her symptoms stopped work, study, plans or sleep, doctor note). Since 2026-11-18 (consent `2026-12`) | User | Supabase Postgres, EU (Ireland), table `health_records` | The service she asked for | Explicit consent, Art. 6(1)(a) + 9(2)(a) | Account deleted |
+| Health records (symptoms and pain incl. the named body parts she marks on the body picture, period days, treatments tried incl. non-medicine ones, history, appointments incl. what she said, what she was told and what happened next, days her symptoms stopped work, study, plans or sleep, doctor note). Since 2026-11-18 (consent `2026-12`) | User | Supabase Postgres, EU (Ireland), table `health_records` | The service she asked for | Explicit consent, Art. 6(1)(a) + 9(2)(a) | Account deleted |
 | Consent record (time, wording version) | User | Same database, `users` | Proof of consent | Legal obligation / legitimate interests | Account deleted |
 | Settings (cycle length, reminder time, time zone, date of birth if given) | User | Same database, `profiles` | Run the app | Contract | Account deleted |
 | Email codes (hash only, 15 minutes) | User | Same database, `email_codes` | Confirm address, reset password | Contract / security | Used, expired, or account deleted |

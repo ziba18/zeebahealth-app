@@ -11,7 +11,7 @@ from app.config import settings
 
 router = APIRouter(tags=["legal"])
 
-EFFECTIVE_DATE = "18 November 2026"
+EFFECTIVE_DATE = "23 November 2026"
 
 # Colours from the app's "Warm Paper, Deep Ink" palette (constants/zeebaUI.ts).
 _PAGE = """<!doctype html>
@@ -59,8 +59,9 @@ protection law. You can reach us at <a href="mailto:{email}">{email}</a>.</p>
   email and password, we store your password only in hashed form, never as plain text. If you
   use Sign in with Apple or Google, we receive your email address (and your name, if you share
   it) from them; we never see your Apple or Google password.</li>
-  <li><strong>What you record in the app:</strong> symptoms and pain in your own words, period
-  days, treatments you have tried (medicines and others, such as physio or diet changes) and
+  <li><strong>What you record in the app:</strong> symptoms and pain in your own words, the parts
+  of your body you mark on the body picture to show where it hurts (for example lower tummy or left
+  hip), period days, treatments you have tried (medicines and others, such as physio or diet changes) and
   whether they helped, appointments (who you saw, what you said, what you were told and what
   happened next), the days your symptoms stopped you working, studying, keeping plans or
   sleeping, health history and notes for your doctor. If you type the name of a doctor, nurse or

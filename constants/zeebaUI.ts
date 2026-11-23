@@ -18,35 +18,39 @@ export const DARK_MODE_ENABLED = false;
 
 /** Raw palettes. Contrast-checked (WCAG AA) for text pairs; see design/BRAND.md for the table. */
 export const palettes = {
+  // Light = "ChatGPT neutral" trial (23 Nov 2026, branch design/chatgpt-neutral; owner has not approved it yet).
+  // Source: chatgpt.com light theme, opened in a browser: white page, near-black ink, grey fills, hairline
+  // borders, one black main button. Colour is kept for DATA only (the pain scale, bleeding, saved, errors).
+  // The raspberry values this replaces are in git: `git show 6ca38f4:constants/zeebaUI.ts`.
   light: {
-    canvas: '#F2F2F7', // systemGroupedBackground
-    surface: '#FFFFFF', // cards, sheets, grouped rows
-    raised: '#FFFFFF', // dashboard tiles
-    sunken: '#E9E9EE', // segmented track, input wells, pressed rows
-    hairline: '#D8D8DE', // separators
-    cardBorder: 'rgba(0,0,0,0)', // light cards are borderless, like iOS
-    borderStrong: '#8E8E93', // input + chip outlines (3.3:1)
-    ink: '#000000',
-    ink2: '#6C6C72', // secondary label (4.7:1 on canvas)
-    ink3: '#6C6C72',
-    accent: '#C81E55', // raspberry: actions, selected tab, links (5.0:1 on canvas, white on it 5.6:1)
-    accentPressed: '#A8164A',
-    accentTint: '#FCE8EE',
+    canvas: '#FFFFFF',
+    surface: '#FFFFFF', // cards sit on white with a hairline edge
+    raised: '#FFFFFF',
+    sunken: '#F4F4F4', // input wells, pressed rows, segmented track
+    hairline: '#E5E5E5', // separators
+    cardBorder: 'rgba(0,0,0,0.10)',
+    borderStrong: '#8F8F8F', // input + chip outlines (3.2:1)
+    ink: '#0D0D0D',
+    ink2: '#5D5D5D', // secondary label (6.7:1 on white)
+    ink3: '#5D5D5D',
+    accent: '#0D0D0D', // actions, selected tab, links: ink, not a colour
+    accentPressed: '#3A3A3A',
+    accentTint: '#F4F4F4',
     onAccent: '#FFFFFF',
-    glow: 'rgba(200,30,85,0.10)', // soft wash behind Wren / hero
-    clay: '#E8562A', // PERIOD / BLEEDING only (orange, never the accent)
+    glow: 'rgba(0,0,0,0)', // no colour washes
+    clay: '#E8562A', // PERIOD / BLEEDING only
     clayTint: '#FDE6DC',
     onClay: '#FFFFFF',
     saved: '#1E7A35',
     savedTint: '#E3F4E6',
     error: '#D70015',
     errorTint: '#FDE4E6',
-    chartTrack: '#E9E9EE', // empty days / chart tracks
+    chartTrack: '#ECECEC', // empty days / chart tracks
     white: '#FFFFFF',
     scrim: 'rgba(0,0,0,0.3)',
-    tabBar: 'rgba(249,249,251,0.94)',
+    tabBar: 'rgba(255,255,255,0.94)',
     tabBarTranslucent: 'rgba(255,255,255,0.72)',
-    glassEdge: 'rgba(0,0,0,0.07)',
+    glassEdge: 'rgba(0,0,0,0.10)',
   },
   dark: {
     canvas: '#0A0C16',

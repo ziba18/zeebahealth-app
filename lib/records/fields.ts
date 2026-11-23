@@ -11,6 +11,13 @@ export const BODY_ZONES = [
   'Bottom',
 ] as const;
 
+/**
+ * Since the body map (23 Nov 2026) she marks where it hurts on a picture, which saves names such as "Lower tummy"
+ * or "Left hip" (components/zeeba/capture/BodyMap.tsx). These two stay as chips because a picture of the outside
+ * of the body cannot show them. BODY_ZONES above is the older list: notes saved with it keep their words.
+ */
+export const OFF_MAP_ZONES = ['Deep inside', 'Bottom'] as const;
+
 /** Display labels where the chip needs more words than the stored value (spec wording). */
 export const BODY_ZONE_LABELS: Partial<Record<(typeof BODY_ZONES)[number], string>> = {
   Bottom: 'Bottom / when opening bowels',
