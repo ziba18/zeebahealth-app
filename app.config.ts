@@ -52,7 +52,7 @@ const config: ExpoConfig = {
     adaptiveIcon: {
       foregroundImage: './assets/android-icon-foreground.png',
       monochromeImage: './assets/android-icon-monochrome.png',
-      backgroundColor: '#FFB58D',
+      backgroundColor: '#FDCCB1',
     },
     package: 'com.zeebahealth.app',
     allowBackup: false,
