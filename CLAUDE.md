@@ -1,5 +1,27 @@
 # Zeeba Health — Claude Code Project Notes
 
+## NEWEST (2026-11-23): ChatGPT-style look, knitted Wren, body map, new icon, on branch `design/chatgpt-neutral` (pushed; latest `402023e` + notes)
+Owner asked for a more professional look inspired by chatgpt.com and for real images in place of drawn art. Images
+are made in the owner's ChatGPT through the browser (Higgsfield is NOT paid for: free plan, 0 credits, "don't want
+to pay yet"). Owner approved all of this on 23 Nov. See WORKLOG 2026-11-23. Rules that now hold:
+- **Light palette = ChatGPT neutral** (`constants/zeebaUI.ts`): white page, near-black ink, grey fills. Colour is for
+  data only (pain scale, bleeding, saved, errors). The raspberry accent is gone from buttons, links and tabs.
+- **Wren is one knitted picture everywhere** (`assets/wren/wren-knitted.png`, `components/zeeba/Wren.tsx`). One pose:
+  `mood` only changes movement. The old drawn Wren is in git (`6ca38f4`). Still never on the Doctor tab or PDF.
+- **App icon** = ChatGPT "Option E, medical report edition": winking knitted Wren holding a report. Owner-approved.
+  Dark and tinted iOS icons, the Android monochrome icon and the splash still show older Wrens.
+- **Pain body map** (`components/zeeba/capture/BodyMap.tsx`, `lib/records/bodyMapData.ts`, `assets/bodymap/`):
+  ChatGPT's front/back figure kept exactly, 49 tappable regions, names saved into `zones` ("Lower tummy", "Left
+  hip"; sides are HER left and right). The data file is generated: do not hand-edit it. "Deep inside" and "Bottom"
+  stay as chips. Older notes keep their old zone words. **Later version (owner asked to be reminded): free painting
+  of pain on the body.**
+- Privacy page line about the body picture is LIVE (`be40d95` on `mvp-symptom-capture`, 23 Nov; the owner gave the
+  push command in chat). Consent wording unchanged, so `CONSENT_VERSION` stays `2026-12`.
+- **Owner wants to see things before they are pushed or submitted.** Show first, then commit.
+- **No new build until the owner has given more feedback from Expo Go** (said 23 Nov). EAS build 3 (`fc5a1f9`,
+  not submitted to Apple) has the first knitted icon and is out of date.
+- Source images: `design/gpt-images-2026-11-23/`. ChatGPT chat: "Generate Wren Render".
+
 ## NEWEST (2026-11-18): evidence pack built on branch `feature/evidence-pack` (not deployed, not on a device)
 Positioning (owner-approved for the pitch): "Other apps track your cycle. Zeeba builds your case." Page 1 of the
 report is now the evidence pack: glance tiles incl. days off work or study / left early / plans cancelled / nights

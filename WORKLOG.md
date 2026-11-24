@@ -3,6 +3,31 @@
 Running log for the `mvp-symptom-capture` branch: what changed, what broke,
 what was decided and why. Newest entries at the top.
 
+## 2026-11-23 — ChatGPT-style look, knitted Wren, pain body map, photo, new app icon
+Branch `design/chatgpt-neutral` (from `feature/what-next` `6ca38f4`), committed and pushed. Owner approved each part.
+- **Look:** light palette swapped for ChatGPT's (opened chatgpt.com in the browser as the reference): white canvas,
+  ink `#0D0D0D`, grey fills `#F4F4F4`, hairline card borders, black main button. Data colours unchanged. The Evidence
+  bar chart now draws in ink because it used the accent; owner has not commented on it.
+- **Images:** Higgsfield account is on the free plan with 0 credits and the owner does not want to pay yet, so all
+  images were generated in the owner's ChatGPT (chat "Generate Wren Render") and downloaded from there. Kept:
+  knitted Wren, waiting-room photo, body map, minimal Wren mark (unused), icon option E medical. Originals in
+  `design/gpt-images-2026-11-23/`.
+- **Wren:** `Wren.tsx` is now an image with the same props (breathing, sway, hop). Moods no longer change the face.
+- **Body map:** the ChatGPT picture was split into its 49 regions by following its own white lines (scipy connected
+  components), giving one cut-out per region and a 112x140 tap grid; ChatGPT's example pink area was returned to
+  grey. Browser clicks use offsetX/Y, native uses locationX/Y: the native path is NOT yet tested on a phone.
+  New notes can no longer say lower tummy left / centre / right (the picture has one lower tummy area); owner was
+  told and has not asked for the chips back.
+- **Photo:** top of For my doctor and the last intro page.
+- **Icon:** tried knitted Wren on peach, then full-frame; owner wanted "another face of Wren", chose ChatGPT option E
+  (wink + chart) then asked for a medical report in place of the "financial" chart. Final: `402023e`. At home-screen
+  size the report's ticks merge into a pattern; owner saw the preview and accepted it.
+- **Privacy page:** body-picture line and date 23 Nov, live on Render (`be40d95`); DPIA draft updated.
+- **Builds:** EAS iOS build 3 (`1b1884f2`, commit `fc5a1f9`) finished, not submitted. No new build until the owner
+  sends more feedback from Expo Go. Owner found Expo Go slow: two Metro servers were running (mine was stopped).
+- **Verified:** `tsc` clean, iOS bundle export OK, Today / Evidence / Doctor / the Where editor in the web preview.
+  Not verified: any real phone, onboarding and intro screens, Android icon, removing a marked body part.
+
 ## 2026-11-20 — Full check, market research, "Before and after your appointment", simpler For my doctor
 Branch `feature/what-next` (from `feature/evidence-pack` `3b0827c`), uncommitted.
 - **Full check:** `tsc` clean, iOS bundle OK, 206 backend tests, AI eval 64/65 fields with 0 wrong fills, live DB at
